@@ -1,0 +1,208 @@
+.navbar_background{
+  line-height: 100%;
+}
+
+.navbar_title{
+  font-family: britannic;
+  font-weight: bold;
+  font-size: 40px;
+  padding: 20px;
+}
+
+.navbar_title:hover{
+  color:white;
+}
+
+
+.navbar_categories{
+  font-family: Agency FB;
+  font-size: 30px;
+  padding: 20px;
+  color:black;
+  max-width:30%;
+  font-weight: bold;
+}
+
+.navbar_subcategories{
+  font-family: Agency FB;
+  font-size: 25px;
+  padding: 20px;
+  color:black;
+  max-width:30%;
+}
+
+.navbar_subcategories:hover{
+  background-color: white;
+  cursor: pointer;
+  text-decoration: none;
+  color:black;
+}
+
+.navbar_categories:hover{
+  color:black;
+}
+
+#search_bar{
+  font-family: Gabriola;
+  font-size: 20px;
+  padding: 5px;
+  min-width:400px;
+  border-radius: 20px;
+}
+
+#Search:focus{
+  outline: none;
+}
+
+@media screen and (max-width:1000px){
+  
+  .search_icon{
+    display:none;
+  }
+  #search_bar{
+    display:none;
+  }
+}
+
+.search_icon{
+  background-image: url("https://image.flaticon.com/icons/png/512/55/55369.png");
+}
+
+.account_icon{
+  background-image: url("https://cdn1.iconfinder.com/data/icons/avatar-1-2/512/User2-512.png");
+}
+
+.cart_icon{
+  background-image: url("https://image.flaticon.com/icons/png/512/107/107831.png");
+}
+.image{
+  width:40px;
+  padding:8px;
+}
+
+.search_bar:focus{
+  outline: none;
+}
+
+.main_color{
+  background-color: #A17575;
+}
+
+.main_lightcolor_bg{
+  background-color: #B29B9B;
+}
+
+.greycolor_text{
+  color: #707070;
+}
+
+.font_Britannic{
+  font-family: britannic;
+}
+
+.font_AgencyFB{
+  font-family: Agency FB;
+}
+
+.font_Gabriola{
+  font-family: Gabriola;
+}
+
+.font_weight_bold{
+  font-weight: bold;
+}
+
+.button_hover:hover{
+  background-color: #B29B9B;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.popup_container{
+  position: absolute; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  right:10px;
+  padding:10px;
+  border-radius: 20px;
+  border: #B29B9B 1px solid;
+  overflow: hidden;
+  display:none;
+}
+
+.popup_input_text{
+  min-width:250px;
+}
+
+.popup-button{
+  margin:5px;
+  font-weight: bold;
+  font-size: 16px;
+  color:#B29B9B;
+  border:#B29B9B 1px solid;
+}
+
+.float_right{
+  float:right;
+}
+
+.float_left{
+  float:left;
+}
+
+.margin-10-topbottom{
+  margin: 0% 10%;
+}
+
+.regTable{
+  width:80%;
+  margin:auto;
+  table-layout: fixed;
+  
+}
+
+.regTable td{
+  padding:5px;
+}
+
+.regForm-Container{
+  vertical-align: top;
+}
+
+
+.regColumn:hover{
+  text-decoration: none;
+  color:gray;
+}
+
+.border-topright-line{
+  border-top:#707070 1px solid;
+  border-right:#707070 1px solid;
+}
+
+.border-bottomleft-line{
+  border-bottom:#707070 1px solid;
+  border-left:#707070 1px solid;
+}
+
+.border-topleft-line{
+  border-bottom: #A17575 1px solid;
+  border-top:#707070 1px solid;
+  border-left:#707070 1px solid;
+}
+
+.border-bottomright-line{
+  border-bottom:#707070 1px solid;
+  border-right:#707070 1px solid;
+}
+
+.border-right-line{
+  border-right:#707070 2px solid;
+}
+
+.regForm{
+  padding:0px 20px;
+}
+
+.regForm-SignIn-Container{
+  padding: 0px 30%;
+}
