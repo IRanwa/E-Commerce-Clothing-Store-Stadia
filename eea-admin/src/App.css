@@ -1,0 +1,68 @@
+input[type='email'], input[type='password'] {
+  padding:2px 5px;
+  width:100%;
+}
+
+.input_container{
+  margin:10px 20px;
+}
+
+.main_color{
+  background-color: #A17575;
+}
+
+.main_lightcolor_bg{
+  background-color: #B29B9B;
+}
+
+.greycolor_text{
+  color: #707070;
+}
+
+.font_Britannic{
+  font-family: britannic;
+}
+
+.font_AgencyFB{
+  font-family: Agency FB;
+}
+
+.font_weight_bold{
+  font-weight: bold;
+}
+
+.button_hover:hover{
+  background-color: #B29B9B;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.button{
+  color:#B29B9B;
+}
+
+.button:hover{
+  cursor: pointer;
+}
+
+.float_right{
+  float:right;
+}
+
+.float_left{
+  float:left;
+}
+
+.Red-Text{
+  color:red;
+}
+
+.login-form{
+  margin:10% 30%;
+}
+
+@media screen and (max-height:500px){
+  .login-form{
+    margin:0% 30%;
+  }
+}
