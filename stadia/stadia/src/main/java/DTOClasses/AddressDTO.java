@@ -1,4 +1,4 @@
-package ModelClasses;
+package DTOClasses;
 
 import java.io.Serializable;
 import java.util.List;
@@ -19,19 +19,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-public class Address implements Serializable{
+public class AddressDTO implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 
-	@OneToMany(mappedBy="shippingAddress")
-	@Getter @Setter List<Orders> ordersShipping;
+	@Getter @Setter List<OrdersDTO> ordersShipping;
 	
 	@OneToMany(mappedBy="billingAddress")
-	@Getter @Setter List<Orders> ordersBilling;
+	@Getter @Setter List<OrdersDTO> ordersBilling;
 	
-	@ManyToOne(cascade=CascadeType.REMOVE)
-	@JoinColumn(name="email",referencedColumnName="email")
-	@Getter @Setter User user;
+	@Getter @Setter UserDTO user;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -57,3 +54,4 @@ public class Address implements Serializable{
 	@Getter @Setter AddressType addType;
 
 }
+

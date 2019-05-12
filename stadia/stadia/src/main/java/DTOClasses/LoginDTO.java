@@ -1,4 +1,4 @@
-package ModelClasses;
+package DTOClasses;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-public class Login implements Serializable {
+public class LoginDTO implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -31,23 +31,7 @@ public class Login implements Serializable {
 	
 	@Getter @Setter private Date lastLogin;
 
-	public Login() {
+	public LoginDTO() {
 		
-	}
-	
-	public Login(String email, String pass, String fName, String lName, UserRole role, Date lastLogin) {
-		super();
-		this.email = email;
-		this.pass = pass;
-		this.fName = fName;
-		this.lName = lName;
-		this.role = role;
-		this.lastLogin = lastLogin;
-	}
-
-	public Login(String email, String pass) {
-		super();
-		this.email = email;
-		this.pass = pass;
 	}
 }

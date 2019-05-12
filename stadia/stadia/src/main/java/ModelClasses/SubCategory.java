@@ -3,6 +3,7 @@ package ModelClasses;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,11 +18,11 @@ public class SubCategory implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
-	@OneToMany(mappedBy="subCategory")
+	@OneToMany(mappedBy="subCategory",cascade=CascadeType.ALL)
 	@Getter @Setter List<MainSubCategory> mainSubCategory;
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Getter @Setter int id;
 	
 	@Getter @Setter String subCatTitle;
