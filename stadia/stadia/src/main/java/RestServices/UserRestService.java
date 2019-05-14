@@ -36,29 +36,29 @@ public class UserRestService {
 	public String RegisterUser() {
 		Login login = new Login("imeshranwa2","123","Imesh","Ranawaka",UserRole.Consumer,new Date());
 		User user = new User(login,"imeshranwa2");
-		return "{\"Status\":"+userService.RegisterUser(user)+"}";
+		return "{\"Status\":"+userService.registerUser(user)+"}";
 	}
 	
 	@GetMapping(value="/Login")
 	public boolean LoginUser() {
 		Login login = new Login("imeshranwa2","123");
-		return userService.LoginUser(login);
+		return userService.loginUser(login);
 	}
 	
 	@GetMapping(value="/User/{id}")
 	public UserDTO GetUserDetails(@PathVariable String id) {
-		return userService.GetUser(id);
+		return userService.getUser(id);
 	}
 	
 	@DeleteMapping(value="/User/{id}")
 	public boolean DeleteUser(@PathVariable String id) {
-		return userService.DeleteUser(id);
+		return userService.deleteUser(id);
 	}
 	
 	@PutMapping(value="/User/{id}")
 	public User UpdateUser(@PathVariable String id) {
 		
-		return userService.UpdateUser(id);
+		return userService.updateUser(id);
 	}
 	
 	

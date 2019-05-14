@@ -26,15 +26,12 @@ public class Product implements Serializable{
 	@Getter @Setter List<ProductSizes> productSizes;
 	
 	
-	@ManyToOne(cascade=CascadeType.REMOVE)
-	@JoinColumns({
-		@JoinColumn(name="mainCatId",referencedColumnName="mainId"),
-		@JoinColumn(name="subCatId",referencedColumnName="subId")
-	})
+	@ManyToOne
+	@JoinColumn(name="mainSubCatId",referencedColumnName="id")
 	@Getter @Setter MainSubCategory mainSubCategory;
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Getter @Setter long id;
 	
 	@Getter @Setter String title;

@@ -1,6 +1,7 @@
 package ModelClasses;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.EmbeddedId;
@@ -11,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
+import javax.persistence.OneToMany;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -31,4 +33,7 @@ public class MainSubCategory implements Serializable{
 	@ManyToOne
 	@JoinColumn(name="subId",referencedColumnName="id")
 	@Getter @Setter SubCategory subCategory;
+	
+	@OneToMany(mappedBy="mainSubCategory",cascade=CascadeType.ALL)
+	@Getter @Setter List<Product> productsList;
 }

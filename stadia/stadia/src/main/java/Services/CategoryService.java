@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
-import DTOClasses.MainCategoryDTO;
+import DTOClasses.CategoryDTO;
 import DTOClasses.MainSubCategoryDTO;
 import ModelClasses.MainCategory;
 import ModelClasses.MainSubCategory;
@@ -29,9 +29,9 @@ public class CategoryService {
 	SubCategoryRepository subCatRepo;
 	
 	//Main Category
-	public List<MainCategoryDTO> GetMainCategoryList(){
+	public List<CategoryDTO> getMainCategoryList(){
 		Iterable<MainCategory> mainCatList = mainCatRepo.findAll();
-		List<MainCategoryDTO> mainCatDTOList = new ArrayList<MainCategoryDTO>();
+		List<CategoryDTO> mainCatDTOList = new ArrayList<CategoryDTO>();
 		//Retrieve all main categories
 		for(MainCategory mainCat : mainCatList) {
 			List<MainSubCategory> mainSubcatList = mainCat.getMainSubCategory();
@@ -47,7 +47,7 @@ public class CategoryService {
 			}
 			//Create MainCategoryDTO class
 			mainCat.setMainSubCategory(null);
-			MainCategoryDTO mainCatDTO = new MainCategoryDTO();
+			CategoryDTO mainCatDTO = new CategoryDTO();
 			mainCatDTO.setMainCategory(mainCat);
 			mainCatDTO.setMainSubCategory(mainSubCatDTOList);
 			mainCatDTOList.add(mainCatDTO);
@@ -55,11 +55,11 @@ public class CategoryService {
 		return mainCatDTOList;
 	}
 	
-	public MainCategory AddCategory(MainCategory mainCat) {
+	public MainCategory addCategory(MainCategory mainCat) {
 		return mainCatRepo.save(mainCat);
 	}
 	
-	public boolean DeleteCategory(Integer id) {
+	public boolean deleteCategory(Integer id) {
 		try {
 			mainCatRepo.deleteById(id);
 			return true;
@@ -69,7 +69,7 @@ public class CategoryService {
 		return false;
 	}
 	
-	public boolean UpdateCategory(MainCategory newMainCat, Integer id) {
+	public boolean updateCategory(MainCategory newMainCat, Integer id) {
 		try {
 			MainCategory mainCat = mainCatRepo.findById(id).get();
 			newMainCat.setId(mainCat.getId());
@@ -82,11 +82,19 @@ public class CategoryService {
 	}
 	
 	//Sub Category
-	public Iterable<SubCategory> GetSubCategoryList(){
-		return subCatRepo.findAll();
+	public Iterable<CategoryDTO> getSubCategoryList(){
+		List<SubCategory> subCatList = subCatRepo.findAll();
+		List<CategoryDTO> newSubCatList = new ArrayList<CategoryDTO>();
+		for(SubCategory subCat : subCatList) {
+			subCat.setMainSubCategory(null);
+			CategoryDTO category = new CategoryDTO();
+			category.setSubcategory(subCat);
+			newSubCatList.add(category);
+		}
+		return newSubCatList;
 	}
 	
-	public SubCategory AddSubCategory(SubCategory subCat,int mainCatId) {
+	public SubCategory addSubCategory(SubCategory subCat,int mainCatId) {
 		MainCategory mainCat = mainCatRepo.findById(mainCatId).get();
 		subCat= subCatRepo.save(subCat);
 		
@@ -97,7 +105,7 @@ public class CategoryService {
 		return subCat;
 	}
 	
-	public SubCategory AddSubCategory(int mainCatId,int subCatId) {
+	public SubCategory addSubCategory(int mainCatId,int subCatId) {
 		MainCategory mainCat = mainCatRepo.findById(mainCatId).get();
 		SubCategory subCat = subCatRepo.findById(subCatId).get();
 		
@@ -108,7 +116,7 @@ public class CategoryService {
 		return subCat;
 	}
 	
-	public boolean DeleteSubCategory(int id) {
+	public boolean deleteSubCategory(int id) {
 		try {
 			subCatRepo.deleteById(id);
 			return true;
@@ -118,7 +126,7 @@ public class CategoryService {
 		return false;
 	}
 	
-	public boolean UpdateSubCategory(SubCategory newSubCat, int id) {
+	public boolean updateSubCategory(SubCategory newSubCat, int id) {
 		try {
 			SubCategory subCat = subCatRepo.findById(id).get();
 			newSubCat.setId(subCat.getId());

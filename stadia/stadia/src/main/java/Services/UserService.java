@@ -31,7 +31,7 @@ public class UserService {
 	@Autowired
 	AddressRepository addressRepo;
 
-	public boolean RegisterUser(User user) {
+	public boolean registerUser(User user) {
 		if(!loginRepo.existsById(user.getEmail())) {
 			loginRepo.save(user.getLogin());
 			if(user.getLogin().getRole()==UserRole.Consumer) {
@@ -63,14 +63,14 @@ public class UserService {
 		return false;
 	}
 	
-	public boolean LoginUser(Login login) {
+	public boolean loginUser(Login login) {
 		if(loginRepo.existsByEmailAndPass(login.getEmail(),login.getPass())) {
 			return true;
 		}
 		return false;
 	}
 	
-	public UserDTO GetUser(String id) {
+	public UserDTO getUser(String id) {
 		User user = userRepo.findById(id).get();
 		
 		UserDTO userDTO = new UserDTO();
@@ -98,7 +98,7 @@ public class UserService {
 		return userDTO;
 	}
 	
-	public boolean DeleteUser(String id) {
+	public boolean deleteUser(String id) {
 		try{
 			loginRepo.deleteById(id);
 			return true;
@@ -108,7 +108,7 @@ public class UserService {
 		return false;
 	}
 	
-	public User UpdateUser(String id) {
+	public User updateUser(String id) {
 		User user = new User();
 		Login login = loginRepo.findById(id).get();
 		login.setFName("I");

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import DTOClasses.MainCategoryDTO;
+import DTOClasses.CategoryDTO;
 import EnumClasses.Gender;
 import EnumClasses.UserRole;
 import ModelClasses.MainCategory;
@@ -31,8 +31,8 @@ public class CategoryRestService {
 	//Maincategory
 	
 	@GetMapping("/MainCategory")
-	public List<MainCategoryDTO> GetMainCategories() {
-		return catService.GetMainCategoryList();
+	public List<CategoryDTO> GetMainCategories() {
+		return catService.getMainCategoryList();
 	}
 	
 	@PostMapping("/MainCategory")
@@ -42,12 +42,12 @@ public class CategoryRestService {
 		mainCat.setMainCatTitle("Cat3");
 		mainCat.setMainCatImg("Cat3");
 		mainCat.setType(Gender.F);
-		return catService.AddCategory(mainCat);
+		return catService.addCategory(mainCat);
 	}
 	
 	@DeleteMapping("/MainCategory/{id}")
 	public String DeleteMainCategory(@PathVariable Integer id) {
-		return "{\"Status\":"+catService.DeleteCategory(id)+"}";
+		return "{\"Status\":"+catService.deleteCategory(id)+"}";
 	}
 	
 	@PutMapping("/MainCategory/{id}")
@@ -57,13 +57,13 @@ public class CategoryRestService {
 		mainCat.setMainCatTitle("Cat4");
 		mainCat.setMainCatImg("Cat4");
 		mainCat.setType(Gender.F);
-		return "{\"Status\":"+catService.UpdateCategory(mainCat,id)+"}";
+		return "{\"Status\":"+catService.updateCategory(mainCat,id)+"}";
 	}
 	
 	//SubCategory
 	@GetMapping("/SubCategory")
-	public Iterable<SubCategory> GetSubCategories() {
-		return catService.GetSubCategoryList();
+	public Iterable<CategoryDTO> GetSubCategories() {
+		return catService.getSubCategoryList();
 	}
 	
 	@PostMapping("/SubCategory/{id}")
@@ -72,17 +72,17 @@ public class CategoryRestService {
 		subCat.setSubCatTitle("SubCat1");
 		subCat.setSubCatDesc("SubCat1");
 		subCat.setSubCatImg("SubCat1");
-		return catService.AddSubCategory(subCat,id);
+		return catService.addSubCategory(subCat,id);
 	}
 	
 	@PostMapping("/SubCategory/{mainId}/{subId}")
 	public SubCategory AddSubCategory(@PathVariable int mainId,@PathVariable int subId) {
-		return catService.AddSubCategory(mainId,subId);
+		return catService.addSubCategory(mainId,subId);
 	}
 	
 	@DeleteMapping("/SubCategory/{id}")
 	public String DeleteSubCategory(@PathVariable int id) {
-		return "{\"Status\":"+catService.DeleteSubCategory(id)+"}";
+		return "{\"Status\":"+catService.deleteSubCategory(id)+"}";
 	}
 	
 	@PutMapping("/SubCategory/{id}")
@@ -91,6 +91,6 @@ public class CategoryRestService {
 		subCat.setSubCatDesc("SubCatUpdate1");
 		subCat.setSubCatTitle("SubCatUpdate1");
 		subCat.setSubCatImg("SubCatUpdate1");
-		return "{\"Status\":"+catService.UpdateSubCategory(subCat,id)+"}";
+		return "{\"Status\":"+catService.updateSubCategory(subCat,id)+"}";
 	}
 }

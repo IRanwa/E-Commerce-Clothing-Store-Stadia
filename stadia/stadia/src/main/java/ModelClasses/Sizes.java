@@ -21,7 +21,7 @@ public class Sizes implements Serializable{
 	@Getter @Setter List<ProductSizes> productSizes;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Getter @Setter long id;
 	
 	@Getter @Setter String size;
