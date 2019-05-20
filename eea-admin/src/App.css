@@ -185,11 +185,18 @@ input[type='email'], input[type='password'] {
 }
 
 .modal{
+  overflow:scroll;
   display:block;
   background-color: rgba(0,0,0,0.4); 
+
+}
+.modal-dialog{
+  overflow:hidden;
 }
 
 .modal-body{
+  
+  overflow:hidden;
   display:block;
 }
 

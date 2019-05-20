@@ -1,12 +1,19 @@
 .navbar_background{
-  line-height: 100%;
+  padding:0px;
 }
 
 .navbar_title{
   font-family: britannic;
   font-weight: bold;
   font-size: 40px;
-  padding: 20px;
+  display:inline-block;
+  border-right:1px #A17575 solid;
+  padding:0px 30px;
+}
+
+.navbar_title a{
+  text-decoration: none;
+
 }
 
 .navbar_title:hover{
@@ -17,10 +24,22 @@
 .navbar_categories{
   font-family: Agency FB;
   font-size: 30px;
-  padding: 20px;
-  color:black;
-  max-width:30%;
   font-weight: bold;
+  display:inline-block;
+  padding:5px 20px;
+  padding-top:10px;
+  
+}
+
+.navbar_categories a{
+  color:black;
+  text-decoration: none;
+  height:100%;
+  
+}
+
+.navbar_category_active{
+  background-color: #B29B9B;
 }
 
 .navbar_subcategories{
@@ -28,7 +47,6 @@
   font-size: 25px;
   padding: 20px;
   color:black;
-  max-width:30%;
 }
 
 .navbar_subcategories:hover{
@@ -48,6 +66,7 @@
   padding: 5px;
   min-width:400px;
   border-radius: 20px;
+  display:inline-block;
 }
 
 #Search:focus{

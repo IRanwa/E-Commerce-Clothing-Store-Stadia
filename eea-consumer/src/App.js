@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import {Register,SignIn} from './RegSignIn'
+import {Register,SignIn} from './RegSignIn';
+const axios = require("axios");
 
 const sitename = "Stadia";
 
@@ -33,8 +34,59 @@ class Index extends Component{
 class NavBar extends Component{
   constructor(props){
     super(props);
-    this.state = {login:false}
+    this.state = {
+      login:false,
+      menSelected:true,
+      selectedMainCat:"New Arrivals",
+      mainCatList:[]
+    }
     this.handleLoginBtnClick = this.handleLoginBtnClick.bind(this);
+    this.genderSelectBtnClick = this.genderSelectBtnClick.bind(this);
+    this.getCategories = this.getCategories.bind(this);
+  }
+
+  componentDidMount(){
+    let gender;
+    if(this.state.menSelected){
+      gender = "Men";
+    }else{
+      gender = "Women";
+    }
+    this.getCategories(gender);
+  }
+
+
+  genderSelectBtnClick(type){
+    if(type==="Men"){
+      this.setState({
+        menSelected:true
+      });
+    }else{
+      this.setState({
+        menSelected:false
+      });
+    }
+    this.getCategories(type);
+    
+  }
+
+  getCategories(gender){
+    const that = this;
+    axios.get("http://localhost:8080/MainCategory/"+gender)
+    .then(function(res){
+        let categoryList = [];
+        categoryList = res.data.map(mainCat=>{
+          const category = {
+            id:mainCat["id"],
+            title:mainCat["mainCatTitle"]
+          }
+         return  category;
+        });
+        that.state.mainCatList.push(categoryList);
+        that.setState({
+          mainCatList:categoryList
+        })
+    });
   }
 
   handleLoginBtnClick(){
@@ -46,9 +98,15 @@ class NavBar extends Component{
       <div>
         <nav className="main_color navbar_background navbar">
           <div className="mr-auto">
-            <Link className="navbar_title text-white button_hover"  to="/">{sitename}</Link>
-            <Link className="navbar_categories button_hover " to="/about">Men</Link>
-            <a className="navbar_categories button_hover " href="https://www.google.com/search?q=css+hyperlink+hover+underline+no&oq=css+hyperlink+hover+underline+no&aqs=chrome..69i57j0.17461j0j7&sourceid=chrome&ie=UTF-8">Women</a>
+            <div className="navbar_title button_hover">
+              <Link className="text-white"  to="/">{sitename}</Link>
+            </div>
+            <div className={this.state.menSelected?"navbar_categories button_hover navbar_category_active ":"navbar_categories button_hover"}>
+              <Link  onClick={()=>this.genderSelectBtnClick("Men")} to="#">Men</Link>
+            </div>
+            <div className={this.state.menSelected?"navbar_categories button_hover ":"navbar_categories button_hover navbar_category_active"}>
+              <Link onClick={()=>this.genderSelectBtnClick("Women")} to="#">Women</Link>
+            </div>
           </div>
           <div className="form-inline">
             <input className="form-control mr-sm-2" id="search_bar" type="search" placeholder="Search for items" aria-label="Search"></input>
@@ -76,22 +134,38 @@ class NavBar extends Component{
             </div>
           </div>
         </nav>
-        <SubCategories/>
-        
+        <SubCategories mainCatList={this.state.mainCatList}/>
       </div>
     );
   }
 }
 
 class SubCategories extends Component{
+  constructor(props){
+    super(props);
+    this.state={
+      mainCatList:props.mainCatList
+    }
+  }
+
+  componentWillReceiveProps(value){
+    this.setState({
+      mainCatList:value.mainCatList
+    })
+   
+  }
+
+
   render(){
+    console.log(this.state.mainCatList);
     return(
       <div className="mr-auto main_lightcolor_bg">
-        <a className="navbar_subcategories" href="https://www.google.com/search?q=css+hyperlink+hover+underline+no&oq=css+hyperlink+hover+underline+no&aqs=chrome..69i57j0.17461j0j7&sourceid=chrome&ie=UTF-8">New Arrivals</a>
-        <a className="navbar_subcategories" href="https://www.google.com/search?q=css+hyperlink+hover+underline+no&oq=css+hyperlink+hover+underline+no&aqs=chrome..69i57j0.17461j0j7&sourceid=chrome&ie=UTF-8">Clothing</a>
-        <a className="navbar_subcategories" href="https://www.google.com/search?q=css+hyperlink+hover+underline+no&oq=css+hyperlink+hover+underline+no&aqs=chrome..69i57j0.17461j0j7&sourceid=chrome&ie=UTF-8">Shoes</a>
-        <a className="navbar_subcategories" href="https://www.google.com/search?q=css+hyperlink+hover+underline+no&oq=css+hyperlink+hover+underline+no&aqs=chrome..69i57j0.17461j0j7&sourceid=chrome&ie=UTF-8">Accessories</a>
-        <a className="navbar_subcategories" href="https://www.google.com/search?q=css+hyperlink+hover+underline+no&oq=css+hyperlink+hover+underline+no&aqs=chrome..69i57j0.17461j0j7&sourceid=chrome&ie=UTF-8">Active Wear</a>
+        <a className="navbar_subcategories" href="/about">New Arrivals</a>
+        {
+          this.state.mainCatList.map(mainCat=>{
+            return <a className="navbar_subcategories" href="/about" key={mainCat["id"]}>{mainCat["title"]}</a>;
+          })
+        }
       </div>
     );
   }

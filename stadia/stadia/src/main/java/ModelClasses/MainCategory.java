@@ -10,6 +10,9 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import DTOClasses.MainSubCategoryDTO;
@@ -22,8 +25,12 @@ public class MainCategory implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
-	@OneToMany(mappedBy="mainCategory",cascade=CascadeType.ALL)
-	@Getter @Setter List<MainSubCategory> mainSubCategory;
+	@ManyToMany(cascade=CascadeType.ALL)
+	@JoinTable(
+			  name = "main_sub_category", 
+			  joinColumns = @JoinColumn(name = "mainId", referencedColumnName = "id"), 
+			  inverseJoinColumns = @JoinColumn(name = "subId", referencedColumnName = "id"))
+	@Getter @Setter List<SubCategory> subCategory;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

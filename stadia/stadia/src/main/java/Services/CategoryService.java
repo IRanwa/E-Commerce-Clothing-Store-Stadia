@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import DTOClasses.CategoryDTO;
 import DTOClasses.MainSubCategoryDTO;
+import EnumClasses.Gender;
 import ModelClasses.MainCategory;
 import ModelClasses.MainSubCategory;
 import ModelClasses.SubCategory;
@@ -29,30 +30,25 @@ public class CategoryService {
 	SubCategoryRepository subCatRepo;
 	
 	//Main Category
-	public List<CategoryDTO> getMainCategoryList(){
-		Iterable<MainCategory> mainCatList = mainCatRepo.findAll();
+	public Iterable<MainCategory> getMainCategoryList(String type){
+		Iterable<MainCategory> mainCatList;
+		if(type.equalsIgnoreCase("men")) {
+			mainCatList = mainCatRepo.findByType(Gender.M);
+		}else {
+			mainCatList = mainCatRepo.findByType(Gender.F);
+		}
 		List<CategoryDTO> mainCatDTOList = new ArrayList<CategoryDTO>();
 		//Retrieve all main categories
 		for(MainCategory mainCat : mainCatList) {
-			List<MainSubCategory> mainSubcatList = mainCat.getMainSubCategory();
-			List<MainSubCategoryDTO> mainSubCatDTOList = new ArrayList<MainSubCategoryDTO>();
-			//Retrieve all MainSubCategories
-			for(MainSubCategory mainSubCat : mainSubcatList) {
-				//Create MainSubCategoryDTO class
-				MainSubCategoryDTO newMainSubCat = new MainSubCategoryDTO();
-				newMainSubCat.setId(mainSubCat.getId());
-				newMainSubCat.setMainCatId(mainSubCat.getMainCategory().getId());
-				newMainSubCat.setSubCatId(mainSubCat.getSubCategory().getId());
-				mainSubCatDTOList.add(newMainSubCat);
+			List<SubCategory> subCatList = mainCat.getSubCategory();
+			List<SubCategory> newSubCatList = new ArrayList<>();
+			for(SubCategory subCat : subCatList) {
+				subCat.setMainCategory(null);
+				newSubCatList.add(subCat);
 			}
-			//Create MainCategoryDTO class
-			mainCat.setMainSubCategory(null);
-			CategoryDTO mainCatDTO = new CategoryDTO();
-			mainCatDTO.setMainCategory(mainCat);
-			mainCatDTO.setMainSubCategory(mainSubCatDTOList);
-			mainCatDTOList.add(mainCatDTO);
+			mainCat.setSubCategory(newSubCatList);
 		}
-		return mainCatDTOList;
+		return mainCatList;
 	}
 	
 	public MainCategory addCategory(MainCategory mainCat) {
@@ -86,7 +82,7 @@ public class CategoryService {
 		List<SubCategory> subCatList = subCatRepo.findAll();
 		List<CategoryDTO> newSubCatList = new ArrayList<CategoryDTO>();
 		for(SubCategory subCat : subCatList) {
-			subCat.setMainSubCategory(null);
+			//subCat.setMainSubCategory(null);
 			CategoryDTO category = new CategoryDTO();
 			category.setSubcategory(subCat);
 			newSubCatList.add(category);

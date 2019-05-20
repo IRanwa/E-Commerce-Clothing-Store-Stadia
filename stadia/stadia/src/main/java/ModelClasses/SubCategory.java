@@ -8,6 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import lombok.Getter;
@@ -18,8 +21,8 @@ public class SubCategory implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
-	@OneToMany(mappedBy="subCategory",cascade=CascadeType.ALL)
-	@Getter @Setter List<MainSubCategory> mainSubCategory;
+	@ManyToMany(mappedBy="subCategory",cascade=CascadeType.ALL)
+	@Getter @Setter List<MainCategory> mainCategory;
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

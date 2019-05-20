@@ -3,6 +3,7 @@ package RestServices;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import ModelClasses.SubCategory;
 import Repositories.MainCategoryRepository;
 import Services.CategoryService;
 
+@CrossOrigin("*")
 @RestController
 public class CategoryRestService {
 	
@@ -29,10 +31,9 @@ public class CategoryRestService {
 	MainCategoryRepository mainCatRepo;
 
 	//Maincategory
-	
-	@GetMapping("/MainCategory")
-	public List<CategoryDTO> GetMainCategories() {
-		return catService.getMainCategoryList();
+	@GetMapping("/MainCategory/{type}")
+	public Iterable<MainCategory> GetMainCategories(@PathVariable String type) {
+		return catService.getMainCategoryList(type);
 	}
 	
 	@PostMapping("/MainCategory")
