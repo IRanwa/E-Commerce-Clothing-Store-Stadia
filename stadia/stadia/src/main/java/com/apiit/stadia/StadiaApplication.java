@@ -8,9 +8,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 @SpringBootApplication
-@ComponentScan(basePackages = { "RestServices","Services"} )
-@EntityScan("ModelClasses")
-@EnableJpaRepositories("Repositories")
+@ComponentScan(basePackages = { "com.apiit.stadia.RestController","com.apiit.stadia.Services"} )
+@EntityScan("com.apiit.stadia.ModelClasses")
+@EnableJpaRepositories("com.apiit.stadia.Repositories")
 public class StadiaApplication{
 	public static void main(String[] args) {
 		SpringApplication.run(StadiaApplication.class, args);

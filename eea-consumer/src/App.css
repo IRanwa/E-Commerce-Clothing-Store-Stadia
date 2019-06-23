@@ -89,6 +89,7 @@
 
 .account_icon{
   background-image: url("https://cdn1.iconfinder.com/data/icons/avatar-1-2/512/User2-512.png");
+  
 }
 
 .cart_icon{
@@ -228,4 +229,26 @@
 
 .Red-Text{
   color:red;
+}
+
+.container_column{
+  word-wrap:break-word;
+  text-align: left;
+  max-width:260px;
+  font-size: 18px;
+ 
+}
+
+.prod_image{
+  width:260px;
+}
+
+.prod_title{
+  margin-left:10px;
+}
+
+.prod_price{
+  color:black;
+  font-weight: bold;
+  margin-left:10px;
 }

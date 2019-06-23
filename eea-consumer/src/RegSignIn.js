@@ -342,7 +342,7 @@ class RegSignIn extends Component{
       return(
         <div>
           <h1 className="text-center font_Britannic greycolor_text">{sitename}</h1>
-          <table className="text-center text-white main_lightcolor_bg regTable">
+          <table className="text-center text-white main_color regTable">
             <tr >
               {new_account_text}
               {already_account_text}

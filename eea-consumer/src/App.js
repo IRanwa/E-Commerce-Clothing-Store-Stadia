@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import {Register,SignIn} from './RegSignIn';
+import ProductList from './ProductList';
 const axios = require("axios");
 
 const sitename = "Stadia";
@@ -37,12 +38,14 @@ class NavBar extends Component{
     this.state = {
       login:false,
       menSelected:true,
-      selectedMainCat:"New Arrivals",
+      selectedMainCat:0,
+      selectedSubCat:1,
       mainCatList:[]
     }
     this.handleLoginBtnClick = this.handleLoginBtnClick.bind(this);
     this.genderSelectBtnClick = this.genderSelectBtnClick.bind(this);
     this.getCategories = this.getCategories.bind(this);
+    this.setMainCat = this.setMainCat.bind(this);
   }
 
   componentDidMount(){
@@ -55,6 +58,9 @@ class NavBar extends Component{
     this.getCategories(gender);
   }
 
+  setMainCat(mainCat){
+    console.log("updated child",mainCat);
+  }
 
   genderSelectBtnClick(type){
     if(type==="Men"){
@@ -82,7 +88,7 @@ class NavBar extends Component{
           }
          return  category;
         });
-        that.state.mainCatList.push(categoryList);
+        //that.state.mainCatList.push(categoryList);
         that.setState({
           mainCatList:categoryList
         })
@@ -118,7 +124,7 @@ class NavBar extends Component{
             <button className="btn my-2 my-sm-0 button_hover mr-auto" type="submit">
                 <span className="navbar-toggler-icon cart_icon"></span>
             </button>
-            <button id="profileId" className="btn my-2 my-sm-0 button_hover" type="submit" onClick={this.handleLoginBtnClick}>
+            <button id="profileId" className="btn my-2 my-sm-0 button_hover mx-4" type="submit" onClick={this.handleLoginBtnClick}>
                 <span className="navbar-toggler-icon account_icon"></span>
             </button>
             <div className="popup_container main_color card" style={{display:this.state.login?"block":"none"}}>
@@ -134,13 +140,15 @@ class NavBar extends Component{
             </div>
           </div>
         </nav>
-        <SubCategories mainCatList={this.state.mainCatList}/>
+        <MainCategories mainCatList={this.state.mainCatList} setMainCatMethod={this.setMainCat}/>
+        <ProductList mainCat={this.state.selectedMainCat} subCat={this.state.selectedSubCat}/>
       </div>
     );
   }
 }
 
-class SubCategories extends Component{
+//Nav Bar Main Category
+class MainCategories extends Component{
   constructor(props){
     super(props);
     this.state={
@@ -152,18 +160,17 @@ class SubCategories extends Component{
     this.setState({
       mainCatList:value.mainCatList
     })
-   
   }
 
 
   render(){
-    console.log(this.state.mainCatList);
+    //console.log(this.state.mainCatList);
     return(
       <div className="mr-auto main_lightcolor_bg">
         <a className="navbar_subcategories" href="/about">New Arrivals</a>
         {
           this.state.mainCatList.map(mainCat=>{
-            return <a className="navbar_subcategories" href="/about" key={mainCat["id"]}>{mainCat["title"]}</a>;
+            return <Link className="navbar_subcategories" to="#" key={mainCat["id"]} onClick={()=>this.props.setMainCatMethod(mainCat["id"])}>{mainCat["title"]}</Link>;
           })
         }
       </div>

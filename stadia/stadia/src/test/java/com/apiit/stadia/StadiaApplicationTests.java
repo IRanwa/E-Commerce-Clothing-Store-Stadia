@@ -11,6 +11,7 @@ public class StadiaApplicationTests {
 
 	@Test
 	public void contextLoads() {
+		
 	}
 
 }

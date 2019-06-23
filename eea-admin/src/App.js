@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import './images.css';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import HomepageApp from './Homepage.js';
 import CategoriesApp from './Categories.js';
@@ -9,7 +10,7 @@ class App extends Component{
   render(){
     return(
       <Router>
-        <div>
+        <div >
           <Route exact path="/" component={Index} />
           <Route path="/homepage" component={Homepage} />
           <Route path="/categories" component={Categories} /> 
@@ -23,20 +24,19 @@ class Index extends Component{
   render(){
     return(
       <div className="login-form">
-      <h2 className="font_Britannic greycolor_text text-center">Login</h2>
-        <div className="main_color card p-sm-2 text-white font_AgencyFB shadow-lg">
-          <div className="input_container">
-            <h5>Email</h5>
-            <input className="card" type="email" placeholder="Email" name="email"/>
+          <div className="main_color card p-sm-2 shadow">
+            <div className="input_container">
+              <h6 className="font_weight_bold">Email</h6>
+              <input className="card font_14px" type="email" placeholder="Email" name="email"/>
+            </div>
+            <div className="input_container">
+              <h6 className="font_weight_bold">Password</h6>
+              <input className="card font_14px" type="password" placeholder="Password" name="password"/>
+            </div>
+            <div className="input_container text-center">
+              <input className="btn btn-lg shadow btnSignIn" type="submit" value="Sign In"/>
+            </div>
           </div>
-          <div className="input_container">
-            <h5>Password</h5>
-            <input className="card" type="password" placeholder="Password" name="password"/>
-          </div>
-          <div className="input_container text-center">
-            <input className="btn btn-lg bg-white button font_AgencyFB shadow-sm" type="submit" value="SIGN IN"/>
-          </div>
-        </div>
       </div>
     );
   }
@@ -65,45 +65,52 @@ class Categories extends Component{
 }
 
 class NavBar extends Component{
+  constructor(props){
+    super(props);
+    this.state={
+      showNav:false
+    }
+    this.toggleClick = this.toggleClick.bind(this);
+  }
+
+  toggleClick(){
+    this.setState({
+      showNav:!this.state.showNav
+    })
+  }
+
+
+
   render(){
     return(
       <div>
-        <div className="navbar main_color font_AgencyFB font_weight_bold">
-          <div>
-            <div className="navbar_header">
-              <a href="index.html">Homepage</a>
-            </div>
-            <div>
-              <div>
-                <a href="index.html">Categories</a>
-              </div>
-              <div>
-                <a href="index.html">Product Sizes</a>
-              </div>
-              <div className="navbar_collapsed">
-                <a href="index.html">Products</a>
-                <div>
-                  <div className="navbar_sub">
-                    <a href="index.html">Questions</a>
-                  </div>
-                  <div className="navbar_sub">
-                    <a href="index.html">Ratings</a>
+        <nav className="navbar navbar-expand-lg bg-light">
+          <a className="navbar-brand" href="/">Homepage</a>
+          
+          <button className="navbar-toggler" type="button" onClick={this.toggleClick} aria-controls="navbarNavAltMarkup" aria-expanded={this.state.showNav}>
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" style={{display:this.state.showNav?("block"):("")}}  id="navbarNavAltMarkup">
+            
+            <div className="navbar-nav w-100">
+              <ul className="navbar-nav mr-auto">
+                <a className="nav-item nav-link nav-sub" href="/">Categories</a>
+
+                <div className="dropdown">
+                  <a className="nav-item nav-link" href="/">Products</a>
+                  <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a className="nav-item nav-link" href="/">Products</a>
+                    <a className="nav-item nav-link" href="/">Products Size</a>
                   </div>
                 </div>
-              </div>
-              <div>
-                <a href="index.html">Orders</a>
-              </div>
-            </div>
-            <div className="navbar_bottom">
-              <a href="index.html">Log Out</a>
+                
+                <a className="nav-item nav-link nav-sub" href="/">Orders</a>
+              </ul>
+              <a className="nav-item nav-link mr-3" href="/">Log out</a>
+              
             </div>
           </div>
-        </div>
-        <div className="loggedin_text font_AgencyFB">
-          <p>Login as imeshranwa2@hotmail.com</p>
-        </div>
-        <hr/>
+        </nav>
       </div>
     );
   }
