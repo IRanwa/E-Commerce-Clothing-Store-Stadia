@@ -5,6 +5,7 @@ import './images.css';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import HomepageApp from './Homepage.js';
 import CategoriesApp from './Categories.js';
+import ProductSizesApp from './ProductSizes.js';
 
 class App extends Component{
   render(){
@@ -14,6 +15,7 @@ class App extends Component{
           <Route exact path="/" component={Index} />
           <Route path="/homepage" component={Homepage} />
           <Route path="/categories" component={Categories} /> 
+          <Route path="/product_sizes" component={ProductSizes} /> 
         </div>
       </Router>
     );
@@ -64,6 +66,17 @@ class Categories extends Component{
   }
 }
 
+class ProductSizes extends Component{
+  render(){
+    return(
+      <div>
+        <NavBar />
+        <ProductSizesApp/>
+      </div>
+    );
+  }
+}
+
 class NavBar extends Component{
   constructor(props){
     super(props);
@@ -79,13 +92,11 @@ class NavBar extends Component{
     })
   }
 
-
-
   render(){
     return(
       <div>
         <nav className="navbar navbar-expand-lg bg-light">
-          <a className="navbar-brand" href="/">Homepage</a>
+          <a className="navbar-brand" href="/homepage">Homepage</a>
           
           <button className="navbar-toggler" type="button" onClick={this.toggleClick} aria-controls="navbarNavAltMarkup" aria-expanded={this.state.showNav}>
             <span className="navbar-toggler-icon"></span>
@@ -94,13 +105,13 @@ class NavBar extends Component{
             
             <div className="navbar-nav w-100">
               <ul className="navbar-nav mr-auto">
-                <a className="nav-item nav-link nav-sub" href="/">Categories</a>
+                <a className="nav-item nav-link nav-sub" href="/categories">Categories</a>
 
                 <div className="dropdown">
                   <a className="nav-item nav-link" href="/">Products</a>
                   <div className="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a className="nav-item nav-link" href="/">Products</a>
-                    <a className="nav-item nav-link" href="/">Products Size</a>
+                    <a className="nav-item nav-link" href="/product_sizes">Products Size</a>
                   </div>
                 </div>
                 

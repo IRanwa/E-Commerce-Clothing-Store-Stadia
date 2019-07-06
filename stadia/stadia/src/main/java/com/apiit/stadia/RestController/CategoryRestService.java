@@ -103,11 +103,6 @@ public class CategoryRestService {
 		}
 	}
 	
-//	@PostMapping("/SubCategory/{mainId}/{subId}")
-//	public SubCategory AddSubCategory(@PathVariable int mainId,@PathVariable int subId) {
-//		return catService.addSubCategory(mainId,subId);
-//	}
-	
 	@DeleteMapping("/DeleteSubCategory/{id}")
 	public ResponseEntity<Boolean> DeleteSubCategory(@PathVariable int id) {
 		return catService.deleteSubCategory(id);

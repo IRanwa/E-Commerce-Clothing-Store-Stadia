@@ -2,15 +2,10 @@ package com.apiit.stadia.RestController;
 
 import java.util.List;
 
+import com.apiit.stadia.DTOClasses.SizesDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.apiit.stadia.DTOClasses.ProductDTO;
 import com.apiit.stadia.ModelClasses.Product;
@@ -24,13 +19,23 @@ public class ProductRestService {
 	ProductService prodService;
 	
 	//Sizes
-	@GetMapping("/Sizes")
-	public List<Sizes> getSizesList() {
-		return prodService.getSizesList();
+	@GetMapping("/Sizes/{pageNo}")
+	public List<SizesDTO> getSizes(@PathVariable int pageNo) {
+		return prodService.getSizesList(pageNo);
+	}
+
+	@GetMapping("/Sizes/Pages")
+	public double getSizesPageCount() {
+		return prodService.getSizesPages();
+	}
+
+	@GetMapping("/GetSize/{id}")
+	public ResponseEntity<SizesDTO> getSize(@PathVariable long id){
+		return prodService.getSize(id);
 	}
 	
-	@PostMapping("/Sizes")
-	public Sizes addSize(Sizes size) {
+	@PostMapping("/AddSizes")
+	public ResponseEntity<SizesDTO> addSize(@RequestBody Sizes size) {
 		return prodService.addSize(size);
 	}
 	

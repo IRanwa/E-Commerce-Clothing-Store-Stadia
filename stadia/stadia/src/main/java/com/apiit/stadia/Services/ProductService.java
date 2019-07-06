@@ -5,21 +5,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.apiit.stadia.DTOClasses.*;
+import com.apiit.stadia.ModelClasses.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.apiit.stadia.DTOClasses.ProductDTO;
-import com.apiit.stadia.DTOClasses.ProductImagesDTO;
-import com.apiit.stadia.DTOClasses.ProductSizesDTO;
-import com.apiit.stadia.ModelClasses.MainCategory;
-import com.apiit.stadia.ModelClasses.MainSubCategory;
-import com.apiit.stadia.ModelClasses.Product;
-import com.apiit.stadia.ModelClasses.ProductImages;
-import com.apiit.stadia.ModelClasses.ProductSizes;
-import com.apiit.stadia.ModelClasses.Sizes;
 import com.apiit.stadia.Repositories.MainCategoryRepository;
 import com.apiit.stadia.Repositories.MainSubCategoryRepository;
 import com.apiit.stadia.Repositories.ProductImagesRepository;
@@ -46,20 +42,47 @@ public class ProductService {
 	//Model Class to DTO
 	@Autowired
 	ModelClassToDTO modelToDTO;
-	
-	
+
+	private final int PAGE_COUNT = 2;
 	
 	//Sizes
-	public List<Sizes> getSizesList() {
-		List<Sizes> sizesList = sizesRepo.findAll();
-		for(Sizes size : sizesList) {
-			size.setProductSizes(null);
+	public double getSizesPages() {
+		return Math.ceil(Double.valueOf(sizesRepo.count())/PAGE_COUNT);
+	}
+
+	public List<SizesDTO> getSizesList(int pageNo){
+
+		List<SizesDTO> newSizesList = new ArrayList<>();
+		if(pageNo>=0) {
+			Pageable pages = PageRequest.of(pageNo, PAGE_COUNT);
+
+			Page<Sizes> sizesList = sizesRepo.findAll(pages);
+			for(Sizes size : sizesList) {
+				newSizesList.add(modelToDTO.sizesToDTO(size));
+			}
+		}else{
+			List<Sizes> sizesList = sizesRepo.findAll();
+			for(Sizes size : sizesList) {
+				newSizesList.add(modelToDTO.sizesToDTO(size));
+			}
 		}
-		return sizesRepo.findAll();
+		return newSizesList;
+	}
+
+	public ResponseEntity<SizesDTO> getSize(long id){
+		Optional<Sizes> sizeOptional = sizesRepo.findById(id);
+		if(sizeOptional.isPresent()){
+			return new ResponseEntity<>(modelToDTO.sizesToDTO(sizeOptional.get()),HttpStatus.OK);
+		}
+		return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
 	}
 	
-	public Sizes addSize(Sizes size) {
-		return sizesRepo.save(size);
+	public ResponseEntity<SizesDTO> addSize(Sizes size) {
+		size =  sizesRepo.save(size);
+		if(size.getId()>0) {
+			return new ResponseEntity<SizesDTO>(modelToDTO.sizesToDTO(size), HttpStatus.OK);
+		}
+		return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	public Sizes updateSize(Sizes newSize,long id) {

@@ -130,7 +130,7 @@ class CategoriesApp extends Component{
         })
     }
 
-    modalClose(cancelStatus){
+    modalClose(){
         const that = this;
         const modal = document.getElementsByClassName("modal")[0];
         window.onclick = function(event) {

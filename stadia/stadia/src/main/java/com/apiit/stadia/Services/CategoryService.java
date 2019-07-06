@@ -42,7 +42,7 @@ public class CategoryService {
 	@Autowired
 	ModelClassToDTO modelToDTO;
 	
-	private final int pageCount = 2;
+	private final int PAGE_COUNT = 2;
 
 	//Main Category
 	public List<MainCategoryDTO> getMainCategoryList(){
@@ -55,7 +55,7 @@ public class CategoryService {
 	}
 
 	public List<MainCategoryDTO> getMainCategoryList(int pageNo){
-		Pageable pages = PageRequest.of(pageNo, pageCount);
+		Pageable pages = PageRequest.of(pageNo, PAGE_COUNT);
 		
 		Page<MainCategory> mainCatList = mainCatRepo.findAll(pages);
 		List<MainCategoryDTO> mainCatDTOList = new ArrayList<>();
@@ -66,7 +66,7 @@ public class CategoryService {
 	}
 	
 	public double getMainCatPages() {
-		return Math.ceil(Double.valueOf(mainCatRepo.count())/pageCount);
+		return Math.ceil(Double.valueOf(mainCatRepo.count())/PAGE_COUNT);
 	}
 
 	public ResponseEntity<MainCategoryDTO> getMainCategory(int id){
@@ -191,14 +191,14 @@ public class CategoryService {
 	
 	//Sub Category
 	public double getSubCatPages() {
-		return Math.ceil(Double.valueOf(subCatRepo.count())/pageCount);
+		return Math.ceil(Double.valueOf(subCatRepo.count())/PAGE_COUNT);
 	}
 
 	public List<SubCategoryDTO> getSubCategoryList(int pageNo){
 
 		List<SubCategoryDTO> newSubCatList = new ArrayList<>();
 		if(pageNo>=0) {
-			Pageable pages = PageRequest.of(pageNo, pageCount);
+			Pageable pages = PageRequest.of(pageNo, PAGE_COUNT);
 
 			Page<SubCategory> subCatList = subCatRepo.findAll(pages);
 			for(SubCategory subCat : subCatList) {
