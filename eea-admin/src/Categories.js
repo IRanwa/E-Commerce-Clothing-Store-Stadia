@@ -10,6 +10,8 @@ class CategoriesApp extends Component{
         this.state={
             mainCat:true,
             addCat:false,
+            updateId:0,
+            deleteId:0,
             tableData:[],
             pageNo:0,
             noOfPages:0
@@ -22,6 +24,12 @@ class CategoriesApp extends Component{
         this.retrieveMainCat = this.retrieveMainCat.bind(this);
         this.retrieveSubCat = this.retrieveSubCat.bind(this);
         this.changePage = this.changePage.bind(this);
+        
+        this.btnUpdateCat = this.btnUpdateCat.bind(this);
+        this.btnDeleteCat = this.btnDeleteCat.bind(this);
+        this.updateCategory = this.updateCategory.bind(this);
+        this.deleteCategory = this.deleteCategory.bind(this);
+        this.popupCancel = this.popupCancel.bind(this);
     }
 
     componentDidMount(){
@@ -70,7 +78,7 @@ class CategoriesApp extends Component{
             if(data>0){
                 axios.get("http://localhost:8080/MainCategory/"+pageNo)
                 .then(function(res){
-                    console.log(res.data);
+                    //console.log(res.data);
                     that.setState({
                         tableData:res.data,
                         pageNo:pageNo
@@ -91,7 +99,8 @@ class CategoriesApp extends Component{
                 that.setState({
                     noOfPages:res.data
                 })
-                console.log("sub no of pages ",res.data)
+                //console.log("sub no of pages ",res.data)
+                console.log("Retrieve sub cat no of pages successful!");
                 return res.data;
             }
         }).catch(function(error){
@@ -102,7 +111,7 @@ class CategoriesApp extends Component{
             if(data>0){
                 axios.get("http://localhost:8080/SubCategory/"+pageNo)
                 .then(function(res){
-                    console.log("sub cat data ",res.data);
+                    //console.log("sub cat data ",res.data);
                     that.setState({
                         tableData:res.data,
                         pageNo:pageNo
@@ -115,20 +124,30 @@ class CategoriesApp extends Component{
         })
     }
 
-    addCatOnClick(){
+    addCatOnClick(status){
         this.setState({
-            addCat:!this.state.addCat
+            addCat:status
         })
     }
 
-    modalClose(){
+    modalClose(cancelStatus){
         const that = this;
         const modal = document.getElementsByClassName("modal")[0];
         window.onclick = function(event) {
             if (event.target === modal) {
-              that.addCatOnClick();
+              that.addCatOnClick(false);
+              that.setState({
+                  updateId:0,
+                  deleteId:0
+              })
             }
         }
+    }
+
+    popupCancel(){
+        this.setState({
+            deleteId:0
+        })
     }
 
     addSubCategory(url,data){
@@ -170,6 +189,49 @@ class CategoriesApp extends Component{
         }
     }
 
+    btnUpdateCat(id){
+        this.setState({
+            updateId:id
+        })
+    }
+
+    btnDeleteCat(id){
+        this.setState({
+            deleteId:id
+        })
+    }
+
+    updateCategory(data,url){
+        //console.log(url);
+        //console.log(data);
+        const that = this;
+        axios.put(url,data)
+        .then(function(res){
+            //console.log(res.data)
+            alert("Updated Successfully!");
+            that.setState({
+                updateId:0
+            })
+            window.location.reload();
+        }).catch(function(error){
+            alert(error);
+        });
+    }
+
+    deleteCategory(url){
+        const that = this;
+        axios.delete(url)
+        .then(function(res){
+            alert("Category deleted sucessfully!");
+            that.setState({
+                deleteId:0
+            })
+            window.location.reload();
+        }).catch(function(error){
+            alert("Delete Category Error : ",error)
+        })
+    }
+
     render(){
         let pagesContent=[];
         if(this.state.noOfPages>10){
@@ -179,12 +241,10 @@ class CategoriesApp extends Component{
             }
         }else{
             for (let i = 0; i < this.state.noOfPages; ++i) {
-                console.log("count ",this.state.pageNo);
-                console.log(i)
                 pagesContent.push(<div className={this.state.pageNo===i?"paging-selected col-sm":"paging-not-selected col-sm"} key={i} onClick={()=>this.changePage(i)}>{i+1}</div>);
             }
         }
-        console.log(pagesContent)
+        //console.log(pagesContent)
         return(
             <div className="card w-90 p-3 m-5">
                 {
@@ -196,6 +256,17 @@ class CategoriesApp extends Component{
                         )
                     ):("")
                 }
+                {
+                    this.state.updateId>0?(
+                        <UpdateCategory id={this.state.updateId} mainCat={this.state.mainCat} modalClose={this.modalClose} updateCategory={this.updateCategory}/>
+                    ):("")
+                }
+                {
+                    this.state.deleteId>0?(
+                        <DeleteCategory id={this.state.deleteId} mainCat={this.state.mainCat} modalClose={this.modalClose} deleteCategory={this.deleteCategory} 
+                        popupCancel={this.popupCancel}/>
+                    ):("")
+                }
                 <div className="w-100 container text-center category-menu">
                     <div className="row">
                         <a className={this.state.mainCat?("col-sm category-menu-item-active"):("col-sm category-menu-item-deactive")} href="/" 
@@ -204,14 +275,14 @@ class CategoriesApp extends Component{
                         onClick={(e)=>{e.preventDefault(); this.changeCategory(false)}}>Sub category</a>
                     </div>
                     <div className="row mt-2 text-center">
-                        <h4 className="w-100 m-0">
+                        <h5 className="w-100 m-0">
                             {
                                 this.state.mainCat?("Main Category Details"):("Sub category Details")
                             }
-                        </h4>
+                        </h5>
                     </div>
                     <div className="row mb-1">
-                        <button className="btn btn-sm addBtn" onClick={this.addCatOnClick}>
+                        <button className="btn btn-sm addBtn" onClick={()=>this.addCatOnClick(true)}>
                             {
                                 this.state.mainCat?("Add Main Category"):("Add Sub Category")
                             }
@@ -254,8 +325,8 @@ class CategoriesApp extends Component{
                                                     <td><img src={data.mainCatImg} alt={data.id} className="category-img"/></td>
                                                     <td>{data.type}</td>
                                                     <td>
-                                                        <button className="btn btn-sm btn-update w-50 my-1 mr-1">Update</button>
-                                                        <button className="btn btn-sm btn-delete w-50 my-1 mr-1">Delete</button>
+                                                        <button className="btn btn-sm btn-update w-50 my-1 mr-1" onClick={()=>this.btnUpdateCat(data.id)}>Update</button>
+                                                        <button className="btn btn-sm btn-delete w-50 my-1 mr-1" onClick={()=>this.btnDeleteCat(data.id)}>Delete</button>
                                                     </td>
                                                 </tr>
                                             );
@@ -269,8 +340,8 @@ class CategoriesApp extends Component{
                                                     <td>{data.subCatDesc}</td>
                                                     <td><img src={data.subCatImg} alt={data.id} className="category-img"/></td>
                                                     <td>
-                                                        <button className="btn btn-sm btn-update w-50 my-1 mr-1">Update</button>
-                                                        <button className="btn btn-sm btn-delete w-50 my-1 mr-1">Delete</button>
+                                                        <button className="btn btn-sm btn-update w-50 my-1 mr-1" onClick={()=>this.btnUpdateCat(data.id)}>Update</button>
+                                                        <button className="btn btn-sm btn-delete w-50 my-1 mr-1" onClick={()=>this.btnDeleteCat(data.id)}>Delete</button>
                                                     </td>
                                                 </tr>
                                             );
@@ -493,9 +564,6 @@ class AddMainCategory extends Component{
                 ]
             }
         }
-        
-        console.log(mainData);
-
         this.props.addMainCategory(mainUrl,mainData);
     }
 
@@ -694,7 +762,6 @@ class SubcategoryBody extends Component{
     }
 
     render(){
-        console.log("add sub cat ",this.props.addSubCatData)
         return(
             <div>
                 <div className="modal-header">
@@ -743,6 +810,219 @@ class SubcategoryBody extends Component{
                             )
                         }
                         
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
+class UpdateCategory extends Component{
+    constructor(props){
+        super(props);
+        this.state={
+            id:props.id,
+            mainCat:props.mainCat,
+            title:"",
+            desc:"",
+            image:"",
+            imageName:"",
+            type:""
+        }
+        this.inputChnage = this.inputChnage.bind(this);
+        this.fileUpload = this.fileUpload.bind(this);
+        this.btnReset = this.btnReset.bind(this);
+        this.btnUpdateCat = this.btnUpdateCat.bind(this);
+    }
+
+    componentDidMount(){
+        const that = this;
+        if(this.state.mainCat){
+            axios.get("http://localhost:8080/GetMainCategory/"+this.state.id)
+            .then(function(res){
+                const data = res.data;
+                that.setState({
+                    title:data["mainCatTitle"],
+                    desc:data["mainCatDesc"],
+                    image:data["mainCatImg"],
+                    imageName:data["mainCatImgName"],
+                    type:data["type"]
+                })
+            }).catch(function(error){
+                alert("Get Main Category : ",error);
+            })
+        }else{
+            axios.get("http://localhost:8080/GetSubCategory/"+this.state.id)
+            .then(function(res){
+                const data = res.data;
+                that.setState({
+                    title:data["subCatTitle"],
+                    desc:data["subCatDesc"],
+                    image:data["subCatImg"],
+                    imageName:data["subCatImgName"]
+                })
+            }).catch(function(error){
+                alert("Get Sub Category : ",error);
+            })
+        }
+    }
+
+    inputChnage(target){
+        const name = target.name;
+        const value = target.value;
+        switch(name){
+            case "title":
+                this.setState({
+                    title:value
+                })
+                break;
+            case "desc":
+                this.setState({
+                    desc:value
+                })
+                break;
+            case "type":
+                this.setState({
+                    type:value
+                })
+                break;
+            default:
+                console.log("Update Category Input Change Error!");
+                break;
+        }
+    }
+
+    fileUpload(files){
+        this.setState({
+            image:files.base64,
+            imageName:files.fileList[0].name
+        })
+        
+    }
+
+    btnReset(){
+        this.setState({
+            title:"",
+            desc:"",
+            image:"",
+            imageName:"",
+            type:""
+        })
+    }
+
+    btnUpdateCat(){
+        let data;
+        let url;
+        if(this.state.mainCat){
+            data = {
+                mainCatTitle:this.state.title,
+                mainCatDesc:this.state.desc,
+                mainCatImg:this.state.image,
+                type:this.state.type,
+            }
+            url = "http://localhost:8080/UpdateMainCategory/"+this.state.id;
+        }else{
+            data = {
+                id:this.state.id,
+                subCatTitle:this.state.title,
+                subCatDesc:this.state.desc,
+                subCatImg:this.state.image
+            }
+            url = "http://localhost:8080/UpdateSubCategory/"+this.state.id;
+        }
+        
+        this.props.updateCategory(data,url);
+    }
+
+    render(){
+        return(
+            <div className="modal" onClick={this.props.modalClose}>
+                <div className="card modal-content  add-cat-popup">
+                    <div className="modal-header">
+                        <h5>Update Category</h5>
+                    </div>
+                    <div className="modal-body add-cat-popup-body">
+                        <div className="add-cat-form">
+                            <h6>Title</h6>
+                            <input className="w-100" type="text" name="title" value={this.state.title} onChange={(event)=>this.inputChnage(event.target)}/>
+                            <h6>Description</h6>
+                            <textarea name="desc" className="w-100" value={this.state.desc} onChange={(event)=>this.inputChnage(event.target)}></textarea>
+                            <h6>Image</h6>
+                            <div className="">
+                                <img src={this.state.image} alt={this.state.id} className="category-img"/>
+                                <div className="row" style={{margin:"0px"}}>
+                                    <input type="text" editable="false" name="img" className="col-lg card" value={this.state.imageName} onChange={(event)=>event.preventDefault()}/>
+                                    <ReactFileReader fileTypes={[".png",".jpeg",".jpg"]} base64={true} multipleFiles={false} handleFiles={this.fileUpload}>
+                                        <button className='btn btn-primary'>Upload</button>
+                                    </ReactFileReader>
+                                </div>
+                            </div>
+                            {
+                                this.state.mainCat?(
+                                    <div>
+                                        <h6>Type</h6>
+                                        <select name="type" className="w-100" onChange={(event)=>this.inputChnage(event.target)} value={this.state.type}>
+                                            <option value="M">Male</option>
+                                            <option value="F">Female</option>
+                                        </select>
+                                    </div>
+                                ):("")
+                            }
+                        </div>
+                    </div>
+                    <div className="modal-footer">
+                        <button className="btn btn-success"  onClick={this.btnUpdateCat}>Update</button>
+                        <button className="btn btn-danger" onClick={this.btnReset}>Reset</button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
+class DeleteCategory extends Component{
+    constructor(props){
+        super(props);
+        this.state={
+            id:props.id,
+            mainCat:props.mainCat,
+        }
+        this.btnDeleteCat = this.btnDeleteCat.bind(this);
+    }
+
+    btnDeleteCat(){
+        let url;
+        if(this.state.mainCat){
+            url = "http://localhost:8080/DeleteMainCategory/"+this.state.id;
+        }else{
+            url = "http://localhost:8080/DeleteSubCategory/"+this.state.id;
+        }
+        this.props.deleteCategory(url);
+    }
+
+    render(){
+        return(
+            <div className="modal" onClick={this.props.modalClose}>
+                <div className="card modal-content  add-cat-popup">
+                    <div className="modal-header">
+                        <h5>Delete Category</h5>
+                    </div>
+                    <div className="modal-body add-cat-popup-body">
+                        {
+                            this.state.mainCat?(
+                                <label>
+                                    Are you sure you want to delete main category id - {this.state.id} ?
+                                </label> 
+                            ):(
+                                <label>
+                                    Are you sure you want to delete sub category id - {this.state.id} ?
+                                </label>          
+                            )
+                        }
+                    </div>
+                    <div className="modal-footer">
+                        <button className="btn btn-success"  onClick={this.btnDeleteCat}>Delete</button>
+                        <button className="btn btn-danger" onClick={this.props.popupCancel}>Cancel</button>
                     </div>
                 </div>
             </div>

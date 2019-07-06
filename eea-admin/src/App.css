@@ -198,7 +198,7 @@ input[type='email'], input[type='password'] {
 .category-menu a{
   text-decoration: none;
   padding:10px;
-  font-size:16px;
+  font-size:14px;
   
 }
 
@@ -229,6 +229,7 @@ input[type='email'], input[type='password'] {
 .category-table{
   background-color: #7E6666;
   color:white;
+  font-size: 14px;
   
 }
 
@@ -243,7 +244,7 @@ input[type='email'], input[type='password'] {
 .addBtn{
   background-color: #FFBF21;
   color:black;
-  font-size: 16px;
+  font-size: 14px;
   
 }
 

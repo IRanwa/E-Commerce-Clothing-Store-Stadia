@@ -52,33 +52,32 @@ public class CategoryRestService {
 		return catService.getMainCatPages();
 	}
 
+	@GetMapping("/GetMainCategory/{id}")
+	public ResponseEntity<MainCategoryDTO> GetMainCategory(@PathVariable int id){
+		return catService.getMainCategory(id);
+	}
+
 	@PostMapping("/AddMainCategory")
 	public ResponseEntity<MainCategoryDTO> AddMainCategory(@RequestBody MainCategory mainCategory) {
 		MainCategoryDTO mainCatDTO = catService.addMainCategory(mainCategory);
 		if(mainCategory!=null) {
-			return new ResponseEntity<MainCategoryDTO>(mainCatDTO,HttpStatus.OK);
+			return new ResponseEntity<>(mainCatDTO,HttpStatus.OK);
 		}else {
 			return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
 		}
 	}
 	
-	@DeleteMapping("/MainCategory/{id}")
-	public String DeleteMainCategory(@PathVariable Integer id) {
-		return "{\"Status\":"+catService.deleteCategory(id)+"}";
+	@DeleteMapping("/DeleteMainCategory/{id}")
+	public ResponseEntity<Boolean> DeleteMainCategory(@PathVariable int id) {
+		return catService.deleteMainCategory(id);
 	}
 	
-	@PutMapping("/MainCategory/{id}")
-	public String UpdateMainCategory(@PathVariable Integer id) {
-		MainCategory mainCat = new MainCategory();
-		mainCat.setMainCatDesc("Cat4");
-		mainCat.setMainCatTitle("Cat4");
-		mainCat.setMainCatImg("Cat4");
-		mainCat.setType(Gender.F);
-		return "{\"Status\":"+catService.updateCategory(mainCat,id)+"}";
+	@PutMapping("/UpdateMainCategory/{id}")
+	public ResponseEntity<MainCategoryDTO> UpdateMainCategory(@PathVariable int id, @RequestBody MainCategory mainCat) {
+		return catService.updateCategory(mainCat,id);
 	}
 	
 	//SubCategory
-
 	@GetMapping("/SubCategory/{pageNo}")
 	public List<SubCategoryDTO> GetSubCategories(@PathVariable int pageNo) {
 		return catService.getSubCategoryList(pageNo);
@@ -88,33 +87,34 @@ public class CategoryRestService {
 	public double getSubCategoryPageCount() {
 		return catService.getSubCatPages();
 	}
-	
+
+	@GetMapping("/GetSubCategory/{id}")
+	public ResponseEntity<SubCategoryDTO> GetSubCategory(@PathVariable int id){
+		return catService.getSubCategory(id);
+	}
+
 	@PostMapping("/AddSubCategory/{mainCatId}")
 	public ResponseEntity<SubCategory> AddSubCategory(@PathVariable int mainCatId, @RequestBody SubCategory subCat) {
 		subCat = catService.addSubCategory(subCat, mainCatId);
 		if(subCat!=null) {
-			return new ResponseEntity<SubCategory>(subCat,HttpStatus.OK);
+			return new ResponseEntity<>(subCat,HttpStatus.OK);
 		}else {
 			return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
 		}
 	}
 	
-	@PostMapping("/SubCategory/{mainId}/{subId}")
-	public SubCategory AddSubCategory(@PathVariable int mainId,@PathVariable int subId) {
-		return catService.addSubCategory(mainId,subId);
+//	@PostMapping("/SubCategory/{mainId}/{subId}")
+//	public SubCategory AddSubCategory(@PathVariable int mainId,@PathVariable int subId) {
+//		return catService.addSubCategory(mainId,subId);
+//	}
+	
+	@DeleteMapping("/DeleteSubCategory/{id}")
+	public ResponseEntity<Boolean> DeleteSubCategory(@PathVariable int id) {
+		return catService.deleteSubCategory(id);
 	}
 	
-	@DeleteMapping("/SubCategory/{id}")
-	public String DeleteSubCategory(@PathVariable int id) {
-		return "{\"Status\":"+catService.deleteSubCategory(id)+"}";
-	}
-	
-	@PutMapping("/SubCategory/{id}")
-	public String UpdateSubCategory(@PathVariable int id) {
-		SubCategory subCat = new SubCategory();
-		subCat.setSubCatDesc("SubCatUpdate1");
-		subCat.setSubCatTitle("SubCatUpdate1");
-		//subCat.setSubCatImg("SubCatUpdate1");
-		return "{\"Status\":"+catService.updateSubCategory(subCat,id)+"}";
+	@PutMapping("/UpdateSubCategory/{id}")
+	public ResponseEntity<SubCategoryDTO> UpdateSubCategory(@PathVariable int id, @RequestBody SubCategory subCat) {
+		return catService.updateSubCategory(subCat,id);
 	}
 }

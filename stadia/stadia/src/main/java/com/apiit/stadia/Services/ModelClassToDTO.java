@@ -89,6 +89,7 @@ public class ModelClassToDTO {
 		mainCatDTO.setMainCatTitle(mainCat.getMainCatTitle());
 		mainCatDTO.setMainCatDesc(mainCat.getMainCatDesc());
 		mainCatDTO.setType(mainCat.getType());
+		mainCatDTO.setMainCatImgName(mainCat.getMainCatImg());
 		String path = System.getProperty("user.dir")+"/Images/MainCategory/"+mainCat.getMainCatImg();
 		File file = new File(path);
 		if(file.exists()) {
@@ -96,6 +97,8 @@ public class ModelClassToDTO {
 				FileInputStream in = new FileInputStream(file);
 				byte[] imageData = new byte[(int) file.length()];
 				in.read(imageData);
+				in.close();
+
 				String base64Image = Base64.getEncoder().encodeToString(imageData);
 				mainCatDTO.setMainCatImg("data:image/png;base64, "+base64Image);
 			} catch (FileNotFoundException e) {
@@ -114,6 +117,7 @@ public class ModelClassToDTO {
 		subCatDTO.setId(subCat.getId());
 		subCatDTO.setSubCatTitle(subCat.getSubCatTitle());
 		subCatDTO.setSubCatDesc(subCat.getSubCatDesc());
+		subCatDTO.setSubCatImgName(subCat.getSubCatImg());
 		String path = System.getProperty("user.dir")+"/Images/SubCategory/"+subCat.getSubCatImg();
 		File file = new File(path);
 		if(file.exists()) {
@@ -121,6 +125,8 @@ public class ModelClassToDTO {
 				FileInputStream in = new FileInputStream(file);
 				byte[] imageData = new byte[(int) file.length()];
 				in.read(imageData);
+				in.close();
+
 				String base64Image = Base64.getEncoder().encodeToString(imageData);
 				subCatDTO.setSubCatImg("data:image/png;base64, "+base64Image);
 			} catch (FileNotFoundException e) {

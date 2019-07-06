@@ -21,7 +21,7 @@ public class SubCategory implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToMany(mappedBy="subCategory",cascade=CascadeType.ALL)
+	@ManyToMany(mappedBy="subCategory",cascade={CascadeType.MERGE})
 	@Getter @Setter List<MainCategory> mainCategory;
 	
 	@Id

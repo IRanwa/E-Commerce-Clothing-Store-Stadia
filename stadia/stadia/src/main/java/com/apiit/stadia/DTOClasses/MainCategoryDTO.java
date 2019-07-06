@@ -18,6 +18,8 @@ public class MainCategoryDTO {
 	@Getter @Setter String mainCatDesc;
 	
 	@Getter @Setter String mainCatImg;
+
+	@Getter @Setter String mainCatImgName;
 	
 	@Enumerated(EnumType.STRING)
 	@Getter @Setter Gender type;

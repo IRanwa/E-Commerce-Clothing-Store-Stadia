@@ -26,7 +26,7 @@ public class MainCategory implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToMany(cascade=CascadeType.ALL)
+	@ManyToMany(cascade={CascadeType.MERGE})
 	@JoinTable(
 			  name = "main_sub_category", 
 			  joinColumns = @JoinColumn(name = "mainId", referencedColumnName = "id"), 
@@ -37,6 +37,7 @@ public class MainCategory implements Serializable{
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Getter @Setter int id;
 	
+
 	@Getter @Setter String mainCatTitle;
 	
 	@Getter @Setter String mainCatDesc;

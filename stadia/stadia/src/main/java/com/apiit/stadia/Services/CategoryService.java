@@ -18,11 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.apiit.stadia.DTOClasses.CategoryDTO;
 import com.apiit.stadia.DTOClasses.MainCategoryDTO;
-import com.apiit.stadia.DTOClasses.MainSubCategoryDTO;
 import com.apiit.stadia.DTOClasses.SubCategoryDTO;
-import com.apiit.stadia.EnumClasses.Gender;
 import com.apiit.stadia.ModelClasses.MainCategory;
 import com.apiit.stadia.ModelClasses.MainSubCategory;
 import com.apiit.stadia.ModelClasses.SubCategory;
@@ -46,8 +43,8 @@ public class CategoryService {
 	ModelClassToDTO modelToDTO;
 	
 	private final int pageCount = 2;
-	//Main Category
 
+	//Main Category
 	public List<MainCategoryDTO> getMainCategoryList(){
 		List<MainCategory> mainCatList = mainCatRepo.findAll();
 		List<MainCategoryDTO> mainCatDTOList = new ArrayList<>();
@@ -71,52 +68,26 @@ public class CategoryService {
 	public double getMainCatPages() {
 		return Math.ceil(Double.valueOf(mainCatRepo.count())/pageCount);
 	}
-//	public Iterable<MainCategoryDTO> getMainCategoryList(String type){
-//		Iterable<MainCategory> mainCatList;
-//		if(type.equalsIgnoreCase("men")) {
-//			mainCatList = mainCatRepo.findByType(Gender.M);
-//		}else {
-//			mainCatList = mainCatRepo.findByType(Gender.F);
-//		}
-//		List<MainCategoryDTO> mainCatDTOList = mainCategoryToDTO(mainCatList);
-//		return mainCatDTOList;
-//	}
+
+	public ResponseEntity<MainCategoryDTO> getMainCategory(int id){
+		Optional<MainCategory> mainCatOptinal = mainCatRepo.findById(id);
+		if(mainCatOptinal.isPresent()){
+			return new ResponseEntity<>(modelToDTO.mainCategoryToDTO(mainCatOptinal.get()),HttpStatus.OK);
+		}
+		return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+	}
 	
 	public MainCategoryDTO addMainCategory(MainCategory mainCategory) {
 		Optional<MainCategory> mainCatOptional = mainCatRepo.findById(mainCategory.getId());
 		SubCategory subcat = null;
 		
 		if(!mainCatOptional.isPresent()) {
-			String path = System.getProperty("user.dir") + "/Images/MainCategory/";
-			String imageName = mainCategory.getMainCatTitle() + ".png";
 
-			File file = new File(path + imageName);
-			int count = 1;
-			while (file.exists()) {
-				imageName = mainCategory.getMainCatTitle() + "_" + count + ".png";
-				file = new File(path + imageName);
-				count++;
-			}
-
-			String base64 = mainCategory.getMainCatImg().split(",")[1];
-			byte[] data = Base64.decodeBase64(base64);
-
-			try {
-				FileOutputStream out = new FileOutputStream(new File(path + imageName));
-				out.write(data);
-				out.flush();
-				out.close();
-
+			String imageName = saveImage("/Images/MainCategory/",mainCategory.getMainCatTitle(),mainCategory.getMainCatImg());
+			if(imageName!=null) {
 				mainCategory.setMainCatImg(imageName);
-
 				subcat = mainCategory.getSubCategory().get(0);
 				mainCategory.setSubCategory(new ArrayList<>());
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				System.err.println(e.getMessage());
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.err.println(e.getMessage());
 			}
 		}else {
 			subcat = mainCategory.getSubCategory().get(0);
@@ -125,7 +96,7 @@ public class CategoryService {
 
 		Optional<SubCategory> subCatOptional = subCatRepo.findById(subcat.getId());
 		if(!subCatOptional.isPresent()){
-			String subCatImage = saveSubCatImage(subcat);
+			String subCatImage = saveImage("/Images/SubCategory/",subcat.getSubCatTitle(),subcat.getSubCatImg());
 			subcat.setSubCatImg(subCatImage);
 			System.err.println(mainCategory.getSubCategory().size());
 
@@ -147,26 +118,75 @@ public class CategoryService {
 		return null;
 	}
 	
-	public boolean deleteCategory(Integer id) {
+	public ResponseEntity<Boolean> deleteMainCategory(Integer id) {
 		try {
-			mainCatRepo.deleteById(id);
-			return true;
+			Optional<MainCategory> mainCatOptional = mainCatRepo.findById(id);
+			if(mainCatOptional.isPresent()){
+				MainCategory mainCat = mainCatOptional.get();
+				boolean deleteStatus = deleteImage("/Images/MainCategory/"+mainCat.getMainCatImg());
+				if(deleteStatus){
+					ArrayList<Integer> subIds = new ArrayList<>();
+					for(SubCategory subCat : mainCat.getSubCategory()){
+						if(subCat.getMainCategory().size()==1){
+							subIds.add(subCat.getId());
+						}
+					}
+					mainCatRepo.deleteById(id);
+					if(subIds.size()>0) {
+						for(int subId : subIds){
+							Optional<SubCategory> subCatOptional = subCatRepo.findById(subId);
+							if(subCatOptional.isPresent()){
+								boolean status = deleteImage("/Images/SubCategory/"+subCatOptional.get().getSubCatImg());
+								if(status){
+									subCatRepo.deleteById(subId);
+								}
+							}
+						}
+					}
+					return new ResponseEntity<>(true,HttpStatus.OK);
+				}
+			}else {
+				return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+			}
 		}catch(EmptyResultDataAccessException erda_ex) {
 			
 		}
-		return false;
+		return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
-	public boolean updateCategory(MainCategory newMainCat, Integer id) {
-		try {
-			MainCategory mainCat = mainCatRepo.findById(id).get();
-			newMainCat.setId(mainCat.getId());
-			mainCatRepo.save(newMainCat);
-			return true;
-		}catch(EmptyResultDataAccessException erda_ex) {
-			
+	public ResponseEntity<MainCategoryDTO> updateCategory(MainCategory newMainCat, int id) {
+		Optional<MainCategory> mainCatOptional = mainCatRepo.findById(id);
+		if(mainCatOptional.isPresent()){
+			MainCategory mainCat = mainCatOptional.get();
+
+			System.err.println("new main "+newMainCat.getMainCatTitle());
+			if(newMainCat.getMainCatTitle()!=null &&  !newMainCat.getMainCatTitle().equalsIgnoreCase("")){
+				mainCat.setMainCatTitle(newMainCat.getMainCatTitle());
+			}
+			if(newMainCat.getMainCatDesc()!=null && !newMainCat.getMainCatDesc().equalsIgnoreCase("")){
+				mainCat.setMainCatDesc(newMainCat.getMainCatDesc());
+			}
+			if(newMainCat.getType()!=null && !newMainCat.getType().toString().equalsIgnoreCase("")) {
+				mainCat.setType(newMainCat.getType());
+			}
+
+			if(newMainCat.getMainCatImg()!=null && !newMainCat.getMainCatImg().equalsIgnoreCase("")) {
+				boolean status = deleteImage("/Images/MainCategory/"+mainCat.getMainCatImg());
+				if(status) {
+					String imageName = saveImage("/Images/MainCategory/", newMainCat.getMainCatTitle(), newMainCat.getMainCatImg());
+					if (imageName != null) {
+						mainCat.setMainCatImg(imageName);
+					} else {
+						return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+					}
+				}else{
+					return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+			}
+			mainCat = mainCatRepo.save(mainCat);
+			return new ResponseEntity<>(modelToDTO.mainCategoryToDTO(mainCat), HttpStatus.OK);
 		}
-		return false;
+		return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
 	}
 	
 	//Sub Category
@@ -192,9 +212,17 @@ public class CategoryService {
 		}
 		return newSubCatList;
 	}
-	
+
+	public ResponseEntity<SubCategoryDTO> getSubCategory(int id){
+		Optional<SubCategory> subCatOptinal = subCatRepo.findById(id);
+		if(subCatOptinal.isPresent()){
+			return new ResponseEntity<>(modelToDTO.subCategoryToDTO(subCatOptinal.get()),HttpStatus.OK);
+		}
+		return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+	}
+
 	public SubCategory addSubCategory(SubCategory subCat,int mainCatId) {
-		String imageName = saveSubCatImage(subCat);
+		String imageName = saveImage("/Images/SubCategory/",subCat.getSubCatTitle(),subCat.getSubCatImg());
 		if(imageName!=null) {
 			subCat.setSubCatImg(imageName);
 			subCat = subCatRepo.save(subCat);
@@ -210,89 +238,94 @@ public class CategoryService {
 		return null;
 	}
 	
-	public SubCategory addSubCategory(int mainCatId,int subCatId) {
-		MainCategory mainCat = mainCatRepo.findById(mainCatId).get();
-		SubCategory subCat = subCatRepo.findById(subCatId).get();
-		
-		MainSubCategory mainSubCat = new MainSubCategory();
-		mainSubCat.setMainCategory(mainCat);
-		mainSubCat.setSubCategory(subCat);
-		mainSubCatRepo.save(mainSubCat);
-		return subCat;
-	}
-	
-	public boolean deleteSubCategory(int id) {
+	public ResponseEntity<Boolean> deleteSubCategory(int id) {
 		try {
-			subCatRepo.deleteById(id);
-			return true;
-		}catch(EmptyResultDataAccessException erda_ex) {
-			
-		}
-		return false;
-	}
-	
-	public boolean updateSubCategory(SubCategory newSubCat, int id) {
-		try {
-			SubCategory subCat = subCatRepo.findById(id).get();
-			newSubCat.setId(subCat.getId());
-			subCatRepo.save(newSubCat);
-			return true;
-		}catch(EmptyResultDataAccessException erda_ex) {
-			
-		}
-		return false;
-	}
-	
-	private List<MainCategoryDTO> mainCategoryToDTO(Iterable<MainCategory> mainCatList) {
-		//Main Category DTO List
-		List<MainCategoryDTO> mainCatDTOList = new ArrayList<MainCategoryDTO>();
-		for(MainCategory mainCat: mainCatList) {
-			//Main Category DTO
-			MainCategoryDTO mainCatDTO = new MainCategoryDTO();
-			mainCatDTO.setId(mainCat.getId());
-			mainCatDTO.setMainCatTitle(mainCat.getMainCatTitle());
-			mainCatDTO.setMainCatDesc(mainCat.getMainCatDesc());
-			mainCatDTO.setMainCatImg(mainCat.getMainCatImg());
-			
-			//Sub Category DTO List
-			List<SubCategory> subCatList = mainCat.getSubCategory();
-			List<SubCategoryDTO> subCatDTOList = new ArrayList<SubCategoryDTO>();
-			for(SubCategory subCat : subCatList) {
-				//New Sub Category DTO
-				SubCategoryDTO subCatDTO = new SubCategoryDTO();
-				subCatDTO.setId(subCat.getId());
-				subCatDTO.setSubCatTitle(subCat.getSubCatTitle());
-				subCatDTO.setSubCatDesc(subCat.getSubCatDesc());
-				subCatDTO.setSubCatImg(subCat.getSubCatImg());
-				subCatDTOList.add(subCatDTO);
+			Optional<SubCategory> subCatOptional = subCatRepo.findById(id);
+			if(subCatOptional.isPresent()){
+				SubCategory subCat = subCatOptional.get();
+				boolean deleteStatus = deleteImage("/Images/SubCategory/"+subCat.getSubCatImg());
+				if(deleteStatus){
+					ArrayList<Integer> mainCatIds = new ArrayList<>();
+					for(MainCategory mainCat : subCat.getMainCategory()){
+						if(mainCat.getSubCategory().size()==1){
+							mainCatIds.add(mainCat.getId());
+						}
+					}
+					subCatRepo.deleteById(id);
+					if(mainCatIds.size()>0){
+						for(int mainCatId : mainCatIds){
+							Optional<MainCategory> mainCatOptional = mainCatRepo.findById(mainCatId);
+							if(mainCatOptional.isPresent()){
+								boolean status = deleteImage("/Images/MainCategory/"+mainCatOptional.get().getMainCatImg());
+								if(status){
+									mainCatRepo.deleteById(mainCatId);
+								}
+							}
+						}
+					}
+					return new ResponseEntity<>(true,HttpStatus.OK);
+				}
+			}else {
+				return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
 			}
-			mainCatDTO.setSubCategoryDTO(subCatDTOList);
-			mainCatDTOList.add(mainCatDTO);
+
+		}catch(EmptyResultDataAccessException erda_ex) {
+			
 		}
-		return mainCatDTOList;
+		return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
-	public String saveSubCatImage(SubCategory subCat) {
-		String path = System.getProperty("user.dir")+"/Images/SubCategory/";
-		String imageName = subCat.getSubCatTitle()+".png";
-		
-		File file = new File(path+imageName);
+	public ResponseEntity<SubCategoryDTO> updateSubCategory(SubCategory newSubCat, int id) {
+		Optional<SubCategory> subCatOptional = subCatRepo.findById(id);
+		if(subCatOptional.isPresent()){
+			SubCategory subCat = subCatOptional.get();
+
+			if(newSubCat.getSubCatTitle()!=null &&  !newSubCat.getSubCatTitle().equalsIgnoreCase("")){
+				subCat.setSubCatTitle(newSubCat.getSubCatTitle());
+			}
+			if(newSubCat.getSubCatDesc()!=null && !newSubCat.getSubCatDesc().equalsIgnoreCase("")){
+				subCat.setSubCatDesc(newSubCat.getSubCatDesc());
+			}
+
+			if(newSubCat.getSubCatImg()!=null && !newSubCat.getSubCatImg().equalsIgnoreCase("")) {
+				boolean status = deleteImage("/Images/SubCategory/"+subCat.getSubCatImg());
+				if(status) {
+					String imageName = saveImage("/Images/SubCategory/", newSubCat.getSubCatTitle(), newSubCat.getSubCatImg());
+					if (imageName != null) {
+						subCat.setSubCatImg(imageName);
+					} else {
+						return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+					}
+				}else{
+					return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+			}
+			subCat = subCatRepo.save(subCat);
+			return new ResponseEntity<>(modelToDTO.subCategoryToDTO(subCat), HttpStatus.OK);
+		}
+		return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+	}
+
+	private String saveImage(String subPath,String title, String image){
+		String path = System.getProperty("user.dir") + subPath;
+		String imageName = title + ".png";
+
+		File file = new File(path + imageName);
 		int count = 1;
-		while(file.exists()) {
-			imageName = subCat.getSubCatTitle()+"_"+count+".png";
-			file = new File(path+imageName);
+		while (file.exists()) {
+			imageName = title + "_" + count + ".png";
+			file = new File(path + imageName);
 			count++;
 		}
-		
-		String base64 = subCat.getSubCatImg().split(",")[1];
+
+		String base64 = image.split(",")[1];
 		byte[] data = Base64.decodeBase64(base64);
-		
+
 		try {
-			FileOutputStream out = new FileOutputStream(new File(path+imageName));
+			FileOutputStream out = new FileOutputStream(new File(path + imageName));
 			out.write(data);
 			out.flush();
 			out.close();
-		    
 			return imageName;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -302,5 +335,19 @@ public class CategoryService {
 			System.err.println(e.getMessage());
 		}
 		return null;
+	}
+
+	public boolean deleteImage(String imagePath){
+		String path = System.getProperty("user.dir") + imagePath;
+		File file = new File(path);
+		if(file.exists()) {
+			if(file.delete()) {
+				System.err.println(path);
+				return true;
+			}
+			return false;
+		}else{
+			return true;
+		}
 	}
 }
