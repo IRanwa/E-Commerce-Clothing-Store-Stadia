@@ -43,7 +43,7 @@ public class ProductService {
 	@Autowired
 	ModelClassToDTO modelToDTO;
 
-	private final int PAGE_COUNT = 2;
+	private final int PAGE_COUNT = 1;
 	
 	//Sizes
 	public double getSizesPages() {
@@ -85,13 +85,20 @@ public class ProductService {
 		return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
-	public Sizes updateSize(Sizes newSize,long id) {
-		Optional<Sizes> size = sizesRepo.findById(id);
-		if(size.isPresent()) {
-			newSize.setId(size.get().getId());
-			return sizesRepo.save(newSize);
+	public ResponseEntity<SizesDTO> updateSize(Sizes newSize, long id) {
+		Optional<Sizes> sizeOptional = sizesRepo.findById(id);
+		if(sizeOptional.isPresent()) {
+			Sizes size = sizeOptional.get();
+			if(newSize.getSize()!=null){
+				size.setSize(newSize.getSize());
+			}
+
+			if(newSize.getDescription()!=null){
+				size.setDescription(newSize.getDescription());
+			}
+			return new ResponseEntity<>(modelToDTO.sizesToDTO(sizesRepo.save(size)),HttpStatus.OK);
 		}
-		return null;
+		return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
 	}
 
 	public boolean deleteSize(long id) {

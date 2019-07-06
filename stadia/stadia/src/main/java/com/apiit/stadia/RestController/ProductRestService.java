@@ -39,8 +39,8 @@ public class ProductRestService {
 		return prodService.addSize(size);
 	}
 	
-	@PutMapping("/Sizes/{id}")
-	public Sizes updateSize(Sizes size,@PathVariable long id) {
+	@PutMapping("/UpdateSizes/{id}")
+	public ResponseEntity<SizesDTO> updateSize(@RequestBody Sizes size,@PathVariable long id) {
 		return prodService.updateSize(size, id);
 	}
 	

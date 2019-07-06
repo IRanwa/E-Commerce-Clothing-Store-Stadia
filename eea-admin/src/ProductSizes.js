@@ -10,15 +10,18 @@ class ProductSizesApp extends Component{
             tableData:[],
             pageNo:0,
             noOfPages:0,
-            addStatus:false
+            addStatus:false,
+            updateStatus:false,
+            updateId:0
         }
-        this.addStatusChange = this.addStatusChange.bind(this);
-        this.btnUpdate = this.btnUpdate.bind(this);
+        this.statusChange = this.statusChange.bind(this);
         this.btnDelete = this.btnDelete.bind(this);
         this.retrieveProdSize = this.retrieveProdSize.bind(this);
         this.changePage = this.changePage.bind(this);
         this.modalClose = this.modalClose.bind(this);
+        
         this.addProdSize = this.addProdSize.bind(this);
+
     }
 
     componentDidMount(){
@@ -60,36 +63,55 @@ class ProductSizesApp extends Component{
         
     }
 
-    addStatusChange(status){
-        this.setState({
-            addStatus:status
-        })
+    statusChange(status,value,id){
+        if(status==="add"){
+            this.setState({
+                addStatus:value
+            })
+        }else if(status==="update"){
+            this.setState({
+                updateStatus:value,
+                updateId:id
+            })
+        }
         
-    }
-
-    btnUpdate(){
-
     }
 
     btnDelete(){
 
     }
 
-    changePage(){
-
+    changePage(pageNo){
+        console.log("change pageb , ",pageNo)
+        this.setState({
+            tableData:[]
+        })
+        this.retrieveProdSize(pageNo);
     }
 
-    addProdSize(url,data){
+    addProdSize(url,data,status){
         const that = this;
-        axios.post(url,data)
-        .then(function(res){
-            alert("Product Added Successfully!");
-            that.addStatusChange(false);
-            that.retrieveProdSize(that.state.pageNo);
-        }).catch(function(error){
-            console.error("Add Product Size ",error);
-            alert("Product Size Adding Un-Successful!");
-        })
+        if(status==="add"){
+            axios.post(url,data)
+            .then(function(res){
+                alert("Product Size Added Successfully!");
+                that.statusChange("add",false);
+                that.retrieveProdSize(that.state.pageNo);
+            }).catch(function(error){
+                console.error("Add Product Size ",error);
+                alert("Product Size Adding Un-Successful!");
+            })
+        }else if(status==="update"){
+            axios.put(url,data)
+            .then(function(res){
+                alert("Product Size Updated Successfully!");
+                that.statusChange("update",false);
+                that.retrieveProdSize(that.state.pageNo);
+            }).catch(function(error){
+                console.error("Update Product Size ",error);
+                alert("Product Size Updating Un-Successful!");
+            })
+        }
         
     }
 
@@ -99,7 +121,9 @@ class ProductSizesApp extends Component{
         window.onclick = function(event) {
             if (event.target === modal) {
               that.setState({
-                  addStatus:false
+                  addStatus:false,
+                  updateStatus:false,
+                  updateId:0
               })
             }
         }
@@ -108,8 +132,32 @@ class ProductSizesApp extends Component{
     render(){
         let pagesContent=[];
         if(this.state.noOfPages>10){
-            for (let i = 0; i < 10; ++i) {
-                pagesContent.push(<div className={this.state.pageNo===i?"paging-selected col-sm":"paging-not-selected col-sm"} key={i} onClick={()=>this.changePage(i)}>{i+1}</div>);
+            console.log(this.state.noOfPages)
+            console.log(this.state.pageNo)
+            let maxNoOfPages = this.state.noOfPages-(this.state.pageNo+1);
+            if(maxNoOfPages>10){
+                maxNoOfPages = this.state.pageNo+10;
+                if(this.state.pageNo>0){
+                    pagesContent.push(<div className="paging-not-selected col-sm" key={this.state.pageNo-1} onClick={()=>this.changePage(this.state.pageNo-1)}>{this.state.pageNo}</div>);
+                    maxNoOfPages -= 1;
+                }
+                for (let i = this.state.pageNo; i <maxNoOfPages; ++i) {
+                    pagesContent.push(<div className={this.state.pageNo===i?"paging-selected col-sm":"paging-not-selected col-sm"} key={i} onClick={()=>this.changePage(i)}>{i+1}</div>);
+                }
+            }else if(maxNoOfPages===10){
+                maxNoOfPages = this.state.noOfPages;
+                
+                //pagesContent.push(<div className="paging-not-selected col-sm" key={i-1} onClick={()=>this.changePage(i-1)}>{i}</div>);
+                for (let i = this.state.noOfPages-12; i <maxNoOfPages; ++i) {
+                    pagesContent.push(<div className={this.state.pageNo===i?"paging-selected col-sm":"paging-not-selected col-sm"} key={i} onClick={()=>this.changePage(i)}>{i+1}</div>);
+                }
+            }else{
+                
+                maxNoOfPages = this.state.noOfPages;
+                
+                for (let i = maxNoOfPages-11; i <maxNoOfPages; ++i) {
+                    pagesContent.push(<div className={this.state.pageNo===i?"paging-selected col-sm":"paging-not-selected col-sm"} key={i} onClick={()=>this.changePage(i)}>{i+1}</div>);
+                }
             }
         }else{
             for (let i = 0; i < this.state.noOfPages; ++i) {
@@ -120,7 +168,12 @@ class ProductSizesApp extends Component{
             <div className="card w-90 p-3 m-5">
                 {
                     this.state.addStatus?(
-                        <AddSize modalClose={this.modalClose} addProdSize={this.addProdSize}/>
+                        <SizePopupWindow modalClose={this.modalClose} addProdSize={this.addProdSize}/>
+                    ):("")
+                }
+                {
+                    this.state.updateStatus?(
+                        <SizePopupWindow modalClose={this.modalClose} addProdSize={this.addProdSize} id={this.state.updateId}/>
                     ):("")
                 }
                 <div className="w-100 container text-center category-menu">
@@ -130,7 +183,7 @@ class ProductSizesApp extends Component{
                         </h5>
                     </div>
                     <div className="row mb-1">
-                        <button className="btn btn-sm addBtn" onClick={this.addStatusChange}>
+                        <button className="btn btn-sm addBtn" onClick={()=>this.statusChange("add",true)}>
                             Add Product Size
                         </button>                        
                     </div>
@@ -153,7 +206,7 @@ class ProductSizesApp extends Component{
                                                 <td>{data.size}</td>
                                                 <td>{data.description}</td>
                                                 <td>
-                                                    <button className="btn btn-sm btn-update w-50 my-1 mr-1" onClick={()=>this.btnUpdate(data.id)}>Update</button>
+                                                    <button className="btn btn-sm btn-update w-50 my-1 mr-1" onClick={()=>this.statusChange("update",true,data.id)}>Update</button>
                                                     <button className="btn btn-sm btn-delete w-50 my-1 mr-1" onClick={()=>this.btnDelete(data.id)}>Delete</button>
                                                 </td>
                                             </tr>
@@ -178,16 +231,44 @@ class ProductSizesApp extends Component{
     }
 }
 
-class AddSize extends Component{
+class SizePopupWindow extends Component{
     constructor(props){
         super(props);
-        this.state={
-            size:"",
-            desc:""
+        if(this.props.id===undefined){
+            this.state={
+                size:"",
+                desc:"",
+                windowStatus:"add"
+            }
+        }else{
+            this.state={
+                id:this.props.id,
+                size:"",
+                desc:"",
+                windowStatus:"update"
+            }
         }
         this.inputChnage = this.inputChnage.bind(this);
         this.btnReset = this.btnReset.bind(this);
         this.addProdSize = this.addProdSize.bind(this);
+    }
+
+    componentDidMount(){
+        if(this.state.windowStatus==="update"){
+            const that = this;
+            axios.get("http://localhost:8080//GetSize/"+this.state.id)
+            .then(function(res){
+                const data = res.data;
+                that.setState({
+                    size:data["size"],
+                    desc:data["description"],
+                })
+                console.log("Size retrieve successful!");
+            }).catch(function(error){
+                console.error("Size retrieve error ",error);
+                alert("Size retrieve error ",error);
+            })
+        }
     }
 
     inputChnage(target){
@@ -210,12 +291,22 @@ class AddSize extends Component{
     }
 
     addProdSize(){
-        const url =  "http://localhost:8080/AddSizes";
-        const data = {
-            size:this.state.size,
-            description:this.state.desc
+        let url;
+        let data;
+        if(this.state.windowStatus==="add"){
+            url =  "http://localhost:8080/AddSizes";
+            data = {
+                size:this.state.size,
+                description:this.state.desc
+            }
+        }else{
+            url =  "http://localhost:8080/UpdateSizes/"+this.state.id;
+            data = {
+                size:this.state.size,
+                description:this.state.desc
+            }
         }
-        this.props.addProdSize(url,data);
+        this.props.addProdSize(url,data,this.state.windowStatus);
     }
 
     btnReset(){
@@ -230,7 +321,15 @@ class AddSize extends Component{
             <div className="modal" onClick={this.props.modalClose}>
                 <div className="card modal-content  add-cat-popup">
                     <div className="modal-header">
-                        <h5>Add Product Size</h5>
+                        <h5>
+                            {
+                                this.state.windowStatus==="add"?(
+                                    "Add Product Size"
+                                ):(
+                                    "Update Product Size"
+                                )
+                            }
+                        </h5>
                     </div>
                     <div className="modal-body add-cat-popup-body">
                         <div className="add-cat-form">
@@ -241,7 +340,15 @@ class AddSize extends Component{
                         </div>
                     </div>
                     <div className="modal-footer">
-                        <button className="btn btn-success"  onClick={this.addProdSize}>Add Product Size</button>
+                        <button className="btn btn-success"  onClick={this.addProdSize}>
+                            {
+                                this.state.windowStatus==="add"?(
+                                    "Add Product Size"
+                                ):(
+                                    "Update Product Size"
+                                )
+                            }
+                        </button>
                         <button className="btn btn-danger" onClick={this.btnReset}>Reset</button>
                     </div>
                 </div>
