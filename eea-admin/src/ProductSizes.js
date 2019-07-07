@@ -12,15 +12,17 @@ class ProductSizesApp extends Component{
             noOfPages:0,
             addStatus:false,
             updateStatus:false,
-            updateId:0
+            updateId:0,
+            deleteStatus:false,
+            deleteId:0
         }
         this.statusChange = this.statusChange.bind(this);
-        this.btnDelete = this.btnDelete.bind(this);
         this.retrieveProdSize = this.retrieveProdSize.bind(this);
         this.changePage = this.changePage.bind(this);
         this.modalClose = this.modalClose.bind(this);
-        
+        this.genPagesContent = this.genPagesContent.bind(this);
         this.addProdSize = this.addProdSize.bind(this);
+
 
     }
 
@@ -73,12 +75,13 @@ class ProductSizesApp extends Component{
                 updateStatus:value,
                 updateId:id
             })
+        }else if(status==="delete"){
+            this.setState({
+                deleteStatus:value,
+                deleteId:id
+            })
         }
         
-    }
-
-    btnDelete(){
-
     }
 
     changePage(pageNo){
@@ -112,6 +115,17 @@ class ProductSizesApp extends Component{
                 alert("Product Size Updating Un-Successful!");
             })
         }
+        else if(status==="delete"){
+            axios.delete(url)
+            .then(function(res){
+                alert("Product Size Deleted Successfully!");
+                that.statusChange("delete",false);
+                that.retrieveProdSize(that.state.pageNo);
+            }).catch(function(error){
+                console.error("Delete Product Size ",error);
+                alert("Product Size Deleting Un-Successful!");
+            })
+        }
         
     }
 
@@ -123,13 +137,15 @@ class ProductSizesApp extends Component{
               that.setState({
                   addStatus:false,
                   updateStatus:false,
-                  updateId:0
+                  updateId:0,
+                  deleteStatus:false,
+                  deleteId:0
               })
             }
         }
     }
 
-    render(){
+    genPagesContent(){
         let pagesContent=[];
         if(this.state.noOfPages>10){
             console.log(this.state.noOfPages)
@@ -146,15 +162,12 @@ class ProductSizesApp extends Component{
                 }
             }else if(maxNoOfPages===10){
                 maxNoOfPages = this.state.noOfPages;
-                
-                //pagesContent.push(<div className="paging-not-selected col-sm" key={i-1} onClick={()=>this.changePage(i-1)}>{i}</div>);
                 for (let i = this.state.noOfPages-12; i <maxNoOfPages; ++i) {
                     pagesContent.push(<div className={this.state.pageNo===i?"paging-selected col-sm":"paging-not-selected col-sm"} key={i} onClick={()=>this.changePage(i)}>{i+1}</div>);
                 }
             }else{
                 
                 maxNoOfPages = this.state.noOfPages;
-                
                 for (let i = maxNoOfPages-11; i <maxNoOfPages; ++i) {
                     pagesContent.push(<div className={this.state.pageNo===i?"paging-selected col-sm":"paging-not-selected col-sm"} key={i} onClick={()=>this.changePage(i)}>{i+1}</div>);
                 }
@@ -164,16 +177,26 @@ class ProductSizesApp extends Component{
                 pagesContent.push(<div className={this.state.pageNo===i?"paging-selected col-sm":"paging-not-selected col-sm"} key={i} onClick={()=>this.changePage(i)}>{i+1}</div>);
             }
         }
+        return pagesContent;
+    }
+
+    render(){
+        const pagesContent = this.genPagesContent();
         return(
             <div className="card w-90 p-3 m-5">
                 {
                     this.state.addStatus?(
-                        <SizePopupWindow modalClose={this.modalClose} addProdSize={this.addProdSize}/>
+                        <SizePopupWindow modalClose={this.modalClose} addProdSize={this.addProdSize} windowStatus="add"/>
                     ):("")
                 }
                 {
                     this.state.updateStatus?(
-                        <SizePopupWindow modalClose={this.modalClose} addProdSize={this.addProdSize} id={this.state.updateId}/>
+                        <SizePopupWindow modalClose={this.modalClose} addProdSize={this.addProdSize} id={this.state.updateId} windowStatus="update"/>
+                    ):("")
+                }
+                {
+                    this.state.deleteStatus?(
+                        <SizePopupWindow modalClose={this.modalClose} addProdSize={this.addProdSize} id={this.state.deleteId} windowStatus="delete"/>
                     ):("")
                 }
                 <div className="w-100 container text-center category-menu">
@@ -207,7 +230,7 @@ class ProductSizesApp extends Component{
                                                 <td>{data.description}</td>
                                                 <td>
                                                     <button className="btn btn-sm btn-update w-50 my-1 mr-1" onClick={()=>this.statusChange("update",true,data.id)}>Update</button>
-                                                    <button className="btn btn-sm btn-delete w-50 my-1 mr-1" onClick={()=>this.btnDelete(data.id)}>Delete</button>
+                                                    <button className="btn btn-sm btn-delete w-50 my-1 mr-1" onClick={()=>this.statusChange("delete",true,data.id)}>Delete</button>
                                                 </td>
                                             </tr>
                                         );
@@ -238,14 +261,14 @@ class SizePopupWindow extends Component{
             this.state={
                 size:"",
                 desc:"",
-                windowStatus:"add"
+                windowStatus:this.props.windowStatus
             }
         }else{
             this.state={
                 id:this.props.id,
                 size:"",
                 desc:"",
-                windowStatus:"update"
+                windowStatus:this.props.windowStatus
             }
         }
         this.inputChnage = this.inputChnage.bind(this);
@@ -299,12 +322,14 @@ class SizePopupWindow extends Component{
                 size:this.state.size,
                 description:this.state.desc
             }
-        }else{
+        }else if(this.state.windowStatus==="update"){
             url =  "http://localhost:8080/UpdateSizes/"+this.state.id;
             data = {
                 size:this.state.size,
                 description:this.state.desc
             }
+        }else if(this.state.windowStatus==="delete"){
+            url =  "http://localhost:8080/DeleteSizes/"+this.state.id;
         }
         this.props.addProdSize(url,data,this.state.windowStatus);
     }
@@ -317,37 +342,46 @@ class SizePopupWindow extends Component{
     }
 
     render(){
+        let header;
+        let footer;
+        if(this.state.windowStatus==="add"){
+            header = "Add Product Size";
+            footer = "Add";
+        }else if(this.state.windowStatus==="update"){
+            header = "Update Product Size";
+            footer = "Update";
+        }else if(this.state.windowStatus==="delete"){
+            header = "Delete Product Size";
+            footer = "Delete";
+        }
         return(
             <div className="modal" onClick={this.props.modalClose}>
                 <div className="card modal-content  add-cat-popup">
                     <div className="modal-header">
-                        <h5>
-                            {
-                                this.state.windowStatus==="add"?(
-                                    "Add Product Size"
-                                ):(
-                                    "Update Product Size"
-                                )
-                            }
-                        </h5>
+                        <h5>{header}</h5>
                     </div>
                     <div className="modal-body add-cat-popup-body">
-                        <div className="add-cat-form">
-                            <h6>Size</h6>
-                            <input className="w-100" type="text" name="size" value={this.state.size} onChange={(event)=>this.inputChnage(event.target)}/>
-                            <h6>Description</h6>
-                            <textarea name="desc" className="w-100" value={this.state.desc} onChange={(event)=>this.inputChnage(event.target)}></textarea>
-                        </div>
+                        {
+                            this.state.windowStatus==="delete"?(
+                                <div>
+                                    <label>
+                                        Are you sure you want to delete product size id - {this.state.id} ?
+                                    </label> 
+                                </div>
+                            ):(
+                                <div className="add-cat-form">
+                                    <h6>Size</h6>
+                                    <input className="w-100" type="text" name="size" value={this.state.size} onChange={(event)=>this.inputChnage(event.target)}/>
+                                    <h6>Description</h6>
+                                    <textarea name="desc" className="w-100" value={this.state.desc} onChange={(event)=>this.inputChnage(event.target)}></textarea>
+                                </div>
+                            )
+                        }
+                        
                     </div>
                     <div className="modal-footer">
                         <button className="btn btn-success"  onClick={this.addProdSize}>
-                            {
-                                this.state.windowStatus==="add"?(
-                                    "Add Product Size"
-                                ):(
-                                    "Update Product Size"
-                                )
-                            }
+                            {footer}
                         </button>
                         <button className="btn btn-danger" onClick={this.btnReset}>Reset</button>
                     </div>

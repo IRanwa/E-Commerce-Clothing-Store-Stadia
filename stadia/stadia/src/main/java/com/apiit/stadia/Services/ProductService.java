@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import com.apiit.stadia.DTOClasses.*;
 import com.apiit.stadia.ModelClasses.*;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -43,7 +44,7 @@ public class ProductService {
 	@Autowired
 	ModelClassToDTO modelToDTO;
 
-	private final int PAGE_COUNT = 1;
+	private final int PAGE_COUNT = 2;
 	
 	//Sizes
 	public double getSizesPages() {
@@ -101,14 +102,14 @@ public class ProductService {
 		return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
 	}
 
-	public boolean deleteSize(long id) {
+	public ResponseEntity<Boolean> deleteSize(long id) {
 		try {
 			sizesRepo.deleteById(id);
-			return true;
+			return new ResponseEntity<>(true,HttpStatus.OK);
 		}catch(EmptyResultDataAccessException erda_ex) {
 			
 		}
-		return false;
+		return new ResponseEntity<>(true,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	//Product

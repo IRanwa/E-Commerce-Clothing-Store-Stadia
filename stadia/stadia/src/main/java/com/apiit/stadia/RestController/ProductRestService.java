@@ -44,17 +44,12 @@ public class ProductRestService {
 		return prodService.updateSize(size, id);
 	}
 	
-	@DeleteMapping("/Sizes/{id}")
-	public String deleteSize(@PathVariable long id) {
-		return "{status:"+prodService.deleteSize(id)+"}";
+	@DeleteMapping("/DeleteSizes/{id}")
+	public ResponseEntity<Boolean> deleteSize(@PathVariable long id) {
+		return prodService.deleteSize(id);
 	}
-	
+
 	//Products
-//	@GetMapping("/Product/{mainCat}/{orderBy}")
-//	public List<Product> getSizesList(@PathVariable int mainCat,@PathVariable boolean orderBy) {
-//		return prodService.getProductList(mainCat,orderBy);
-//	}
-	
 	@GetMapping("/Product")
 	public List<ProductDTO> getProductList(){
 		return prodService.getProductsList();
