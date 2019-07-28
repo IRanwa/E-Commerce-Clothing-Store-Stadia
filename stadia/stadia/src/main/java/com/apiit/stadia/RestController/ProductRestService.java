@@ -60,8 +60,8 @@ public class ProductRestService {
 		return prodService.getProduct(id);
 	}
 	
-	@PostMapping("/Product")
-	public String addProduct(Product product) {
+	@PostMapping("/AddProduct")
+	public String addProduct(@RequestBody Product product) {
 		return "{status:"+prodService.addProduct(product)+"}";
 	}
 	

@@ -12,5 +12,5 @@ import com.apiit.stadia.ModelClasses.MainSubCategory;
 
 @Repository
 public interface MainSubCategoryRepository extends JpaRepository<MainSubCategory, Long> {
-	List<MainSubCategory> findByMainCategoryAndSubCategory(MainCategory mainCategory, SubCategory subCategory);
+	MainSubCategory findByMainCategoryAndSubCategory(MainCategory mainCategory, SubCategory subCategory);
 }

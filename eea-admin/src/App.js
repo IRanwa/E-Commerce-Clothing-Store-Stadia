@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import HomepageApp from './Homepage.js';
 import CategoriesApp from './Categories.js';
 import ProductSizesApp from './ProductSizes.js';
+import ProductsApp from './Products';
 
 class App extends Component{
   render(){
@@ -16,6 +17,7 @@ class App extends Component{
           <Route path="/homepage" component={Homepage} />
           <Route path="/categories" component={Categories} /> 
           <Route path="/product_sizes" component={ProductSizes} /> 
+          <Route path="/products" component={Products} /> 
         </div>
       </Router>
     );
@@ -77,6 +79,17 @@ class ProductSizes extends Component{
   }
 }
 
+class Products extends Component{
+  render(){
+    return(
+      <div>
+        <NavBar/>
+        <ProductsApp/>
+      </div>
+    )
+  }
+}
+
 class NavBar extends Component{
   constructor(props){
     super(props);
@@ -110,7 +123,7 @@ class NavBar extends Component{
                 <div className="dropdown">
                   <a className="nav-item nav-link" href="/">Products</a>
                   <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a className="nav-item nav-link" href="/">Products</a>
+                    <a className="nav-item nav-link" href="/products">Products</a>
                     <a className="nav-item nav-link" href="/product_sizes">Products Size</a>
                   </div>
                 </div>

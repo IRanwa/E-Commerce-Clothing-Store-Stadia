@@ -93,6 +93,11 @@ public class CategoryRestService {
 		return catService.getSubCategory(id);
 	}
 
+	@GetMapping("/MainSubCategory/{id}")
+	public List<SubCategoryDTO> GetMainSubCategory(@PathVariable int id){
+		return catService.getMainSubCategory(id);
+	}
+
 	@PostMapping("/AddSubCategory/{mainCatId}")
 	public ResponseEntity<SubCategory> AddSubCategory(@PathVariable int mainCatId, @RequestBody SubCategory subCat) {
 		subCat = catService.addSubCategory(subCat, mainCatId);

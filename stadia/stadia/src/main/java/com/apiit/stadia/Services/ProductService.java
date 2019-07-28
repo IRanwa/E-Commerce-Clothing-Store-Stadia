@@ -1,5 +1,9 @@
 package com.apiit.stadia.Services;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,7 +11,9 @@ import java.util.Optional;
 
 import com.apiit.stadia.DTOClasses.*;
 import com.apiit.stadia.ModelClasses.*;
+import com.apiit.stadia.Repositories.*;
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -16,13 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import com.apiit.stadia.Repositories.MainCategoryRepository;
-import com.apiit.stadia.Repositories.MainSubCategoryRepository;
-import com.apiit.stadia.Repositories.ProductImagesRepository;
-import com.apiit.stadia.Repositories.ProductRepository;
-import com.apiit.stadia.Repositories.ProductSizesRepository;
-import com.apiit.stadia.Repositories.SizesRepository;
 
 @Service
 public class ProductService {
@@ -39,12 +38,15 @@ public class ProductService {
 	MainSubCategoryRepository mainSubCatRepo;
 	@Autowired
 	MainCategoryRepository mainCatRepo;
+	@Autowired
+	SubCategoryRepository subCatRepo;
+	
 	
 	//Model Class to DTO
 	@Autowired
 	ModelClassToDTO modelToDTO;
 
-	private final int PAGE_COUNT = 2;
+	private final int PAGE_COUNT = 1;
 	
 	//Sizes
 	public double getSizesPages() {
@@ -165,23 +167,44 @@ public class ProductService {
 	}
 	
 	public boolean addProduct(Product product) {
+		//Find MainSubCategory
+		MainSubCategory mainSubCat = product.getMainSubCategory();
+		Optional<MainCategory> mainCat = mainCatRepo.findById(mainSubCat.getMainCategory().getId());
+		Optional<SubCategory> subCat = subCatRepo.findById(mainSubCat.getSubCategory().getId());
+		mainSubCat = mainSubCatRepo.findByMainCategoryAndSubCategory(mainCat.get(), subCat.get());
+		product.setMainSubCategory(mainSubCat);
+
+		//Save Product
 		Date currentDate = new Date();
 		product.setCreatedDate(currentDate);
 		product.setModifyDate(currentDate);
 		product = productRepo.save(product);
-		
-		//Save Product Images
-		List<ProductImages> productImages = product.getProductImages();
-		for(ProductImages prodImage : productImages) {
-			prodImage.setProduct(product);
-			prodImagesRepo.save(prodImage);
-		}
-		
+
 		//Save Product Sizes
-		List<ProductSizes> prodSizesList = product.getProductSizes();
-		for(ProductSizes prodSize : prodSizesList) {
-			prodSize.setProduct(product);
-			prodSizesRepo.save(prodSize);
+		List<ProductSizes> prodSizes = product.getProductSizes();
+		for(ProductSizes prodSize : prodSizes){
+			List<Sizes> sizes = sizesRepo.findBySize(prodSize.getSizes().getSize());
+			if(sizes.size()>0){
+				prodSize.setSizes(sizes.get(0));
+				prodSize.setProduct(product);
+				prodSizesRepo.save(prodSize);
+			}
+		}
+
+		//Save Product Image
+		String subPath = "/Images/Products/"+product.getId()+"/";
+		String path = System.getProperty("user.dir") + subPath;
+		File dir = new File(path);
+		boolean status = dir.mkdir();
+		if(status) {
+			List<ProductImages> images = product.getProductImages();
+			for (ProductImages prodImage : images) {
+				String imageName = saveImage(subPath,product.getTitle(),prodImage.getPath());
+				prodImage.setProduct(product);
+				prodImage.setPath(imageName);
+				prodImagesRepo.save(prodImage);
+			}
+
 		}
 		return true;
 	}
@@ -258,5 +281,36 @@ public class ProductService {
 			return true;
 		}
 		return false;
+	}
+
+	private String saveImage(String subPath,String title, String image){
+		String path = System.getProperty("user.dir") + subPath;
+		String imageName = title + ".png";
+
+		File file = new File(path + imageName);
+		int count = 1;
+		while (file.exists()) {
+			imageName = title + "_" + count + ".png";
+			file = new File(path + imageName);
+			count++;
+		}
+
+		String base64 = image.split(",")[1];
+		byte[] data = Base64.decodeBase64(base64);
+
+		try {
+			FileOutputStream out = new FileOutputStream(new File(path + imageName));
+			out.write(data);
+			out.flush();
+			out.close();
+			return imageName;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			System.err.println(e.getMessage());
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println(e.getMessage());
+		}
+		return null;
 	}
 }

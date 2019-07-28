@@ -8,8 +8,10 @@ import com.apiit.stadia.ModelClasses.Product;
 import com.apiit.stadia.ModelClasses.ProductSizes;
 import com.apiit.stadia.ModelClasses.Sizes;
 
+import java.util.List;
+
 @Repository
 public interface ProductSizesRepository extends JpaRepository<ProductSizes, Long> {
 
-	public ProductSizes findByProductAndSizes(Product product, Sizes sizes);
+	ProductSizes findByProductAndSizes(Product product, Sizes sizes);
 }

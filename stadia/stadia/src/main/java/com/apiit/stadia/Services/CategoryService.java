@@ -106,8 +106,8 @@ public class CategoryService {
 		if (mainCategory != null) {
 			mainCategory = mainCatRepo.save(mainCategory);
 
-			List<MainSubCategory> mainSubCatList = mainSubCatRepo.findByMainCategoryAndSubCategory(mainCategory, subcat);
-			if(mainSubCatList.size()==0) {
+			MainSubCategory mainSubCatList = mainSubCatRepo.findByMainCategoryAndSubCategory(mainCategory, subcat);
+			if(mainSubCatList!=null) {
 				MainSubCategory mainSubCat = new MainSubCategory();
 				mainSubCat.setMainCategory(mainCategory);
 				mainSubCat.setSubCategory(subcat);
@@ -219,6 +219,18 @@ public class CategoryService {
 			return new ResponseEntity<>(modelToDTO.subCategoryToDTO(subCatOptinal.get()),HttpStatus.OK);
 		}
 		return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+	}
+
+	public List<SubCategoryDTO> getMainSubCategory(int id) {
+		List<SubCategoryDTO> subCatDTOList = new ArrayList<>();
+		Optional<MainCategory> mainCatOptional = mainCatRepo.findById(id);
+		if(mainCatOptional.isPresent()){
+			List<SubCategory> subcatList = mainCatOptional.get().getSubCategory();
+			for(SubCategory subCat : subcatList){
+				subCatDTOList.add(modelToDTO.subCategoryToDTO(subCat));
+			}
+		}
+		return subCatDTOList;
 	}
 
 	public SubCategory addSubCategory(SubCategory subCat,int mainCatId) {

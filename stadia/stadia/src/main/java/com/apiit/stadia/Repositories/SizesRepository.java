@@ -6,8 +6,10 @@ import org.springframework.stereotype.Repository;
 
 import com.apiit.stadia.ModelClasses.Sizes;
 
+import java.util.List;
+
 @Repository
 public interface SizesRepository extends JpaRepository<Sizes, Long> {
 
-	public Sizes findBySize(String size);
+	List<Sizes> findBySize(String size);
 }
