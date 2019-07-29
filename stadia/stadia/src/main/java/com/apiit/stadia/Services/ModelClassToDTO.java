@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -40,13 +42,43 @@ public class ModelClassToDTO {
 		productDTO.setPrice(product.getPrice());
 		productDTO.setCreatedDate(product.getCreatedDate());
 		productDTO.setModifyDate(product.getModifyDate());
+
+		List<ProductImages> prodImages = product.getProductImages();
+		List<ProductImagesDTO> prodImagesDTO = new ArrayList<>();
+		for(ProductImages prodImage : prodImages){
+			prodImagesDTO.add(productImagesToDTO(prodImage,product.getId()));
+		}
+		productDTO.setProductImages(prodImagesDTO);
+
+		List<ProductSizes> prodSizes = product.getProductSizes();
+		List<ProductSizesDTO> prodSizesDTO = new ArrayList<>();
+		for(ProductSizes prodSize : prodSizes){
+			prodSizesDTO.add(productSizesToDTO(prodSize));
+		}
+		productDTO.setProductSizes(prodSizesDTO);
 		return productDTO;
 	}
 	
-	public ProductImagesDTO productImagesToDTO(ProductImages prodImage) {
+	public ProductImagesDTO productImagesToDTO(ProductImages prodImage,long id) {
 		ProductImagesDTO prodImageDTO = new ProductImagesDTO();
 		prodImageDTO.setId(prodImage.getId());
-		prodImageDTO.setPath(prodImage.getPath());
+		String path = System.getProperty("user.dir")+"/Images/Products/"+id+"/"+prodImage.getPath();
+		File file = new File(path);
+		if(file.exists()) {
+			try {
+				FileInputStream in = new FileInputStream(file);
+				byte[] imageData = new byte[(int) file.length()];
+				in.read(imageData);
+				in.close();
+
+				String base64Image = Base64.getEncoder().encodeToString(imageData);
+				prodImageDTO.setPath("data:image/png;base64, "+base64Image);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		return prodImageDTO;
 	}
 	

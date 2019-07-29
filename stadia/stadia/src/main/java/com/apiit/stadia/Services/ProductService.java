@@ -115,24 +115,19 @@ public class ProductService {
 	}
 	
 	//Product
-	public List<ProductDTO> getProductsList(){
-		List<Product> products = productRepo.findAll();
+	public double getProductPages() {
+		return Math.ceil(Double.valueOf(productRepo.count())/PAGE_COUNT);
+	}
+
+	public List<ProductDTO> getProductsList(int pageNo){
 		List<ProductDTO> prodDTOList = new ArrayList<>();
-		for(Product prod : products) {
-			//Convert to product DTO class
-			ProductDTO prodDTO = modelToDTO.productToDTO(prod);
-			
-			//Convert product images to DTO class (Retrieve Only First Image)
-			List<ProductImages> productImages = prod.getProductImages();
-			List<ProductImagesDTO> prodImagesDTOList = new ArrayList<>();
-			for(ProductImages prodImage : productImages) {
-				ProductImagesDTO prodImageDTO = modelToDTO.productImagesToDTO(prodImage);
-				prodImagesDTOList.add(prodImageDTO);
-				break;
+		if(pageNo>=0) {
+			Pageable pages = PageRequest.of(pageNo, PAGE_COUNT);
+
+			Page<Product> prodList = productRepo.findAll(pages);
+			for(Product prod : prodList) {
+				prodDTOList.add(modelToDTO.productToDTO(prod));
 			}
-			prodDTO.setProductImages(prodImagesDTOList);
-			
-			prodDTOList.add(prodDTO);
 		}
 		return prodDTOList;
 	}
@@ -143,23 +138,23 @@ public class ProductService {
 			//Convert to DTO class
 			ProductDTO productDTO = modelToDTO.productToDTO(product.get());
 			
-			//Convert product images to DTO class
-			List<ProductImages> productImages = product.get().getProductImages();
-			List<ProductImagesDTO> prodImagesDTOList = new ArrayList<>();
-			for(ProductImages prodImage : productImages) {
-				ProductImagesDTO prodImageDTO = modelToDTO.productImagesToDTO(prodImage);
-				prodImagesDTOList.add(prodImageDTO);
-			}
-			productDTO.setProductImages(prodImagesDTOList);
-			
-			//Convert product sizes to DTO class
-			List<ProductSizes> productSizes = product.get().getProductSizes();
-			List<ProductSizesDTO> prodSizesDTOList = new ArrayList<>();
-			for(ProductSizes prodSize : productSizes) {
-				ProductSizesDTO prodSizeDTO = modelToDTO.productSizesToDTO(prodSize);
-				prodSizesDTOList.add(prodSizeDTO);
-			}
-			productDTO.setProductSizes(prodSizesDTOList);
+//			//Convert product images to DTO class
+//			List<ProductImages> productImages = product.get().getProductImages();
+//			List<ProductImagesDTO> prodImagesDTOList = new ArrayList<>();
+//			for(ProductImages prodImage : productImages) {
+//				ProductImagesDTO prodImageDTO = modelToDTO.productImagesToDTO(prodImage);
+//				prodImagesDTOList.add(prodImageDTO);
+//			}
+//			productDTO.setProductImages(prodImagesDTOList);
+//
+//			//Convert product sizes to DTO class
+//			List<ProductSizes> productSizes = product.get().getProductSizes();
+//			List<ProductSizesDTO> prodSizesDTOList = new ArrayList<>();
+//			for(ProductSizes prodSize : productSizes) {
+//				ProductSizesDTO prodSizeDTO = modelToDTO.productSizesToDTO(prodSize);
+//				prodSizesDTOList.add(prodSizeDTO);
+//			}
+//			productDTO.setProductSizes(prodSizesDTOList);
 			
 			return new ResponseEntity<>(productDTO,HttpStatus.OK);
 		}
@@ -209,14 +204,31 @@ public class ProductService {
 		return true;
 	}
 	
-	public boolean deleteProduct(long id) {
+	public ResponseEntity<Boolean> deleteProduct(long id) {
 		try {
-			productRepo.deleteById(id);
-			return true;
+			Optional<Product> productOptional = productRepo.findById(id);
+			if(productOptional.isPresent()){
+				Product prod = productOptional.get();
+
+				//Delete Images from Server
+				boolean status = deleteImageFolder("/Images/Products/"+prod.getId()+"/");
+				if(status){
+					productRepo.deleteById(id);
+					return new ResponseEntity<>(true,HttpStatus.OK);
+				}
+//				List<ProductImages> prodImages = prod.getProductImages();
+//				for(ProductImages image : prodImages){
+//					boolean status = deleteImage("/Images/Products/"+prod.getId()+"/"+image);
+//					if(!status){
+//						return new ResponseEntity<>(true,HttpStatus.OK);
+//					}
+//				}
+			}
+
 		}catch(EmptyResultDataAccessException erda_ex) {
 			
 		}
-		return false;
+		return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	public boolean updateProduct(Product newProduct,long id) {
@@ -312,5 +324,17 @@ public class ProductService {
 			System.err.println(e.getMessage());
 		}
 		return null;
+	}
+
+	public boolean deleteImageFolder(String folderPath){
+		String path = System.getProperty("user.dir") + folderPath;
+		File folder = new File(path);
+		String[]entries = folder.list();
+		for(String s: entries){
+			File currentFile = new File(folder.getPath(),s);
+			currentFile.delete();
+		}
+		boolean status = folder.delete();
+		return status;
 	}
 }

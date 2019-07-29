@@ -9,6 +9,8 @@ class ProductsApp extends Component{
     constructor(props){
         super(props);
         this.state={
+            pageNo:0,
+            noOfPages:0,
             tableData:[],
             addStatus:false,
             updateStatus:false,
@@ -16,9 +18,57 @@ class ProductsApp extends Component{
             deleteStatus:false,
             deleteId:0
         }
+
+        this.retrieveData = this.retrieveData.bind(this);
+        this.changePage = this.changePage.bind(this);
+        this.genPagesContent = this.genPagesContent.bind(this);
         this.modalClose = this.modalClose.bind(this);
         this.statusChange = this.statusChange.bind(this);
         this.addProd = this.addProd.bind(this);
+    }
+
+    componentDidMount(){
+        this.retrieveData(this.state.pageNo);
+    }
+
+    retrieveData(pageNo){
+        const that = this;
+        const count = axios.get("http://localhost:8080/Product/Pages")
+        .then(function(res){
+            if(res.data>0){
+                that.setState({
+                    noOfPages:res.data
+                })
+                return res.data;
+            }
+        })
+
+        count.then(data=>{
+            if(data>0){
+                axios.get("http://localhost:8080/Product/"+pageNo)
+                .then(function(res){
+                    console.log(res.data)
+                    that.setState({
+                        tableData:res.data,
+                        pageNo:pageNo
+                    })
+                    console.log("Product Data Received!");
+                }).catch(function(error){
+                    console.log("Product data error ",error);
+                })
+            }
+        })
+    }
+
+    changePage(pageNo){
+        this.setState({
+            tableData:[]
+        })
+        if(this.state.mainCat){
+            this.retrieveData(pageNo);
+        }else{
+            this.retrieveData(pageNo);
+        }
     }
 
     statusChange(status,value,id){
@@ -58,20 +108,80 @@ class ProductsApp extends Component{
 
     addProd(url,data,status){
         console.log("data ",data)
+        const that = this;
         if(status==="add"){
             axios.post(url,data)
             .then(function(res){
-                console.log("add success");
+                alert("Product Added Successfully!");
+                console.log("Product Added Successfully!");
+                that.setState({
+                    addStatus:false
+                })
+                that.retrieveData(that.state.pageNo);
+            })
+        }else if(status==="delete"){
+            axios.delete(url)
+            .then(function(res){
+                alert("Product Deleted Successfully!");
+                console.log("Product Deleted Successfully!");
+                that.setState({
+                    deleteStatus:false,
+                    deleteId:0,
+                    tableData:[]
+                })
+                that.retrieveData(that.state.pageNo);
             })
         }
     }
 
+    genPagesContent(){
+        let pagesContent=[];
+        if(this.state.noOfPages>10){
+            let maxNoOfPages = this.state.noOfPages-(this.state.pageNo+1);
+            if(maxNoOfPages>10){
+                maxNoOfPages = this.state.pageNo+10;
+                if(this.state.pageNo>0){
+                    pagesContent.push(<div className="paging-not-selected col-sm" key={this.state.pageNo-1} onClick={()=>this.changePage(this.state.pageNo-1)}>{this.state.pageNo}</div>);
+                    maxNoOfPages -= 1;
+                }
+                for (let i = this.state.pageNo; i <maxNoOfPages; ++i) {
+                    pagesContent.push(<div className={this.state.pageNo===i?"paging-selected col-sm":"paging-not-selected col-sm"} key={i} onClick={()=>this.changePage(i)}>{i+1}</div>);
+                }
+            }else if(maxNoOfPages===10){
+                maxNoOfPages = this.state.noOfPages;
+                for (let i = this.state.noOfPages-12; i <maxNoOfPages; ++i) {
+                    pagesContent.push(<div className={this.state.pageNo===i?"paging-selected col-sm":"paging-not-selected col-sm"} key={i} onClick={()=>this.changePage(i)}>{i+1}</div>);
+                }
+            }else{
+                
+                maxNoOfPages = this.state.noOfPages;
+                for (let i = maxNoOfPages-11; i <maxNoOfPages; ++i) {
+                    pagesContent.push(<div className={this.state.pageNo===i?"paging-selected col-sm":"paging-not-selected col-sm"} key={i} onClick={()=>this.changePage(i)}>{i+1}</div>);
+                }
+            }
+        }else{
+            for (let i = 0; i < this.state.noOfPages; ++i) {
+                pagesContent.push(<div className={this.state.pageNo===i?"paging-selected col-sm":"paging-not-selected col-sm"} key={i} onClick={()=>this.changePage(i)}>{i+1}</div>);
+            }
+        }
+        return pagesContent;
+    }
+
     render(){
+        const pagesContent = this.genPagesContent();
+
         return(
             <div className="card w-90 p-3 m-5">
                 {
                     this.state.addStatus?(
                         <PopupWindow windowStatus="add" modalClose={this.modalClose} addProd={this.addProd}/>
+                    ):(
+                        ""
+                    )
+                }
+                {
+                    this.state.deleteStatus?(
+                        <PopupWindow windowStatus="delete" modalClose={this.modalClose} id={this.state.deleteId} addProd={this.addProd}/>
                     ):(
                         ""
                     )
@@ -95,6 +205,8 @@ class ProductsApp extends Component{
                                     <th>Title</th>
                                     <th>Description</th>
                                     <th>Price</th>
+                                    <th>Sizes</th>
+                                    <th>Image</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -106,6 +218,30 @@ class ProductsApp extends Component{
                                                 <td>{data.id}</td>
                                                 <td>{data.title}</td>
                                                 <td>{data.description}</td>
+                                                <td>{data.price}</td>
+                                                <td>
+                                                    <div>
+                                                    {
+                                                        data.productSizes.length!==0?(
+                                                            data.productSizes.map((item,index)=>{
+                                                                return(
+                                                                    <div key={index}>
+                                                                        <div>Size - {item.sizes.size}</div>
+                                                                        <div>Available Qty - {item.quantity}</div>
+                                                                    </div>
+                                                                );
+                                                            })
+                                                        ):(<div>No Record!</div>)
+                                                    }
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    {
+                                                        data.productImages.length!==0?(
+                                                            <img src={data.productImages[0].path} alt={data.id} className="category-img"/>
+                                                        ):(<div>No Record!</div>)
+                                                    }
+                                                </td>
                                                 <td>
                                                     <button className="btn btn-sm btn-update w-50 my-1 mr-1" onClick={()=>this.statusChange("update",true,data.id)}>Update</button>
                                                     <button className="btn btn-sm btn-delete w-50 my-1 mr-1" onClick={()=>this.statusChange("delete",true,data.id)}>Delete</button>
@@ -117,7 +253,7 @@ class ProductsApp extends Component{
                             </tbody>
                         </table>
                     </div>
-                    {/* <div className="row">
+                    <div className="row">
                          <div className="row paging-container">
                              {
                                  pagesContent.map(item=>{
@@ -125,7 +261,7 @@ class ProductsApp extends Component{
                                  })
                              }
                         </div>
-                    </div> */}
+                    </div>
                 </div>
             </div>
         );
@@ -154,6 +290,11 @@ class PopupWindow extends Component{
                 selectedSizesQty:[],
                 windowStatus:this.props.windowStatus
             }
+        }else if(this.props.id!==undefined && this.props.windowStatus==="delete"){
+            this.state={
+                id:this.props.id,
+                windowStatus:this.props.windowStatus
+            }
         }
         this.inputChnage = this.inputChnage.bind(this);
         this.inputPrice = this.inputPrice.bind(this);
@@ -172,20 +313,22 @@ class PopupWindow extends Component{
     }
 
     componentDidMount(){
-        const that = this
-        axios.get("http://localhost:8080/MainCategory")
-        .then(function(res){
-            that.setState({
-                mainCat:res.data
+        if(this.state.windowStatus==="add" || this.state.windowStatus==="update"){
+            const that = this
+            axios.get("http://localhost:8080/MainCategory")
+            .then(function(res){
+                that.setState({
+                    mainCat:res.data
+                })
             })
-        })
 
-        axios.get("http://localhost:8080/Sizes/"+(-1))
-        .then(function(res){
-            that.setState({
-                sizes:res.data
+            axios.get("http://localhost:8080/Sizes/"+(-1))
+            .then(function(res){
+                that.setState({
+                    sizes:res.data
+                })
             })
-        })
+        }
     }
 
     inputPrice(event){
@@ -353,7 +496,7 @@ class PopupWindow extends Component{
                 description:this.state.desc
             }
         }else if(this.state.windowStatus==="delete"){
-            url =  "http://localhost:8080/DeleteSizes/"+this.state.id;
+            url =  "http://localhost:8080/DeleteProduct/"+this.state.id;
         }
         this.props.addProd(url,data,this.state.windowStatus);
     }
@@ -381,8 +524,11 @@ class PopupWindow extends Component{
         if(this.state.windowStatus==="add"){
             header = "Add Product";
             footer = "Add";
+        }else if(this.state.windowStatus==="delete"){
+            header = "Delete Product";
+            footer = "Delete";
         }
-        console.log("images ",this.state.images);
+        
         return(
             <div className="modal" onClick={this.props.modalClose}>
                 <div className="card modal-content  add-cat-popup">
@@ -496,7 +642,12 @@ class PopupWindow extends Component{
                         <button className="btn btn-success"  onClick={this.addProd}>
                             {footer}
                         </button>
-                        <button className="btn btn-danger" onClick={this.btnReset}>Reset</button>
+                        {
+                            this.state.windowStatus!=="delete"?(
+                                <button className="btn btn-danger" onClick={this.btnReset}>Reset</button>
+                            ):("")
+                        }
+                        
                     </div>
                 </div>
             </div>

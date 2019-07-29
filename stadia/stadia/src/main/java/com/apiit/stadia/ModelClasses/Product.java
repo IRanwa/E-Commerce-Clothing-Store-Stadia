@@ -22,14 +22,14 @@ public class Product implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
-	@OneToMany(mappedBy="product")
+	@OneToMany(mappedBy="product",cascade = CascadeType.REMOVE)
 	@Getter @Setter List<ProductSizes> productSizes;
 	
 	@ManyToOne
 	@JoinColumn(name="mainSubCatId",referencedColumnName="id")
 	@Getter @Setter MainSubCategory mainSubCategory;
 	
-	@OneToMany(mappedBy="product")
+	@OneToMany(mappedBy="product",cascade = CascadeType.REMOVE)
 	@Getter @Setter List<ProductImages> productImages;
 	
 	@Id

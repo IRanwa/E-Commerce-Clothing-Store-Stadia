@@ -50,12 +50,17 @@ public class ProductRestService {
 	}
 
 	//Products
-	@GetMapping("/Product")
-	public List<ProductDTO> getProductList(){
-		return prodService.getProductsList();
+	@GetMapping("/Product/{pageNo}")
+	public List<ProductDTO> getProductList(@PathVariable int pageNo){
+		return prodService.getProductsList(pageNo);
 	}
-	
-	@GetMapping("/Product/{id}")
+
+	@GetMapping("/Product/Pages")
+	public double getProductPageCount() {
+		return prodService.getProductPages();
+	}
+
+	@GetMapping("/GetProduct/{id}")
 	public ResponseEntity<Object> getProduct(@PathVariable long id){
 		return prodService.getProduct(id);
 	}
@@ -65,9 +70,9 @@ public class ProductRestService {
 		return "{status:"+prodService.addProduct(product)+"}";
 	}
 	
-	@DeleteMapping("/Product/{id}")
-	public String deleteProduct(@PathVariable long id) {
-		return "{status:"+prodService.deleteProduct(id)+"}";
+	@DeleteMapping("/DeleteProduct/{id}")
+	public ResponseEntity<Boolean> deleteProduct(@PathVariable long id) {
+		return prodService.deleteProduct(id);
 	}
 	
 	@PutMapping("/Product/{id}")
