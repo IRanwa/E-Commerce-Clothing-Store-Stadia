@@ -8,4 +8,6 @@ public class ProductImagesDTO {
 	@Getter @Setter long id;
 	
 	@Getter @Setter String path;
+
+	@Getter @Setter String filename;
 }

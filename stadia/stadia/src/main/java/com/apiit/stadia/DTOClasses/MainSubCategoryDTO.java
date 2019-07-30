@@ -15,11 +15,7 @@ public class MainSubCategoryDTO {
 	
 	@Getter @Setter long id;
 	
-	@Getter @Setter MainCategory mainCat;
+	@Getter @Setter MainCategoryDTO mainCategory;
 	
-	@Getter @Setter SubCategory subCat;
-	
-	@Getter @Setter int mainCatId;
-	
-	@Getter @Setter int subCatId;
+	@Getter @Setter SubCategoryDTO subCategory;
 }

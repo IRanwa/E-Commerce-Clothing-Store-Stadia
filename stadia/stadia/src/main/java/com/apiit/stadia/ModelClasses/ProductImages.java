@@ -15,7 +15,7 @@ import lombok.Setter;
 @Entity
 public class ProductImages {
 	
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name="prodId",referencedColumnName="id")
 	@Getter @Setter Product product;
 	

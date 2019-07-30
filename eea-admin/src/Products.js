@@ -131,6 +131,19 @@ class ProductsApp extends Component{
                 })
                 that.retrieveData(that.state.pageNo);
             })
+        }else if(status==="update"){
+            axios.put(url,data)
+            .then(function(res){
+                console.log("update ",res.data)
+                alert("Product Updated Successfully!");
+                console.log("Product Updated Successfully!");
+                that.setState({
+                    updateStatus:false,
+                    updateId:0,
+                    tableData:[]
+                })
+                that.retrieveData(that.state.pageNo);
+            })
         }
     }
 
@@ -182,6 +195,13 @@ class ProductsApp extends Component{
                 {
                     this.state.deleteStatus?(
                         <PopupWindow windowStatus="delete" modalClose={this.modalClose} id={this.state.deleteId} addProd={this.addProd}/>
+                    ):(
+                        ""
+                    )
+                }
+                {
+                    this.state.updateStatus?(
+                        <PopupWindow windowStatus="update" modalClose={this.modalClose} id={this.state.updateId} addProd={this.addProd}/>
                     ):(
                         ""
                     )
@@ -280,7 +300,7 @@ class PopupWindow extends Component{
                 mainSelectedCat:0,
                 subCat:[],
                 subSelectedCat:0,
-                mainSubCat:0,
+                //mainSubCat:0,
                 images:[],
                 imagesName:[],
                 sizes:[],
@@ -294,6 +314,25 @@ class PopupWindow extends Component{
             this.state={
                 id:this.props.id,
                 windowStatus:this.props.windowStatus
+            }
+        }else if(this.props.id!==undefined && this.props.windowStatus==="update"){
+            this.state={
+                id:this.props.id,
+                windowStatus:this.props.windowStatus,
+                title:"",
+                desc:"",
+                price:"",
+                mainCat:[],
+                mainSelectedCat:0,
+                subCat:[],
+                subSelectedCat:0,
+                images:[],
+                imagesName:[],
+                sizes:[],
+                selectedSize:"0",
+                tempSizeQty:"0",
+                selectedSizes:[],
+                selectedSizesQty:[]
             }
         }
         this.inputChnage = this.inputChnage.bind(this);
@@ -328,6 +367,54 @@ class PopupWindow extends Component{
                     sizes:res.data
                 })
             })
+
+            if(this.state.windowStatus==="update"){
+                axios.get("http://localhost:8080/GetProduct/"+this.state.id)
+                .then(function(res){
+                    const data = res.data;
+                    console.log("update ",res.data)
+
+                    that.setState(state=>{
+                        const images = data["productImages"];
+                        let imagesList = state.images;
+                        let imagesNameList = state.imagesName;
+                        for(var i=0;i<images.length;i++){
+                            imagesList.push(images[i]["path"]);
+                            imagesNameList.push(images[i]["filename"]);
+                        }
+
+                        const sizes = data["productSizes"];
+                        let sizesList = state.selectedSizes;
+                        let sizesQtyList = state.selectedSizesQty;
+                        for(i=0;i<sizes.length;i++){
+                            sizesList.push(sizes[i]["sizes"]["size"]);
+                            sizesQtyList.push(sizes[i]["quantity"]);
+                        }
+
+                        const mainCatId = data["mainSubCategory"]["mainCategory"]["id"];
+                        axios.get("http://localhost:8080/MainSubCategory/"+mainCatId)
+                        .then(function(res){
+                            that.setState({
+                                subCat:res.data
+                            })
+                        })
+                        
+
+                        return{
+                            imagesList,
+                            imagesNameList,
+                            sizesList,
+                            sizesQtyList,
+                            title: data["title"],
+                            desc: data["description"],
+                            price: data["price"],
+                            mainSelectedCat:mainCatId,
+                            subSelectedCat:data["mainSubCategory"]["subCategory"]["id"],
+                        }
+                    });
+                    
+                })
+            }
         }
     }
 
@@ -352,7 +439,7 @@ class PopupWindow extends Component{
             let imagesNameList = state.imagesName;
             for(var file in uploadFiles){
                 imagesList.push(uploadFiles[file]);
-                imagesNameList.push(files.fileList[file].name);
+                imagesNameList.push(file.name);
             }
 
             return{
@@ -383,15 +470,17 @@ class PopupWindow extends Component{
                 })
                 break;
             case "mainSelectedCat":
-                console.log(value)
+                
                 this.setState({
                     mainSelectedCat:value
                 })
                 if(value!==""){
                     axios.get("http://localhost:8080/MainSubCategory/"+value)
                     .then(function(res){
+                        console.log("Sub cat ",res.data)
                         that.setState({
-                            subCat:res.data
+                            subCat:res.data,
+                            subSelectedCat:0
                         })
                     })
                 }
@@ -461,8 +550,12 @@ class PopupWindow extends Component{
     addProd(){
         let url;
         let data;
-        if(this.state.windowStatus==="add"){
-            url =  "http://localhost:8080/AddProduct";
+        if(this.state.windowStatus==="add" || this.state.windowStatus==="update"){
+            if(this.state.windowStatus==="add"){
+                url =  "http://localhost:8080/AddProduct";
+            }else{
+                url =  "http://localhost:8080/UpdateProduct/"+this.state.id;
+            }
 
             let prodImages=[];
             let prodSizes=[];
@@ -489,12 +582,6 @@ class PopupWindow extends Component{
                 productSizes:prodSizes
                 
             }
-        }else if(this.state.windowStatus==="update"){
-            url =  "http://localhost:8080/UpdateSizes/"+this.state.id;
-            data = {
-                size:this.state.size,
-                description:this.state.desc
-            }
         }else if(this.state.windowStatus==="delete"){
             url =  "http://localhost:8080/DeleteProduct/"+this.state.id;
         }
@@ -508,7 +595,7 @@ class PopupWindow extends Component{
             price:"",
             mainSelectedCat:0,
             subSelectedCat:0,
-            mainSubCat:0,
+            //mainSubCat:0,
             images:[],
             imagesName:[],
             selectedSize:"0",
@@ -527,8 +614,10 @@ class PopupWindow extends Component{
         }else if(this.state.windowStatus==="delete"){
             header = "Delete Product";
             footer = "Delete";
+        }else if(this.state.windowStatus==="update"){
+            header = "Update Product";
+            footer = "Update";
         }
-        
         return(
             <div className="modal" onClick={this.props.modalClose}>
                 <div className="card modal-content  add-cat-popup">
@@ -589,7 +678,7 @@ class PopupWindow extends Component{
                                             {
                                                 this.state.images.map((item,index)=>{
                                                     return(
-                                                        <div key={item} className="column text-center m-1">
+                                                        <div key={index} className="column text-center m-1">
                                                             <img  src={item} alt={this.state.imagesName[index]} className="category-img"/><br></br>
                                                             <button className="btn-sm btn-danger my-1" onClick={()=>this.removeImage(index)}>Remove</button>
                                                         </div>
@@ -620,7 +709,7 @@ class PopupWindow extends Component{
                                                 this.state.selectedSizes!==undefined && this.state.selectedSizes.length!==0?(
                                                     this.state.selectedSizes.map((item,index)=>{
                                                         return(
-                                                            <li key={item} >
+                                                            <li key={index} >
                                                                 <div>Size : {item}</div>
                                                                 <div>Qty : {this.state.selectedSizesQty[index]}</div>
                                                                 <button className="btn-sm btn-danger" onClick={()=>this.removeSize(index)}>Remove</button>

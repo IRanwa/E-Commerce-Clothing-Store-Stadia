@@ -52,6 +52,11 @@ public class CategoryRestService {
 		return catService.getMainCatPages();
 	}
 
+	@GetMapping("/GetMainCatByType/{type}")
+	public List<MainCategoryDTO> GetMainCatByType(@PathVariable String type){
+		return catService.getMainCatByType(type);
+	}
+
 	@GetMapping("/GetMainCategory/{id}")
 	public ResponseEntity<MainCategoryDTO> GetMainCategory(@PathVariable int id){
 		return catService.getMainCategory(id);

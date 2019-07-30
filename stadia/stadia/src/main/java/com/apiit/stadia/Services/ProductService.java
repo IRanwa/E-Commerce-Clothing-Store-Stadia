@@ -45,6 +45,8 @@ public class ProductService {
 	//Model Class to DTO
 	@Autowired
 	ModelClassToDTO modelToDTO;
+	@Autowired
+	DTOToModelClass dtoToModel;
 
 	private final int PAGE_COUNT = 1;
 	
@@ -231,65 +233,93 @@ public class ProductService {
 		return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
-	public boolean updateProduct(Product newProduct,long id) {
-		Optional<Product> product = productRepo.findById(id);
-		if(product.isPresent()) {
+	public boolean updateProduct(ProductDTO newProductDTO,long id) {
+		Optional<Product> productOptional = productRepo.findById(id);
+		if(productOptional.isPresent()) {
+			Product product = productOptional.get();
 			//Set Product Main Details
-			newProduct.setId(id);
-			newProduct.setCreatedDate(product.get().getCreatedDate());
-			newProduct.setModifyDate(new Date());
+			product.setModifyDate(new Date());
+
+			if(!newProductDTO.getTitle().equals(product.getTitle())){
+				product.setTitle(newProductDTO.getTitle());
+			}
+			if(!newProductDTO.getDescription().equals(product.getDescription())){
+				product.setDescription(newProductDTO.getDescription());
+			}
+			if(newProductDTO.getPrice()!=product.getPrice()){
+				product.setPrice(newProductDTO.getPrice());
+			}
 			
 			//Update Product Main Sub Category Details
-			if(newProduct.getMainSubCategory()==null) {
-				newProduct.setMainSubCategory(product.get().getMainSubCategory());
-			}else {
-				Optional<MainSubCategory> mainSubCat = mainSubCatRepo.findById(newProduct.getMainSubCategory().getId());
-				if(mainSubCat.isPresent()) {
-					newProduct.setMainSubCategory(mainSubCat.get());
+			MainSubCategory currentMainSubCat = product.getMainSubCategory();
+			MainSubCategoryDTO newMainSubCat = newProductDTO.getMainSubCategory();
+			if(currentMainSubCat.getMainCategory().getId()!=newMainSubCat.getMainCategory().getId() ||
+			currentMainSubCat.getSubCategory().getId()!=newMainSubCat.getSubCategory().getId()){
+				Optional<MainCategory> mainCatOptional = mainCatRepo.findById(newMainSubCat.getMainCategory().getId());
+				Optional<SubCategory> subCatOptional = subCatRepo.findById(newMainSubCat.getSubCategory().getId());
+
+				if(mainCatOptional.isPresent() && subCatOptional.isPresent()){
+					MainSubCategory mainSubCat = mainSubCatRepo.findByMainCategoryAndSubCategory(mainCatOptional.get(), subCatOptional.get());
+					product.setMainSubCategory(mainSubCat);
 				}
 			}
-			
-			productRepo.save(newProduct);
-			product = productRepo.findById(id);
+
+			//Save Product
+			product = productRepo.save(product);
 			
 			//Update Product Images
-			if(newProduct.getProductImages()!=null && product.isPresent()) {
-				List<ProductImages> newProductImages = newProduct.getProductImages();
-				for(ProductImages newProdImage : newProductImages) {
-					ProductImages tempProdImage = prodImagesRepo.findByProductAndPath(product.get(), newProdImage.getPath());
-					
-					if(tempProdImage==null) {
-						newProdImage.setProduct(product.get());
-						prodImagesRepo.save(newProdImage);
+			List<ProductImagesDTO> newProductImages = newProductDTO.getProductImages();
+
+			boolean deleted = deleteImageFolder("/Images/Products/" + product.getId() + "/");
+			if(deleted){
+				for(ProductImages prodImage : product.getProductImages()){
+					prodImagesRepo.delete(prodImage);
+				}
+				String subPath = "/Images/Products/"+product.getId()+"/";
+				String path = System.getProperty("user.dir") + subPath;
+				File dir = new File(path);
+				boolean status = dir.mkdir();
+				if(status) {
+					for (ProductImagesDTO newImage : newProductImages) {
+						String savedPath = saveImage("/Images/Products/" + product.getId() + "/", product.getTitle(), newImage.getPath());
+						ProductImages prodImage = new ProductImages();
+						prodImage.setPath(savedPath);
+						prodImage.setProduct(product);
+						prodImagesRepo.save(prodImage);
 					}
 				}
 			}
-			
-			product = productRepo.findById(id);
+
 			//Update Product Sizes
-			if(newProduct.getProductSizes()!=null && product.isPresent()) {
-				System.err.println(product.get());
-				List<ProductSizes> newProductSizes= newProduct.getProductSizes();
-				for(ProductSizes newProdSize : newProductSizes) {
-					Optional<Sizes> size = sizesRepo.findById(newProdSize.getSizes().getId());
-					if(size.isPresent()) {
-						ProductSizes tempProdSize = prodSizesRepo.findByProductAndSizes(product.get(), size.get());
-						System.err.println(tempProdSize);
-						if(tempProdSize==null) {
-							newProdSize.setProduct(product.get());
-							newProdSize.setSizes(size.get());
-							prodSizesRepo.save(newProdSize);
-						}else {
-							if(tempProdSize.getQuantity()!=newProdSize.getQuantity()) {
-								tempProdSize.setQuantity(newProdSize.getQuantity());
-								prodSizesRepo.save(tempProdSize);
-							}
-						}
+			List<ProductSizesDTO> newProductSizes = newProductDTO.getProductSizes();
+			for(ProductSizesDTO newProdSize : newProductSizes) {
+				List<Sizes> sizes = sizesRepo.findBySize(newProdSize.getSizes().getSize());
+				if(sizes.size()>0){
+					ProductSizes prodSizes = prodSizesRepo.findByProductAndSizes(product, sizes.get(0));
+					if(prodSizes==null){
+						prodSizes = new ProductSizes();
+						prodSizes.setSizes(sizes.get(0));
+						prodSizes.setProduct(product);
+						prodSizes.setQuantity(newProdSize.getQuantity());
+					}else{
+						prodSizes.setQuantity(newProdSize.getQuantity());
 					}
+					prodSizesRepo.save(prodSizes);
 				}
 			}
-			
-			
+
+			List<ProductSizes> currentProdSizes = product.getProductSizes();
+			for(ProductSizes prodSize: currentProdSizes){
+				boolean status = false;
+				for(ProductSizesDTO newProdSize : newProductSizes) {
+					if(prodSize.getSizes().getSize().equals(newProdSize.getSizes().getSize())){
+						status = true;
+					}
+				}
+				if(!status){
+					prodSizesRepo.delete(prodSize);
+				}
+			}
 			return true;
 		}
 		return false;
@@ -329,12 +359,18 @@ public class ProductService {
 	public boolean deleteImageFolder(String folderPath){
 		String path = System.getProperty("user.dir") + folderPath;
 		File folder = new File(path);
-		String[]entries = folder.list();
-		for(String s: entries){
-			File currentFile = new File(folder.getPath(),s);
-			currentFile.delete();
+		if(folder.exists()) {
+			String[] entries = folder.list();
+			if (entries != null) {
+				for (String s : entries) {
+					File currentFile = new File(folder.getPath(), s);
+					currentFile.delete();
+				}
+			}
+			boolean status = folder.delete();
+			return status;
 		}
-		boolean status = folder.delete();
-		return status;
+		return true;
+
 	}
 }

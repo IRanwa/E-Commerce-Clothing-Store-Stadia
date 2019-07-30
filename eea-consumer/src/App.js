@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import './images.css';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import {Register,SignIn} from './RegSignIn';
 import ProductList from './ProductList';
@@ -26,7 +27,7 @@ class Index extends Component{
   render(){
     return(
       <div>
-      <NavBar />
+        <NavBar />
     </div>
     );
   }
@@ -35,113 +36,116 @@ class Index extends Component{
 class NavBar extends Component{
   constructor(props){
     super(props);
-    this.state = {
-      login:false,
-      menSelected:true,
-      selectedMainCat:0,
-      selectedSubCat:1,
-      mainCatList:[]
+    this.state={
+      showNav:false,
+      mouseMove:false,
+      mainCat:[],
+      subCatView:true,
     }
-    this.handleLoginBtnClick = this.handleLoginBtnClick.bind(this);
-    this.genderSelectBtnClick = this.genderSelectBtnClick.bind(this);
-    this.getCategories = this.getCategories.bind(this);
-    this.setMainCat = this.setMainCat.bind(this);
+    this.toggleClick = this.toggleClick.bind(this);
+    this.getMainCat = this.getMainCat.bind(this);
   }
 
-  componentDidMount(){
-    let gender;
-    if(this.state.menSelected){
-      gender = "Men";
-    }else{
-      gender = "Women";
-    }
-    this.getCategories(gender);
+  toggleClick(){
+    this.setState({
+      showNav:!this.state.showNav
+    })
   }
 
-  setMainCat(mainCat){
-    console.log("updated child",mainCat);
-  }
-
-  genderSelectBtnClick(type){
-    if(type==="Men"){
-      this.setState({
-        menSelected:true
-      });
-    }else{
-      this.setState({
-        menSelected:false
-      });
-    }
-    this.getCategories(type);
-    
-  }
-
-  getCategories(gender){
+  getMainCat(type){
     const that = this;
-    axios.get("http://localhost:8080/MainCategory/"+gender)
-    .then(function(res){
-        let categoryList = [];
-        categoryList = res.data.map(mainCat=>{
-          const category = {
-            id:mainCat["id"],
-            title:mainCat["mainCatTitle"]
-          }
-         return  category;
-        });
-        //that.state.mainCatList.push(categoryList);
+    if(!this.state.mouseMove){
+      this.setState({
+        mouseMove:true
+      })
+      axios.get("http://localhost:8080/GetMainCatByType/"+type)
+      .then(function(res){
+        //console.log(res.data)
         that.setState({
-          mainCatList:categoryList
-        })
-    });
-  }
-
-  handleLoginBtnClick(){
-    this.setState({login:!this.state.login});
+          mainCat:res.data,
+          mouseMove:false
+        });
+      })
+    }
   }
 
   render(){
     return(
       <div>
-        <nav className="main_color navbar_background navbar">
-          <div className="mr-auto">
-            <div className="navbar_title button_hover">
-              <Link className="text-white"  to="/">{sitename}</Link>
-            </div>
-            <div className={this.state.menSelected?"navbar_categories button_hover navbar_category_active ":"navbar_categories button_hover"}>
-              <Link  onClick={()=>this.genderSelectBtnClick("Men")} to="#">Men</Link>
-            </div>
-            <div className={this.state.menSelected?"navbar_categories button_hover ":"navbar_categories button_hover navbar_category_active"}>
-              <Link onClick={()=>this.genderSelectBtnClick("Women")} to="#">Women</Link>
-            </div>
-          </div>
-          <div className="form-inline">
-            <input className="form-control mr-sm-2" id="search_bar" type="search" placeholder="Search for items" aria-label="Search"></input>
-            <button className="btn my-2 my-sm-0 button_hover" type="submit">
-              <span className="navbar-toggler-icon search_icon"></span>
-            </button>
-          </div>
-          <div className="ml-auto" >
-            <button className="btn my-2 my-sm-0 button_hover mr-auto" type="submit">
-                <span className="navbar-toggler-icon cart_icon"></span>
-            </button>
-            <button id="profileId" className="btn my-2 my-sm-0 button_hover mx-4" type="submit" onClick={this.handleLoginBtnClick}>
-                <span className="navbar-toggler-icon account_icon"></span>
-            </button>
-            <div className="popup_container main_color card" style={{display:this.state.login?"block":"none"}}>
-              <p className="font_Gabriola h5 font_weight_bold">Email</p>
-              <input className="form-control font_Gabriola popup_input_text" type="email" placeholder="Email" aria-label="Email"></input>
-              <p className="font_Gabriola h5 font_weight_bold">Password</p>
-              <input className="form-control font_Gabriola popup_input_text" type="password" placeholder="Password" aria-label="Password"></input>
-              <br/>
-              <Link to="/register">
-                <input className="btn btn-lg bg-white popup-button font_AgencyFB w-30" type="button" value="Register"></input>
-              </Link>
-              <input className="btn btn-lg bg-white popup-button font_AgencyFB w-30 mr-auto" type="submit" value="Sign In"></input>
+        <nav className="navbar navbar-expand-lg bg-light">
+          <a className="navbar-brand" href="/">Stadia</a>
+          
+          <button className="navbar-toggler" type="button" onClick={this.toggleClick} aria-controls="navbarNavAltMarkup" aria-expanded={this.state.showNav}>
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" style={{display:this.state.showNav?("block"):("")}}  id="navbarNavAltMarkup">
+            
+            <div className="navbar-nav w-100">
+              <div className="navbar-nav mr-auto">
+
+              <div className="dropdown dropdown-categories">
+                  <a className="nav-item nav-link" href="/" onMouseMoveCapture={()=>this.getMainCat("M")}>Men</a>
+                  <div className="dropdown-menu dropdown-menu-lg ">
+                     <div className="row d-flex">
+                      <div className="col-lg-4 col-sm-4"> 
+                        {
+                          this.state.mainCat.map((item,index)=>{
+                            return(
+                              <div key={index}>
+                                <a className="dropdown-item" href="/"><h6 className="dropdown-header">{item.mainCatTitle} </h6></a> 
+                                <ul className="mt-10">
+                                  {
+                                    item.subCategoryDTO.map((subItem,index)=>{
+                                      return(
+                                        <li key={index}> <a className="dropdown-item" href="/templates/angular">{subItem.subCatTitle}</a></li> 
+                                      )
+                                    })
+                                  }
+                                </ul>
+                              </div>
+                            )
+                          })
+                        }
+                      </div>
+                    </div> 
+                  </div>
+                </div>
+
+                <div className="dropdown dropdown-categories">
+                  <a className="nav-item nav-link" href="/" onMouseMoveCapture={()=>this.getMainCat("F")}>Women</a>
+                  <div className="dropdown-menu dropdown-menu-lg ">
+                     <div className="row d-flex">
+                      <div className="col-lg-4 col-sm-4"> 
+                        {
+                          this.state.mainCat.map((item,index)=>{
+                            return(
+                              <div key={index}>
+                                <a className="dropdown-item" href="/"><h6 className="dropdown-header">{item.mainCatTitle} </h6></a> 
+                                <ul className="mt-10">
+                                  {
+                                    item.subCategoryDTO.map((subItem,index)=>{
+                                      return(
+                                        <li key={index}> <a className="dropdown-item" href="/templates/angular">{subItem.subCatTitle}</a></li> 
+                                      )
+                                    })
+                                  }
+                                </ul>
+                              </div>
+                            )
+                          })
+                        }
+                      </div>
+                    </div> 
+                  </div>
+                </div>
+
+
+                <a className="nav-item nav-link nav-sub" href="/">Orders</a>
+              </div>
+              <a className="nav-item nav-link mr-3" href="/">Log out</a>
             </div>
           </div>
         </nav>
-        <MainCategories mainCatList={this.state.mainCatList} setMainCatMethod={this.setMainCat}/>
-        <ProductList mainCat={this.state.selectedMainCat} subCat={this.state.selectedSubCat}/>
       </div>
     );
   }

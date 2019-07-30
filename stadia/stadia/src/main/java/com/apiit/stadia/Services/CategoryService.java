@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.apiit.stadia.EnumClasses.Gender;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -76,7 +77,32 @@ public class CategoryService {
 		}
 		return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
 	}
-	
+
+	public List<MainCategoryDTO> getMainCatByType(String type) {
+		List<MainCategory> mainCatList = null;
+		if(type.equalsIgnoreCase("m")){
+			mainCatList = mainCatRepo.findByType(Gender.M);
+		}else if(type.equalsIgnoreCase("f")){
+			mainCatList = mainCatRepo.findByType(Gender.F);
+		}
+
+		if(mainCatList!=null){
+			List<MainCategoryDTO> mainCatDTOList = new ArrayList<>();
+			for(MainCategory mainCat : mainCatList){
+				List<SubCategory> subCatList = mainCat.getSubCategory();
+				List<SubCategoryDTO> subCatDTOList = new ArrayList<>();
+				for(SubCategory subCat : subCatList){
+					subCatDTOList.add(modelToDTO.subCategoryToDTO(subCat));
+				}
+				MainCategoryDTO mainCatDTO = modelToDTO.mainCategoryToDTO(mainCat);
+				mainCatDTO.setSubCategoryDTO(subCatDTOList);
+				mainCatDTOList.add(mainCatDTO);
+			}
+			return mainCatDTOList;
+		}
+		return null;
+	}
+
 	public MainCategoryDTO addMainCategory(MainCategory mainCategory) {
 		Optional<MainCategory> mainCatOptional = mainCatRepo.findById(mainCategory.getId());
 		SubCategory subcat = null;
@@ -107,7 +133,7 @@ public class CategoryService {
 			mainCategory = mainCatRepo.save(mainCategory);
 
 			MainSubCategory mainSubCatList = mainSubCatRepo.findByMainCategoryAndSubCategory(mainCategory, subcat);
-			if(mainSubCatList!=null) {
+			if(mainSubCatList==null) {
 				MainSubCategory mainSubCat = new MainSubCategory();
 				mainSubCat.setMainCategory(mainCategory);
 				mainSubCat.setSubCategory(subcat);
@@ -362,4 +388,6 @@ public class CategoryService {
 			return true;
 		}
 	}
+
+
 }

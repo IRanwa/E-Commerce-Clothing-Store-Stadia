@@ -75,9 +75,9 @@ public class ProductRestService {
 		return prodService.deleteProduct(id);
 	}
 	
-	@PutMapping("/Product/{id}")
-	public String updateProduct(Product product, @PathVariable long id) {
-		return "{Status:"+prodService.updateProduct(product, id)+"}";
+	@PutMapping("/UpdateProduct/{id}")
+	public boolean updateProduct(@RequestBody ProductDTO product, @PathVariable long id) {
+		return prodService.updateProduct(product, id);
 	}
 	
 	//Product Size

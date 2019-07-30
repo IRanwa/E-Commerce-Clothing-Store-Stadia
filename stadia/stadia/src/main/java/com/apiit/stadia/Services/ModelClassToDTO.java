@@ -8,28 +8,9 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+import com.apiit.stadia.DTOClasses.*;
+import com.apiit.stadia.ModelClasses.*;
 import org.springframework.stereotype.Service;
-
-import com.apiit.stadia.DTOClasses.MainCategoryDTO;
-import com.apiit.stadia.DTOClasses.OrderProductsDTO;
-import com.apiit.stadia.DTOClasses.OrdersDTO;
-import com.apiit.stadia.DTOClasses.ProductDTO;
-import com.apiit.stadia.DTOClasses.ProductImagesDTO;
-import com.apiit.stadia.DTOClasses.ProductSizesDTO;
-import com.apiit.stadia.DTOClasses.RatingDTO;
-import com.apiit.stadia.DTOClasses.SizesDTO;
-import com.apiit.stadia.DTOClasses.SubCategoryDTO;
-import com.apiit.stadia.DTOClasses.UserDTO;
-import com.apiit.stadia.ModelClasses.MainCategory;
-import com.apiit.stadia.ModelClasses.OrderProducts;
-import com.apiit.stadia.ModelClasses.Orders;
-import com.apiit.stadia.ModelClasses.Product;
-import com.apiit.stadia.ModelClasses.ProductImages;
-import com.apiit.stadia.ModelClasses.ProductSizes;
-import com.apiit.stadia.ModelClasses.Rating;
-import com.apiit.stadia.ModelClasses.Sizes;
-import com.apiit.stadia.ModelClasses.SubCategory;
-import com.apiit.stadia.ModelClasses.User;
 
 @Service
 public class ModelClassToDTO {
@@ -56,12 +37,16 @@ public class ModelClassToDTO {
 			prodSizesDTO.add(productSizesToDTO(prodSize));
 		}
 		productDTO.setProductSizes(prodSizesDTO);
+
+		MainSubCategoryDTO mainSubCatDTO = mainSubCategoryToDTO(product.getMainSubCategory());
+		productDTO.setMainSubCategory(mainSubCatDTO);
 		return productDTO;
 	}
 	
 	public ProductImagesDTO productImagesToDTO(ProductImages prodImage,long id) {
 		ProductImagesDTO prodImageDTO = new ProductImagesDTO();
 		prodImageDTO.setId(prodImage.getId());
+		prodImageDTO.setFilename(prodImage.getPath());
 		String path = System.getProperty("user.dir")+"/Images/Products/"+id+"/"+prodImage.getPath();
 		File file = new File(path);
 		if(file.exists()) {
@@ -170,5 +155,14 @@ public class ModelClassToDTO {
 			
 		}
 		return subCatDTO;
+	}
+
+	public MainSubCategoryDTO mainSubCategoryToDTO(MainSubCategory mainSubCategory) {
+		MainSubCategoryDTO mainSubCatDTO = new MainSubCategoryDTO();
+		mainSubCatDTO.setId(mainSubCategory.getId());
+
+		mainSubCatDTO.setSubCategory(subCategoryToDTO(mainSubCategory.getSubCategory()));
+		mainSubCatDTO.setMainCategory(mainCategoryToDTO(mainSubCategory.getMainCategory()));
+		return mainSubCatDTO;
 	}
 }
