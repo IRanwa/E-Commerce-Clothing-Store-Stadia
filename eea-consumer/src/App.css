@@ -56,7 +56,16 @@ input[type='email'], input[type='password'] {
 .nav-item{
   font-size: 16px;
   padding:14.5px;
-  margin-left:10px
+  margin-left:10px;
+  cursor: pointer;
+}
+
+.dropdown-item{
+  cursor: pointer;
+}
+
+.dropdown-item:active{
+  background-color: #f8f9fa
 }
 
 .nav-item:hover{
@@ -317,6 +326,80 @@ input[type='email'], input[type='password'] {
 
 .nav-item:hover{
   color:black
+}
+
+.product-container{
+  width:13.5em;
+  margin:10px 20px;
+  padding:5px;
+}
+
+.product-img{
+  height:200px;
+  width:100%;
+  cursor: pointer;
+}
+
+.product-img-details{
+  height:400px;
+  width:100%;
+  
+}
+
+.slide-container-details{
+  width:40%;
+  margin:20px 30px;
+}
+
+.details-container{
+  margin:10px 10%;
+  width:80%;
+}
+
+.product-price{
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+  font-size:20px;
+}
+
+.product-title{
+  color:grey;
+  font-family: 'Times New Roman', Times, serif;
+  font-size:16px;
+  margin:0px;
+}
+
+.product-title-details{
+  font-family: 'Times New Roman', Times, serif;
+  font-size:16px;
+  margin:0px;
+}
+
+.set-cursor{
+  cursor: pointer;
+}
+
+.vertical-line{
+  border-left:1px solid silver;
+}
+
+.out-of-stock{
+  color:red;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 14px;
+  margin:5px 0px;
+  font-weight: bold;
+}
+
+.product-desc{
+  color:grey;
+  font-family: 'Times New Roman', Times, serif;
+  font-size:14px;
+  margin:5px 0px;
+}
+
+.product-sizes{
+  font-family: 'Times New Roman', Times, serif;
 }
 
 @media screen and (max-height:500px){

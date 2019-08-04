@@ -33,7 +33,7 @@ class ProductsApp extends Component{
 
     retrieveData(pageNo){
         const that = this;
-        const count = axios.get("http://localhost:8080/Product/Pages")
+        const count = axios.get("http://localhost:8080/Product/Pages",{})
         .then(function(res){
             if(res.data>0){
                 that.setState({
@@ -45,7 +45,7 @@ class ProductsApp extends Component{
 
         count.then(data=>{
             if(data>0){
-                axios.get("http://localhost:8080/Product/"+pageNo)
+                axios.post("http://localhost:8080/Product/"+pageNo,{})
                 .then(function(res){
                     console.log(res.data)
                     that.setState({

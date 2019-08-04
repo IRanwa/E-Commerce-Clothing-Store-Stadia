@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.apiit.stadia.DTOClasses.*;
+import com.apiit.stadia.EnumClasses.SortBy;
 import com.apiit.stadia.ModelClasses.*;
 import com.apiit.stadia.Repositories.*;
 import com.sun.org.apache.xpath.internal.operations.Bool;
@@ -19,6 +20,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -48,7 +50,7 @@ public class ProductService {
 	@Autowired
 	DTOToModelClass dtoToModel;
 
-	private final int PAGE_COUNT = 1;
+	private final int PAGE_COUNT = 10;
 	
 	//Sizes
 	public double getSizesPages() {
@@ -121,14 +123,44 @@ public class ProductService {
 		return Math.ceil(Double.valueOf(productRepo.count())/PAGE_COUNT);
 	}
 
-	public List<ProductDTO> getProductsList(int pageNo){
+	public List<ProductDTO> getProductsList(int pageNo,ProductDTO productDTO){
 		List<ProductDTO> prodDTOList = new ArrayList<>();
 		if(pageNo>=0) {
-			Pageable pages = PageRequest.of(pageNo, PAGE_COUNT);
+			if(productDTO.getSortBy()==null) {
+				Pageable pages = PageRequest.of(pageNo, PAGE_COUNT);
 
-			Page<Product> prodList = productRepo.findAll(pages);
-			for(Product prod : prodList) {
-				prodDTOList.add(modelToDTO.productToDTO(prod));
+				Page<Product> prodList = productRepo.findAll(pages);
+				for (Product prod : prodList) {
+					prodDTOList.add(modelToDTO.productToDTO(prod));
+				}
+			}else{
+				SortBy sortBy = productDTO.getSortBy();
+				Page<Product> prodList = null;
+				switch(sortBy){
+					case Date_Newest:
+						Pageable pages = PageRequest.of(pageNo, PAGE_COUNT, Sort.by(Sort.Direction.DESC, "modifyDate"));
+						prodList = productRepo.findAll(pages);
+						break;
+					case Date_Oldest:
+						pages = PageRequest.of(pageNo, PAGE_COUNT, Sort.by(Sort.Direction.ASC, "modifyDate"));
+
+						prodList = productRepo.findAll(pages);
+						break;
+					case A_To_Z:
+						pages = PageRequest.of(pageNo, PAGE_COUNT, Sort.by(Sort.Direction.ASC, "title"));
+
+						prodList = productRepo.findAll(pages);
+						break;
+					case Z_To_A:
+						pages = PageRequest.of(pageNo, PAGE_COUNT, Sort.by(Sort.Direction.DESC, "title"));
+
+						prodList = productRepo.findAll(pages);
+						break;
+				}
+				for (Product prod : prodList) {
+					prodDTOList.add(modelToDTO.productToDTO(prod));
+				}
+
 			}
 		}
 		return prodDTOList;

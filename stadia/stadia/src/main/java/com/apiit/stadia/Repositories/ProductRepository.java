@@ -10,6 +10,7 @@ import com.apiit.stadia.ModelClasses.Product;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
+
 	List<Product> findByMainSubCategory(MainSubCategory mainSubCategory);
 	
 	List<Product> findByMainSubCategoryOrderByCreatedDateDesc(MainSubCategory mainSubCategory);

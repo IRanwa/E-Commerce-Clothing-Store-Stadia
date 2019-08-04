@@ -1,5 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
+import { Redirect } from "react-router-dom";
+import { Fade } from 'react-slideshow-image';
 import React, { Component } from 'react';
 const axios = require("axios");
 
@@ -9,29 +11,46 @@ class ProductList extends Component{
         this.state={
             mainCat:props.mainCat,
             subCat:props.subCat,
+            sortBy:"Z_To_A",
+            pageNo:0,
+            noOfPages:0,
             prodList:[]
         }
+        this.retrieveProductList = this.retrieveProductList.bind(this);
     }
 
     componentDidMount(){
+        this.retrieveProductList(this.state.pageNo);
+    }
+
+    retrieveProductList(pageNo){
         const that = this;
         if(this.state.mainCat===0){
-            axios.get("http://localhost:8080/Product/"+this.state.subCat+"/"+true)
+            const count = axios.get("http://localhost:8080/Product/Pages",{})
             .then(function(res){
-                const productList = res.data.map(item=>{
-                    const product = {
-                        id:item["id"],
-                        title:item["title"],
-                        price:item["price"],
-                        image:item["productImages"][0]["path"]
-                    };
-                    return product;
-                });
-                //that.state.prodList.push(productList);
-                that.setState({
-                    prodList:productList
-                })
-            });
+                if(res.data>0){
+                    that.setState({
+                        noOfPages:res.data
+                    })
+                    return res.data;
+                }
+            })
+
+            count.then(data=>{
+                if(data>0){
+                    axios.post("http://localhost:8080/Product/"+pageNo,{sortBy:this.state.sortBy})
+                    .then(function(res){
+                        console.log(res.data)
+                        that.setState({
+                            prodList:res.data,
+                            pageNo:pageNo
+                        })
+                        console.log("Product Data Received!");
+                    }).catch(function(error){
+                        console.log("Product data error ",error);
+                    })
+                }
+            })
         }else{
 
         }
@@ -53,25 +72,66 @@ class ProductList extends Component{
 }
 
 class ProductView extends Component{
+    
     constructor(props){
         super(props);
         this.state={
-            product:props.product
+            selectedId:0,
+            product:props.product,
+            redirectToDetails:false
         }
+        this.viewProductDetails = this.viewProductDetails.bind(this);
+    }
+
+    viewProductDetails(id){
+        this.setState({
+            selectedId:id,
+            redirectToDetails:true
+        })
     }
 
     render(){
+        const properties = {
+            duration: 5000,
+            transitionDuration: 500,
+            infinite: true,
+            indicators: true,
+            arrows: false,
+        }
         return(
-            <div className="card m-2 container_column font_AgencyFB">
-                <div>
-                    <img className="prod_image" src={this.state.product.image}  alt={this.state.product.image}/>
+            
+            <div className="row">
+                {
+                    this.state.redirectToDetails?(
+                        <Redirect to={{
+                            pathname: '/productdetails',
+                            state: { id: this.state.selectedId }
+                          }}/>
+                    ):("")
+                }
+                <div className="card product-container column">
+                    <div className="slide-container">
+                        <Fade {...properties}>
+                        {
+                            this.state.product.productImages.map((image,index)=>{
+                                return(
+                                    <div className="each-fade" key={index}>
+                                        <div>
+                                        <img className="product-img" src={image.path} alt={image.id} onClick={()=>this.viewProductDetails(this.state.product.id)}/>
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        }
+                        </Fade>
+                    </div>
+                    
+                    <div className="card-body">
+                        <h5 className="product-title set-cursor" onClick={()=>this.viewProductDetails(this.state.product.id)}>{this.state.product.title}</h5>
+                        <p className="product-price">Rs. {this.state.product.price}</p>
+                    </div>
                 </div>
-                <div>
-                    <label className="prod_title">{this.state.product.title}</label>
-                </div>
-                <div>
-                    <label className="prod_price">Rs. {this.state.product.price}</label>
-                </div>
+                
             </div>
         );
     }

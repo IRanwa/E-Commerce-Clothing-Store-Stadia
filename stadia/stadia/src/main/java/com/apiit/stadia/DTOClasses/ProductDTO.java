@@ -14,6 +14,7 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.apiit.stadia.EnumClasses.SortBy;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,5 +42,7 @@ public class ProductDTO implements Serializable{
 	@Getter @Setter Date createdDate;
 	
 	@Getter @Setter Date modifyDate;
+
+	@Getter @Setter SortBy sortBy;
 }
 

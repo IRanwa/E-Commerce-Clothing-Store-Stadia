@@ -50,9 +50,9 @@ public class ProductRestService {
 	}
 
 	//Products
-	@GetMapping("/Product/{pageNo}")
-	public List<ProductDTO> getProductList(@PathVariable int pageNo){
-		return prodService.getProductsList(pageNo);
+	@PostMapping("/Product/{pageNo}")
+	public List<ProductDTO> getProductList(@PathVariable int pageNo,@RequestBody ProductDTO productDTO){
+		return prodService.getProductsList(pageNo,productDTO);
 	}
 
 	@GetMapping("/Product/Pages")
