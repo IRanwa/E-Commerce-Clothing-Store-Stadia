@@ -183,6 +183,14 @@ class NavBar extends Component{
 
                 <a className="nav-item nav-link nav-sub" href="/">Orders</a>
               </div>
+              <div className="cart-icon-container">
+                <a className="nav-item nav-link" href="/">
+                  <img src="https://static.thenounproject.com/png/16757-200.png" className="cart-img"/>
+                  <label className="cart-text">1</label>
+                </a>
+                
+              </div>
+              
               <a className="nav-item nav-link mr-3" href="/">Log out</a>
             </div>
           </div>

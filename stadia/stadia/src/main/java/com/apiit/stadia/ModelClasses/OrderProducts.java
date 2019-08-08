@@ -2,13 +2,7 @@ package com.apiit.stadia.ModelClasses;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -17,32 +11,34 @@ import lombok.Setter;
 public class OrderProducts implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	
+
+	@EmbeddedId
+	@Getter @Setter OrderProductsIdentity OrderProductsId;
+
 	@ManyToOne(cascade=CascadeType.REMOVE)
+	@MapsId("orderId")
 	@JoinColumn(name="orderId",referencedColumnName="id")
-	@MapsId("order_id")
 	@Getter @Setter Orders orders;
-	
+
 	@ManyToOne(cascade=CascadeType.REMOVE)
+	@MapsId("prodId")
 	@JoinColumn(name="prodId",referencedColumnName="id")
-	@MapsId("prod_id")
-	@Getter @Setter Product product;
+	@Getter @Setter ProductSizes productSizes;
 	
 	@OneToOne(mappedBy="orderProducts")
 	@Getter @Setter Rating rating;
 	
-	@EmbeddedId
-	@Getter @Setter OrderProductsIdentity OrderProductsId;
+
 	
 	@Getter @Setter int quantity;
 	
 	public OrderProducts() {}
 
-	public OrderProducts(Orders orders, Product product, OrderProductsIdentity orderProductsId, int quantity) {
+	public OrderProducts(Orders orders, ProductSizes productSizes, OrderProductsIdentity orderProductsId, int quantity) {
 		super();
 		this.orders = orders;
-		this.product = product;
-		OrderProductsId = orderProductsId;
+		this.productSizes = productSizes;
+		this.OrderProductsId = orderProductsId;
 		this.quantity = quantity;
 	}
 

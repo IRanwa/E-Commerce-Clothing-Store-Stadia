@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.apiit.stadia.EnumClasses.PaymentMethod;
+import com.apiit.stadia.ModelClasses.*;
+import com.apiit.stadia.Repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,16 +16,6 @@ import org.springframework.stereotype.Service;
 import com.apiit.stadia.DTOClasses.OrderProductsDTO;
 import com.apiit.stadia.DTOClasses.OrdersDTO;
 import com.apiit.stadia.EnumClasses.OrderStatus;
-import com.apiit.stadia.ModelClasses.Login;
-import com.apiit.stadia.ModelClasses.OrderProducts;
-import com.apiit.stadia.ModelClasses.OrderProductsIdentity;
-import com.apiit.stadia.ModelClasses.Orders;
-import com.apiit.stadia.ModelClasses.Product;
-import com.apiit.stadia.ModelClasses.User;
-import com.apiit.stadia.Repositories.LoginRepository;
-import com.apiit.stadia.Repositories.OrderProductsRepository;
-import com.apiit.stadia.Repositories.OrdersRepository;
-import com.apiit.stadia.Repositories.ProductRepository;
 
 @Service
 public class OrdersService {
@@ -32,30 +25,40 @@ public class OrdersService {
 	@Autowired
 	OrderProductsRepository orderProdRepo;
 	@Autowired
-	ProductRepository prodRepo;
+	ProductSizesRepository prodSizesRepo;
+	@Autowired
+	UserRepository userRepo;
 	
 	@Autowired
 	ModelClassToDTO modelToDTO;
 	
 	
-	public boolean addToCart(long prodId,User user) {
-		Orders order = ordersRepo.findByUserAndStatus(user,OrderStatus.Cart);
-		if(order==null) {
-			order = new Orders(user,OrderStatus.Cart,new Date());
-			order = ordersRepo.save(order);
-		}
-		Optional<Product> product = prodRepo.findById(prodId);
-		
-		if(product.isPresent()) {
-			OrderProducts orderProd = orderProdRepo.findByOrdersAndProduct(order,product.get());
-			if(orderProd==null) {
-				OrderProductsIdentity orderProdIdentity = new OrderProductsIdentity(order.getId(),product.get().getId());
-				orderProd = new OrderProducts(order,product.get(),orderProdIdentity,1);
-			}else {
-				orderProd.setQuantity(orderProd.getQuantity() + 1);
+	public boolean addToCart(OrderProducts orderProducts) {
+		long prodSizesId = orderProducts.getProductSizes().getId();
+		String userEmail = orderProducts.getOrders().getUser().getEmail();
+		int qty = orderProducts.getProductSizes().getQuantity();
+
+		Optional<User> userOptional = userRepo.findById(userEmail);
+		if(userOptional.isPresent()) {
+			User user = userOptional.get();
+			Orders order = ordersRepo.findByUserAndStatus(user, OrderStatus.Cart);
+			if (order == null) {
+				order = new Orders(user, OrderStatus.Cart, new Date());
+				order = ordersRepo.save(order);
 			}
-			orderProdRepo.save(orderProd);
-			return true;
+			Optional<ProductSizes> productSizes = prodSizesRepo.findById(prodSizesId);
+
+			if (productSizes.isPresent()) {
+				OrderProducts orderProd = orderProdRepo.findByOrdersAndProductSizes(order, productSizes.get());
+				if (orderProd == null) {
+					OrderProductsIdentity orderProdIdentity = new OrderProductsIdentity(order.getId(), productSizes.get().getId());
+					orderProd = new OrderProducts(order, productSizes.get(), orderProdIdentity, qty);
+				} else {
+					orderProd.setQuantity(orderProd.getQuantity() + qty);
+				}
+				orderProdRepo.save(orderProd);
+				return true;
+			}
 		}
 		return false;
 	}

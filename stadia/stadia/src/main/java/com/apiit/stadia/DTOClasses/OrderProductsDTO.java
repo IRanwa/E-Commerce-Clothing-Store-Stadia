@@ -20,7 +20,7 @@ public class OrderProductsDTO implements Serializable{
 	
 	@Getter @Setter OrdersDTO orders;
 	
-	@Getter @Setter ProductDTO product;
+	@Getter @Setter ProductSizesDTO productSizes;
 	
 	@Getter @Setter RatingDTO rating;
 	

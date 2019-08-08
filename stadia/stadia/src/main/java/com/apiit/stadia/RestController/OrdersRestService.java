@@ -2,12 +2,10 @@ package com.apiit.stadia.RestController;
 
 import java.util.List;
 
+import com.apiit.stadia.ModelClasses.OrderProducts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.apiit.stadia.DTOClasses.OrdersDTO;
 import com.apiit.stadia.ModelClasses.Login;
@@ -15,14 +13,16 @@ import com.apiit.stadia.ModelClasses.Orders;
 import com.apiit.stadia.ModelClasses.User;
 import com.apiit.stadia.Services.OrdersService;
 
+@CrossOrigin("*")
 @RestController
 public class OrdersRestService {
 	@Autowired
 	OrdersService orderService;
 	
-	@PostMapping("/Cart/{prodId}")
-	public String addToCart(@PathVariable long prodId, User user) {
-		return "{Status:"+orderService.addToCart(prodId, user)+"}";
+	@PostMapping("/AddToCart")
+	public String addToCart(@RequestBody OrderProducts orderProducts) {
+		return String.valueOf(orderService.addToCart(orderProducts));
+		//return "success";
 	}
 
 	@PostMapping("/ViewCart")

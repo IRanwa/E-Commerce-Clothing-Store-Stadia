@@ -402,6 +402,29 @@ input[type='email'], input[type='password'] {
   font-family: 'Times New Roman', Times, serif;
 }
 
+.cart-icon-container{
+  margin-right:20px;
+}
+
+.cart-img{
+  width:20px;
+  height:20px;
+  
+}
+
+.cart-text{
+  position: fixed;
+  background-color: green;
+  color:white;
+  border-radius: 30px;
+  width:20px;
+  height:20px;
+  font-size:14px;
+  text-align: center;
+  margin-top:20px;
+  cursor: pointer;
+}
+
 @media screen and (max-height:500px){
   .login-form{
     margin:0% 30%;

@@ -1,16 +1,9 @@
 package com.apiit.stadia.ModelClasses;
 
 import java.io.Serializable;
+import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
+import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +24,10 @@ public class ProductSizes implements Serializable{
 	@ManyToOne
 	@JoinColumn(name="sizeId",referencedColumnName="id")
 	@Getter @Setter Sizes sizes;
+
+	@OneToMany(mappedBy="productSizes",cascade = CascadeType.REMOVE)
+	@Getter @Setter
+	List<OrderProducts> orderProducts;
 	
 	@Getter @Setter int quantity;
 }

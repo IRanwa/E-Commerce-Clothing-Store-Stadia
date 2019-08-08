@@ -69,6 +69,7 @@ public class ModelClassToDTO {
 	
 	public ProductSizesDTO productSizesToDTO(ProductSizes prodSize) {
 		ProductSizesDTO prodSizeDTO = new ProductSizesDTO();
+		prodSizeDTO.setId(prodSize.getId());
 		prodSizeDTO.setQuantity(prodSize.getQuantity());
 		prodSizeDTO.setSizes(sizesToDTO(prodSize.getSizes()));
 		return prodSizeDTO;
@@ -84,7 +85,7 @@ public class ModelClassToDTO {
 	
 	public OrderProductsDTO orderProductToDTO(OrderProducts orderProduct) {
 		OrderProductsDTO orderProdDTO = new OrderProductsDTO();
-		orderProdDTO.setProduct(productToDTO(orderProduct.getProduct()));
+		orderProdDTO.setProductSizes(productSizesToDTO(orderProduct.getProductSizes()));
 		orderProdDTO.setQuantity(orderProduct.getQuantity());
 		return orderProdDTO;
 	}

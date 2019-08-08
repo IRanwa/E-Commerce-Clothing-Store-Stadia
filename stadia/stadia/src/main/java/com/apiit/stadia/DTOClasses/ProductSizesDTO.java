@@ -1,6 +1,7 @@
 package com.apiit.stadia.DTOClasses;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.EmbeddedId;
@@ -16,11 +17,16 @@ import lombok.Setter;
 public class ProductSizesDTO implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	
+
+	@Getter @Setter long id;
+
 	@Getter @Setter ProductDTO product;
 	
 	@Getter @Setter SizesDTO sizes;
 	
 	@Getter @Setter int quantity;
+
+	@Getter @Setter
+	List<OrderProductsDTO> orderProducts;
 }
 

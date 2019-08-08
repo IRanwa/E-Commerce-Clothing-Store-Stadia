@@ -13,10 +13,11 @@ class ProductDetails extends Component{
             product:"",
             stockLevel:0,
             selectedSize:0,
-            selectQty:0
+            selectQty:1
         }
         this.changeSize = this.changeSize.bind(this);
         this.changeQty = this.changeQty.bind(this);
+        this.addToCart = this.addToCart.bind(this);
     }
 
     componentDidMount(){
@@ -43,10 +44,31 @@ class ProductDetails extends Component{
         })
     }
 
-    changeQty(qty){
+    changeQty(value){
         this.setState({
-            selectQty:qty
+            selectQty:value
         })
+    }
+
+    addToCart(){
+        console.log("selected size ",this.state.selectedSize," ",this.state.selectQty)
+        axios.post("http://localhost:8080/AddToCart",{
+            productSizes:{
+                id:this.state.selectedSize,
+                quantity:this.state.selectQty
+           },
+           orders:{
+              user:{
+                 email:"imesh" 
+              } 
+           } 
+        }).then(function(res){
+            alert("Product added to cart successfully!");
+            console.log("Product added to cart successfully!");
+        }).catch(function(error){
+            alert("Product added to cart un-successfully!");
+            console.log("Product added to cart un-successfully!");
+        });
     }
 
     render(){
@@ -115,22 +137,23 @@ class ProductDetails extends Component{
                                         <p className="product-desc">Quantity</p>
                                         <select className="w-50 card product-sizes my-1" onChange={(event)=>this.changeQty(event.target.value)}>
                                             {
-                                                qty.map((value)=>{
+                                                qty.map((quantity)=>{
                                                     return(
-                                                        <option value={value} key={value}>{value}</option>
+                                                        <option value={quantity} key={quantity}>{quantity}</option>
                                                     );
                                                 })
                                             }
                                         </select>
+                                        <div className="row my-3">
+                                            <button className="btn-sm btn-success column m-1">Buy Now</button>
+                                            <button className="btn-sm btn-danger column m-1" onClick={this.addToCart}>Add to Cart</button>
+                                        </div>
                                     </div>
                                 ):(
                                     qty
                                 )
                             }
-                            <div className="row my-3">
-                                <button className="btn-sm btn-success column m-1">Buy Now</button>
-                                <button className="btn-sm btn-danger column m-1">Add to Cart</button>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>

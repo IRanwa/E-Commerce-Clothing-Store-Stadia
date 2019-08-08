@@ -60,14 +60,14 @@ public class Orders implements Serializable{
 	public Orders() {
 		
 	}
-	
+
 	public Orders(User user, OrderStatus status, Date purchasedDate) {
 		super();
 		this.user = user;
 		this.status = status;
 		this.purchasedDate = purchasedDate;
 	}
-	
-	
+
+
 
 }
