@@ -10,10 +10,14 @@ class Cart extends Component{
         super(props);
         this.state={
             orderProducts:[],
-            cartStatus:true
+            cartStatus:true,
+            selectedRows:[],
+            remoteItemBtn:false
         }
         this.changeQty = this.changeQty.bind(this);
         this.removeItem = this.removeItem.bind(this);
+        this.checkBoxSelect = this.checkBoxSelect.bind(this);
+        this.removeSelectedItems = this.removeSelectedItems.bind(this);
     }
 
     componentDidMount(){
@@ -22,9 +26,17 @@ class Cart extends Component{
            email:"imesh"
             
         }).then(function(res){
-            that.setState({
-                orderProducts:res.data
-            })
+            
+            if(res.data!=null && res.data.length>0){
+                that.setState({
+                    orderProducts:res.data
+                })
+            }else{
+                that.setState({
+                    cartStatus: false
+                })
+                
+            }
         }).catch(function(res){
             console.log(res)
             if(res.data!=null && res.data.length==0){
@@ -37,6 +49,99 @@ class Cart extends Component{
                 
             }
         })
+    }
+
+    checkBoxSelect(index,checked){
+        if(checked){
+            if(index>=0){
+                this.setState(state=>{
+                    state.selectedRows.push(index);
+                    if(state.selectedRows.length>0){
+                        return(
+                            state.selectedRows,
+                            state.remoteItemBtn=true
+                        );
+                    }else{
+                        return(
+                            state.selectedRows,
+                            state.remoteItemBtn=false
+                        );
+                    }
+                })
+                
+            }else{
+                for(let i=0;i<this.state.orderProducts.length;i++){
+                    this.setState(state=>{
+                        state.selectedRows.push(state.orderProducts[i].productSizes.id);
+                        if(state.selectedRows.length>0){
+                            return(
+                                state.selectedRows,
+                                state.remoteItemBtn=true
+                           );
+                        }else{
+                            return(
+                                state.selectedRows,
+                                state.remoteItemBtn=false
+                            );
+                        }
+                    })
+                    
+                }
+            }
+        }else{
+            if(index>=0){
+                let position = 0;
+                for(var i=0;i<this.state.selectedRows.length;i++){
+                    if(this.state.selectedRows[i]===index){
+                        position = i;
+                        break;
+                    }
+                }
+                this.setState(state=>{
+                    state.selectedRows.splice(position,1);
+                    if(state.selectedRows.length>0){
+                        return(
+                            state.selectedRows,
+                            state.remoteItemBtn=true
+                        );
+                    }else{
+                        return(
+                            state.selectedRows,
+                            state.remoteItemBtn=false
+                        );
+                    }
+                })
+                
+            }else{
+                this.setState({
+                    selectedRows:[],
+                    remoteItemBtn:false
+                })
+            }
+        }
+    }
+
+    removeSelectedItems(){
+        let prodSizeIds = [];
+        for(var i=0;i<this.state.selectedRows.length;i++){
+            prodSizeIds.push({
+                productSizes:{
+                    id:this.state.selectedRows[i]
+                }
+            });
+        }
+        const data = {
+            id:this.state.orderProducts[0].orders.id,
+            orderProducts:prodSizeIds
+        };
+        console.log(data)
+        axios.post("http://localhost:8080/DeleteCartItems",
+        data
+        ).then(function(res){
+            console.log("Cart selected items removed successfully!");
+            alert("Cart selected items removed successfully!");
+            window.location.reload();
+        });
     }
 
     changeQty(value,orderId,prodSizeId,index){
@@ -67,8 +172,8 @@ class Cart extends Component{
     removeItem(orderId,prodSizeId){
         axios.delete("http://localhost:8080/DeleteCartItem/"+orderId+"/"+prodSizeId)
         .then(function(res){
-            console.log("Cart deleted successfully!");
-            alert("Cart deleted successfully!");
+            console.log("Cart item removed successfully!");
+            alert("Cart item removed successfully!");
             window.location.reload();
         })
     }
@@ -89,10 +194,12 @@ class Cart extends Component{
                     
                         {
                             this.state.cartStatus?(
-                                    <div>
+                                <div>
+                                    <div className="text-center">
                                         <table className="table  table-striped cart-table">
                                             <thead className="thead-dark">
                                                 <tr>
+                                                    <th scope="col"><input type="checkbox" onClick={(event)=>this.checkBoxSelect(-1,event.target.checked)}/></th>
                                                     <th scope="col">#</th>
                                                     <th scope="col"></th>
                                                     <th scope="col"></th>
@@ -109,6 +216,7 @@ class Cart extends Component{
                                                         }
                                                         return(
                                                             <tr key={index}>
+                                                                <td><input type="checkbox" onClick={(event)=>this.checkBoxSelect(orderProd.productSizes.id,event.target.checked)}/></td>
                                                                 <th scope="row">
                                                                     {index+1}
                                                                 </th>
@@ -155,12 +263,18 @@ class Cart extends Component{
                                                         );
                                                     })
                                                 }
-                                                <tr>
-                                                    
-                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
+                                    <div>
+                                        {
+                                            this.state.remoteItemBtn?(
+                                                <button className="btn-sm btn-danger float-left m-2" onClick={this.removeSelectedItems}>Remove Selected</button>
+                                            ):("")
+                                        }
+                                        <button className="btn-sm btn-success float-right m-2">Checkout</button>
+                                    </div>
+                                </div>
                             ):(
                                 <div>
                                     <img className="cart-empty" src="https://iticsystem.com/img/empty-cart.png" alt="cart-empty"/><br></br>

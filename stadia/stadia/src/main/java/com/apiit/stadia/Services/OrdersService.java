@@ -32,8 +32,8 @@ public class OrdersService {
 	
 	@Autowired
 	ModelClassToDTO modelToDTO;
-	
-	
+
+
 	public boolean addToCart(OrderProducts orderProducts) {
 		long prodSizesId = orderProducts.getProductSizes().getId();
 		String userEmail = orderProducts.getOrders().getUser().getEmail();
@@ -110,14 +110,42 @@ public class OrdersService {
 				Orders order = orderProd.getOrders();
 
 				orderProdRepo.delete(orderProd);
-
-				if(order.getOrderProducts().size()==0){
-					ordersRepo.deleteById(order.getId());
-				}
 				return new ResponseEntity<>(true,HttpStatus.OK);
 			}
 		}
 		return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	public ResponseEntity<Boolean> deleteCartItems(Orders removeOrder){
+		boolean status = true;
+		long orderId = removeOrder.getId();
+		Optional<Orders> orderOptional = ordersRepo.findById(orderId);
+		if(orderOptional.isPresent()){
+			for(OrderProducts orderProd : removeOrder.getOrderProducts()){
+				long prodSizeId = orderProd.getProductSizes().getId();
+				Optional<ProductSizes> prodSizeOptional = prodSizesRepo.findById(prodSizeId);
+				if(prodSizeOptional.isPresent()){
+					orderProd = orderProdRepo.findByOrdersAndProductSizes(orderOptional.get(), prodSizeOptional.get());
+
+					if(orderProd!=null) {
+						orderProdRepo.delete(orderProd);
+					}else{
+						status = false;
+						break;
+					}
+				}else{
+					status = false;
+					break;
+				}
+			}
+		}else{
+			status = false;
+		}
+		if(status){
+			return new ResponseEntity<>(true,HttpStatus.OK);
+		}
+		return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
+
 	}
 	
 	public boolean placeOrder(User user) {

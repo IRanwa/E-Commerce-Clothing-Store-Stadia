@@ -40,6 +40,11 @@ public class OrdersRestService {
 	public ResponseEntity<Boolean> deleteCartItem(@PathVariable long orderId, @PathVariable long prodSizeId){
 		return orderService.deleteCartItem(orderId,prodSizeId);
 	}
+
+	@PostMapping("/DeleteCartItems")
+	public ResponseEntity<Boolean> deleteCartItems(@RequestBody Orders order){
+		return orderService.deleteCartItems(order);
+	}
 	
 	@PostMapping("/PlaceOrder")
 	public String placeOrder(User user) {
