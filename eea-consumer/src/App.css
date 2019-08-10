@@ -58,14 +58,12 @@ input[type='email'], input[type='password'] {
   padding:14.5px;
   margin-left:10px;
   cursor: pointer;
+  color:grey;
 }
 
 .dropdown-item{
   cursor: pointer;
-}
-
-.dropdown-item:active{
-  background-color: #f8f9fa
+  color:grey;
 }
 
 .nav-item:hover{
@@ -425,9 +423,61 @@ input[type='email'], input[type='password'] {
   cursor: pointer;
 }
 
+.cart-empty{
+  height:300px;
+}
+
+.continue-shop-text{
+  font-size:25px;
+  font-family: 'Times New Roman', Times, serif;
+  color:grey;
+}
+
+.continue-shop-text:hover{
+  color:black;
+}
+
+.dropdown-categories{
+  color:grey;
+}
+
+.product-img-cart{
+  width:100px;
+  height:100px;
+}
+
+
+.slide-container-img{
+  width:100px;
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.cart-table{
+  color:grey;
+  font-size: 14px;
+}
+
+.cart-table tr, th, td{
+  border:1px solid silver;
+  
+  
+}
+
+.cart-table th{
+  vertical-align: middle;
+}
+
+.cart-table td{
+  vertical-align: middle;
+}
+
 @media screen and (max-height:500px){
   .login-form{
     margin:0% 30%;
+
+
   }
 }
 

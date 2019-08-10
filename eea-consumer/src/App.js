@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import {Register,SignIn} from './RegSignIn';
 import ProductList from './ProductList';
 import ProductDetails from './Details';
+import Cart from './Cart';
 const axios = require("axios");
 
 const sitename = "Stadia";
@@ -19,12 +20,23 @@ class App extends Component{
           <Route path="/register" component={Register} />
           <Route path="/signin" component={SignIn} />
           <Route path="/productdetails" component={ProductDetailsPage} />
+          <Route path="/cart" component={CartPage} />
         </div>
       </Router>
     );
   }
 }
 
+class CartPage extends Component{
+  render(){
+    return(
+      <div>
+        <NavBar />
+        <Cart />
+    </div>
+    );
+  }
+}
 class ProductDetailsPage extends Component{
   constructor(props){
     super(props);
@@ -125,7 +137,7 @@ class NavBar extends Component{
               <div className="navbar-nav mr-auto">
 
               <div className="dropdown dropdown-categories">
-                  <label className="nav-item nav-link" onMouseMoveCapture={()=>this.getMainCat("M")}>Men</label>
+                  <label className="nav-item nav-link " onMouseMoveCapture={()=>this.getMainCat("M")}>Men</label>
                   <div className="dropdown-menu dropdown-menu-lg ">
                      <div className="row d-flex">
                       <div className="col-lg-4 col-sm-4"> 
@@ -138,7 +150,7 @@ class NavBar extends Component{
                                   {
                                     item.subCategoryDTO.map((subItem,index)=>{
                                       return(
-                                        <li key={index}> <label className="dropdown-item" >{subItem.subCatTitle}</label></li> 
+                                        <li key={index}> <a className="dropdown-item" href="/templates/angular">{subItem.subCatTitle}</a></li> 
                                       )
                                     })
                                   }
@@ -184,7 +196,7 @@ class NavBar extends Component{
                 <a className="nav-item nav-link nav-sub" href="/">Orders</a>
               </div>
               <div className="cart-icon-container">
-                <a className="nav-item nav-link" href="/">
+                <a className="nav-item nav-link" href="/cart">
                   <img src="https://static.thenounproject.com/png/16757-200.png" className="cart-img"/>
                   <label className="cart-text">1</label>
                 </a>

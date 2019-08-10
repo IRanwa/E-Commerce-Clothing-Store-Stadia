@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import com.apiit.stadia.DTOClasses.ProductDTO;
 import com.apiit.stadia.EnumClasses.PaymentMethod;
 import com.apiit.stadia.ModelClasses.*;
 import com.apiit.stadia.Repositories.*;
@@ -54,7 +55,7 @@ public class OrdersService {
 					OrderProductsIdentity orderProdIdentity = new OrderProductsIdentity(order.getId(), productSizes.get().getId());
 					orderProd = new OrderProducts(order, productSizes.get(), orderProdIdentity, qty);
 				} else {
-					orderProd.setQuantity(orderProd.getQuantity() + qty);
+					orderProd.setQuantity(qty);
 				}
 				orderProdRepo.save(orderProd);
 				return true;
@@ -63,17 +64,60 @@ public class OrdersService {
 		return false;
 	}
 	
-	public ResponseEntity<Object> getCart(User user) {
-		Orders order = ordersRepo.findByUserAndStatus(user, OrderStatus.Cart);
-		if(order!=null) {
-			List<OrderProducts> orderProds = orderProdRepo.findByOrders(order);
-			List<OrderProductsDTO> orderProdDTOList = new ArrayList<OrderProductsDTO>();
-			for(OrderProducts orderProd : orderProds) {
-				orderProdDTOList.add(modelToDTO.orderProductToDTO(orderProd));
+	public ResponseEntity<List<OrderProductsDTO>> getCart(User user) {
+		List<OrderProductsDTO> orderProdDTOList = new ArrayList<>();
+		Optional<User> userOptional = userRepo.findById(user.getEmail());
+		if(userOptional.isPresent()) {
+			user = userOptional.get();
+			Orders order = ordersRepo.findByUserAndStatus(user, OrderStatus.Cart);
+			if (order != null) {
+				List<OrderProducts> orderProds = orderProdRepo.findByOrders(order);
+
+				for (OrderProducts orderProd : orderProds) {
+					Product product = orderProd.getProductSizes().getProduct();
+					OrderProductsDTO orderProdDTO = modelToDTO.orderProductToDTO(orderProd,product);
+					orderProdDTOList.add(orderProdDTO);
+				}
+				return new ResponseEntity<>(orderProdDTOList, HttpStatus.OK);
 			}
-			return new ResponseEntity<>(orderProdDTOList,HttpStatus.OK);
 		}
-		return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(orderProdDTOList, HttpStatus.NOT_FOUND);
+	}
+
+	public ResponseEntity<Boolean> updateCartQty(OrderProducts orderProducts){
+		Orders orders = orderProducts.getOrders();
+		Optional<Orders> ordersOptional = ordersRepo.findById(orders.getId());
+		if(ordersOptional.isPresent()){
+			ProductSizes prodSizes = orderProducts.getProductSizes();
+			Optional<ProductSizes> prodSizesOptional = prodSizesRepo.findById(prodSizes.getId());
+			if(prodSizesOptional.isPresent()){
+				OrderProducts orderProd = orderProdRepo.findByOrdersAndProductSizes(ordersOptional.get(), prodSizesOptional.get());
+				orderProd.setQuantity(orderProducts.getQuantity());
+				orderProdRepo.save(orderProd);
+				return new ResponseEntity<>(true,HttpStatus.OK);
+			}
+		}
+		return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	public ResponseEntity<Boolean> deleteCartItem(long orderId,long prodSizeId){
+		Optional<Orders> orderOptional = ordersRepo.findById(orderId);
+		if(orderOptional.isPresent()){
+			Optional<ProductSizes> prodSizeOptional = prodSizesRepo.findById(prodSizeId);
+			if(prodSizeOptional.isPresent()){
+				OrderProducts orderProd = orderProdRepo.findByOrdersAndProductSizes(orderOptional.get(), prodSizeOptional.get());
+
+				Orders order = orderProd.getOrders();
+
+				orderProdRepo.delete(orderProd);
+
+				if(order.getOrderProducts().size()==0){
+					ordersRepo.deleteById(order.getId());
+				}
+				return new ResponseEntity<>(true,HttpStatus.OK);
+			}
+		}
+		return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	public boolean placeOrder(User user) {
@@ -97,7 +141,7 @@ public class OrdersService {
 				List<OrderProducts> orderProdList = order.getOrderProducts();
 				List<OrderProductsDTO> orderProdDTOList = new ArrayList<OrderProductsDTO>();
 				for(OrderProducts orderProd : orderProdList) {
-					orderProdDTOList.add(modelToDTO.orderProductToDTO(orderProd));
+					orderProdDTOList.add(modelToDTO.orderProductToDTO(orderProd,null));
 				}
 				orderDTO.setOrderProducts(orderProdDTOList);
 				ordersDTOList.add(orderDTO);

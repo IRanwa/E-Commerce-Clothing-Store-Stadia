@@ -2,6 +2,7 @@ package com.apiit.stadia.RestController;
 
 import java.util.List;
 
+import com.apiit.stadia.DTOClasses.OrderProductsDTO;
 import com.apiit.stadia.ModelClasses.OrderProducts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +27,18 @@ public class OrdersRestService {
 	}
 
 	@PostMapping("/ViewCart")
-	public ResponseEntity<Object> getCart(User user) {
+	public ResponseEntity<List<OrderProductsDTO>> getCart(@RequestBody User user) {
 		return orderService.getCart(user);
+	}
+
+	@PostMapping("/UpdateCartQty")
+	public ResponseEntity<Boolean> updateCartQty(@RequestBody OrderProducts orderProducts){
+		return orderService.updateCartQty(orderProducts);
+	}
+
+	@DeleteMapping("/DeleteCartItem/{orderId}/{prodSizeId}")
+	public ResponseEntity<Boolean> deleteCartItem(@PathVariable long orderId, @PathVariable long prodSizeId){
+		return orderService.deleteCartItem(orderId,prodSizeId);
 	}
 	
 	@PostMapping("/PlaceOrder")

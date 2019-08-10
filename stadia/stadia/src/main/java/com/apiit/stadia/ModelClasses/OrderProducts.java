@@ -15,12 +15,12 @@ public class OrderProducts implements Serializable{
 	@EmbeddedId
 	@Getter @Setter OrderProductsIdentity OrderProductsId;
 
-	@ManyToOne(cascade=CascadeType.REMOVE)
+	@ManyToOne(cascade=CascadeType.DETACH)
 	@MapsId("orderId")
 	@JoinColumn(name="orderId",referencedColumnName="id")
 	@Getter @Setter Orders orders;
 
-	@ManyToOne(cascade=CascadeType.REMOVE)
+	@ManyToOne(cascade=CascadeType.DETACH)
 	@MapsId("prodId")
 	@JoinColumn(name="prodId",referencedColumnName="id")
 	@Getter @Setter ProductSizes productSizes;

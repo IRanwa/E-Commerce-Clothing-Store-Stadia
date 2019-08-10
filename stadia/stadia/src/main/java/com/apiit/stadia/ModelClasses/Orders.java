@@ -26,7 +26,7 @@ public class Orders implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
-	@ManyToOne(cascade=CascadeType.REMOVE)
+	@ManyToOne(cascade=CascadeType.DETACH)
 	@JoinColumn(name="email",referencedColumnName="email") 
 	@Getter @Setter User user;
 	

@@ -83,10 +83,28 @@ public class ModelClassToDTO {
 		return sizeDTO;
 	}
 	
-	public OrderProductsDTO orderProductToDTO(OrderProducts orderProduct) {
+	public OrderProductsDTO orderProductToDTO(OrderProducts orderProduct,Product product) {
 		OrderProductsDTO orderProdDTO = new OrderProductsDTO();
-		orderProdDTO.setProductSizes(productSizesToDTO(orderProduct.getProductSizes()));
+
+		//Set Product and Product Sizes
+		ProductSizesDTO productSizeDTO;
+		if(product!=null){
+			ProductDTO productDTO = productToDTO(product);
+			productSizeDTO = productSizesToDTO(orderProduct.getProductSizes());
+			productSizeDTO.setProduct(productDTO);
+		}else{
+			productSizeDTO = productSizesToDTO(orderProduct.getProductSizes());
+		}
+		orderProdDTO.setProductSizes(productSizeDTO);
+
+		//Set Quantity
 		orderProdDTO.setQuantity(orderProduct.getQuantity());
+
+
+		//Set Orders
+		Orders orders = orderProduct.getOrders();
+		orderProdDTO.setOrders(ordersToDTO(orders));
+
 		return orderProdDTO;
 	}
 	

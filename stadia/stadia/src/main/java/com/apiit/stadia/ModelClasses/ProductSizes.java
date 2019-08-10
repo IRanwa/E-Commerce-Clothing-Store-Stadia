@@ -25,7 +25,7 @@ public class ProductSizes implements Serializable{
 	@JoinColumn(name="sizeId",referencedColumnName="id")
 	@Getter @Setter Sizes sizes;
 
-	@OneToMany(mappedBy="productSizes",cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy="productSizes")
 	@Getter @Setter
 	List<OrderProducts> orderProducts;
 	
