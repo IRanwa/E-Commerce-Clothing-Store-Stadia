@@ -1,10 +1,14 @@
 package com.apiit.stadia.Services;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.apiit.stadia.DTOClasses.AddressDTO;
@@ -19,6 +23,8 @@ import com.apiit.stadia.Repositories.AddressRepository;
 import com.apiit.stadia.Repositories.LoginRepository;
 import com.apiit.stadia.Repositories.UserRepository;
 
+import javax.xml.ws.Response;
+
 @Service
 public class UserService {
 	
@@ -31,36 +37,21 @@ public class UserService {
 	@Autowired
 	AddressRepository addressRepo;
 
-	public boolean registerUser(User user) {
-		if(!loginRepo.existsById(user.getEmail())) {
-			loginRepo.save(user.getLogin());
-			if(user.getLogin().getRole()==UserRole.Consumer) {
-				userRepo.save(user);
-				System.out.println("Saved "+user.getAddress());
-				if(user.getAddress()!=null && user.getAddress().size()>0) {
-					Address address = user.getAddress().get(0);
-					address.setUser(user);
-					address.setAddType(AddressType.Shipping);
-					
-					/*
-					 * System.out.println(address.getAddress());
-					 * System.out.println(address.getCity());
-					 * System.out.println(address.getContactNo());
-					 * System.out.println(address.getCountry());
-					 * System.out.println(address.getFName()); System.out.println(address.getId());
-					 * System.out.println(address.getLName());
-					 * System.out.println(address.getProvince());
-					 * System.out.println(address.getZipCode());
-					 * System.out.println(address.getAddType());
-					 */
-					//addressRepo.save(user.getAddress().get(0));
-					
-					addressRepo.save(address);
-				}
-			}
-			return true;
+	@Autowired
+	private PasswordEncoder bcryptEncoder;
+
+	public ResponseEntity<Boolean> registerUser(User user) {
+		Login login = user.getLogin();
+		login.setPass(bcryptEncoder.encode(login.getPass()));
+		login.setLastLogin(new Date());
+		login = loginRepo.save(login);
+
+		if(login!=null) {
+			user.setLogin(login);
+			userRepo.save(user);
+			return new ResponseEntity<>(true, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return false;
+		return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	public boolean loginUser(Login login) {

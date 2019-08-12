@@ -5,6 +5,7 @@ import java.util.Date;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,20 +24,15 @@ import com.apiit.stadia.ModelClasses.User;
 import com.apiit.stadia.Services.UserService;
 
 @RestController
+@CrossOrigin("*")
 public class UserRestService {
 	
 	@Autowired
 	UserService userService;
-	
-	//@CrossOrigin("*")
+
 	@PostMapping(value="/Register")
-	//public String RegisterUser(@RequestBody User user) {
-	//user.getLogin().setLastLogin(new Date());
-	//user.getLogin().setRole(UserRole.Consumer);
-	public String RegisterUser() {
-		Login login = new Login("imeshranwa2","123","Imesh","Ranawaka",UserRole.Consumer,new Date());
-		User user = new User(login,"imeshranwa2");
-		return "{\"Status\":"+userService.registerUser(user)+"}";
+	public ResponseEntity<Boolean> RegisterUser(@RequestBody User user) {
+		return userService.registerUser(user);
 	}
 	
 	@GetMapping(value="/Login")

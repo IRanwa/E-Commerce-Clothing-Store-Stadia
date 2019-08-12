@@ -3,10 +3,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import './images.css';
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import {Register,SignIn} from './RegSignIn';
+//import {Register,SignIn} from './RegSignIn';
 import ProductList from './ProductList';
 import ProductDetails from './Details';
 import Cart from './Cart';
+import SignIn from './SignIn.jsx';
 const axios = require("axios");
 
 const sitename = "Stadia";
@@ -17,8 +18,8 @@ class App extends Component{
       <Router>
         <div>
           <Route exact path="/" component={Index} />
-          <Route path="/register" component={Register} />
-          <Route path="/signin" component={SignIn} />
+          {/* <Route path="/register" component={Register} /> */}
+          <Route path="/login" component={SignIn} />
           <Route path="/productdetails" component={ProductDetailsPage} />
           <Route path="/cart" component={CartPage} />
         </div>

@@ -6,9 +6,12 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.security.Principal;
 
 @SpringBootApplication
-@ComponentScan(basePackages = { "com.apiit.stadia.RestController","com.apiit.stadia.Services"} )
+//@ComponentScan(basePackages = { "com.apiit.stadia.RestController","com.apiit.stadia.Services"} )
 @EntityScan("com.apiit.stadia.ModelClasses")
 @EnableJpaRepositories("com.apiit.stadia.Repositories")
 public class StadiaApplication{
@@ -16,4 +19,6 @@ public class StadiaApplication{
 		SpringApplication.run(StadiaApplication.class, args);
                 
 	}
+
+
 }

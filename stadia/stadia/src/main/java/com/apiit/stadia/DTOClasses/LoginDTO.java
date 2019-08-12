@@ -32,7 +32,13 @@ public class LoginDTO implements Serializable {
 	
 	@Getter @Setter private Date lastLogin;
 
+	@Getter @Setter String jwttoken;
+
 	public LoginDTO() {
 		
+	}
+
+	public LoginDTO(String jwttoken) {
+		this.jwttoken = jwttoken;
 	}
 }

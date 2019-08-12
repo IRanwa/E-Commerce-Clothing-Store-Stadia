@@ -473,6 +473,31 @@ input[type='email'], input[type='password'] {
   vertical-align: middle;
 }
 
+.signin-container{
+  margin:100px 35%;
+  width:30%;
+  padding:30px;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.signin-text{
+  color:grey;
+  
+}
+
+.socialLoginBtn-container{
+  text-align: center;
+  
+}
+
+.facebook-btn{
+  cursor: pointer;
+}
+
+.google-btn{
+  margin:0.5% 0px;
+}
+
 @media screen and (max-height:500px){
   .login-form{
     margin:0% 30%;
