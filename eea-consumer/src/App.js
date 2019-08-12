@@ -8,6 +8,7 @@ import ProductList from './ProductList';
 import ProductDetails from './Details';
 import Cart from './Cart';
 import SignIn from './SignIn.jsx';
+import Register from './Register';
 const axios = require("axios");
 
 const sitename = "Stadia";
@@ -19,13 +20,32 @@ class App extends Component{
         <div>
           <Route exact path="/" component={Index} />
           {/* <Route path="/register" component={Register} /> */}
-          <Route path="/login" component={SignIn} />
+          <Route path="/login" component={SignInPage} />
+          <Route path="/register" component={RegisterPage} />
           <Route path="/productdetails" component={ProductDetailsPage} />
           <Route path="/cart" component={CartPage} />
         </div>
       </Router>
     );
   }
+}
+
+function SignInPage(){
+  return(
+    <div>
+      <NavBar/>
+      <SignIn/>
+    </div>
+  );
+}
+
+function RegisterPage(){
+  return(
+    <div>
+      <NavBar/>
+      <Register/>
+    </div>
+  );
 }
 
 class CartPage extends Component{

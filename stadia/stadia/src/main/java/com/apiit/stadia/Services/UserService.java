@@ -2,6 +2,7 @@ package com.apiit.stadia.Services;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,16 +41,26 @@ public class UserService {
 	@Autowired
 	private PasswordEncoder bcryptEncoder;
 
-	public ResponseEntity<Boolean> registerUser(User user) {
-		Login login = user.getLogin();
-		login.setPass(bcryptEncoder.encode(login.getPass()));
-		login.setLastLogin(new Date());
-		login = loginRepo.save(login);
+	public ResponseEntity<Boolean> registerUser(User newUser) {
+		Optional<Login> loginOptional = loginRepo.findById(newUser.getEmail());
+		if(!loginOptional.isPresent()) {
+			Login login = newUser.getLogin();
+			login.setPass(bcryptEncoder.encode(login.getPass()));
+			login.setLastLogin(new Date());
+			login = loginRepo.save(login);
 
-		if(login!=null) {
-			user.setLogin(login);
-			userRepo.save(user);
-			return new ResponseEntity<>(true, HttpStatus.INTERNAL_SERVER_ERROR);
+			if (login != null) {
+				newUser.setLogin(login);
+				User user = userRepo.save(newUser);
+
+				if(newUser.getAddress().get(0).getAddress()!=null){
+					Address address = newUser.getAddress().get(0);
+					address.setUser(user);
+					addressRepo.save(address);
+				}
+
+				return new ResponseEntity<>(true, HttpStatus.OK);
+			}
 		}
 		return new ResponseEntity<>(false, HttpStatus.INTERNAL_SERVER_ERROR);
 	}

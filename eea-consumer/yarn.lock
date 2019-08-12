@@ -2625,6 +2625,11 @@ cosmiconfig@^5.0.0, cosmiconfig@^5.0.5, cosmiconfig@^5.0.7:
     lodash.get "^4.4.2"
     parse-json "^4.0.0"
 
+country-state-city@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/country-state-city/-/country-state-city-1.0.0.tgz#c12d9e72b10b93aaf4f99068a7d47230e72518a9"
+  integrity sha512-QWwg8ksVetl16+Tj7d0mdfgJlgUl4iDbQQeHDJ2I4vi8Pv3giy/QEp/vaVnRaZZ+LkIp5HKiQBO/uX1oZ7Ovrg==
+
 create-ecdh@^4.0.0:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/create-ecdh/-/create-ecdh-4.0.3.tgz#c9111b6f33045c4697f144787f9254cdc77c45ff"
@@ -8175,6 +8180,11 @@ react-app-polyfill@^0.2.2:
     promise "8.0.2"
     raf "3.4.1"
     whatwg-fetch "3.0.0"
+
+react-country-region-selector@^1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/react-country-region-selector/-/react-country-region-selector-1.4.3.tgz#fda4a50a1a632078c06b9f99c7a4a81ff2f0b40e"
+  integrity sha512-pWNWkPa6vnX4f8tWkaUQLh60JQKtP/TEkMIK4ZsXQYhvlmM6VNQe9qEbSLE80puakZ42KHhxoONjqg1LwEKW2A==
 
 react-dev-utils@^8.0.0:
   version "8.0.0"

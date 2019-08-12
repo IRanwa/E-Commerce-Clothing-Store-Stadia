@@ -1,8 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import React, { Component } from 'react';
-import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
-import GoogleLogin from 'react-google-login';
+import { Link } from "react-router-dom";
 const axios = require("axios");
 
 
@@ -73,8 +72,9 @@ class SignIn extends Component{
     responseFacebook(response){
         console.log("res facebook ",response)
         if(response.status === 'connected'){
-            window.FB.api('/me',function(response){
+            window.FB.api('/me',{ locale: 'en_US', fields: 'name, email' },function(response){
                 console.log(response.name)
+                console.log(response)
             });
         }
     }
@@ -109,12 +109,12 @@ class SignIn extends Component{
                                 <img className="w-100 facebook-btn" src={require('./facebook-login-icon-10-new.jpg')} onClick={this.loginFacebook}/>
                             </div>
                             <div className="col-lg-6 col-md-12 text-center p-2"> 
-                                <div class="w-100" data-longtitle="false" id="my-signin2"></div>
+                                <div className="w-100" data-longtitle="false" id="my-signin2"></div>
                             </div>
                         </div>
-                        
-                        {/* <div className="google-btn" id="my-signin2"></div> */}
-                       
+                    </div>
+                    <div className="text-center my-1">
+                        <p>Not registered? <Link to="/register" className="register-text">Register Now</Link></p>
                     </div>
                </div>
             </div>
