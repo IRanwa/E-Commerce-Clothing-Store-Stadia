@@ -38,7 +38,9 @@ public class LoginDTO implements Serializable {
 		
 	}
 
-	public LoginDTO(String jwttoken) {
+	public LoginDTO(String jwttoken, String fName, String lName) {
 		this.jwttoken = jwttoken;
+		this.fName = fName;
+		this.lName = lName;
 	}
 }

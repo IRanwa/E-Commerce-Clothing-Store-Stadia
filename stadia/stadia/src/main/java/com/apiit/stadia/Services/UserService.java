@@ -53,7 +53,7 @@ public class UserService {
 				newUser.setLogin(login);
 				User user = userRepo.save(newUser);
 
-				if(newUser.getAddress().get(0).getAddress()!=null){
+				if(newUser.getAddress().get(0).getAddress()!=""){
 					Address address = newUser.getAddress().get(0);
 					address.setUser(user);
 					addressRepo.save(address);
@@ -72,32 +72,37 @@ public class UserService {
 		return false;
 	}
 	
-	public UserDTO getUser(String id) {
-		User user = userRepo.findById(id).get();
-		
-		UserDTO userDTO = new UserDTO();
-		
-		ArrayList<AddressDTO> addressList = new ArrayList<AddressDTO>();
-		for(Address address : user.getAddress()) {
-			AddressDTO addressDTO = new AddressDTO();
-			addressDTO.setAddress(address.getAddress());
-			addressDTO.setAddType(address.getAddType());
-			addressDTO.setCity(address.getCity());
-			addressDTO.setContactNo(address.getContactNo());
-			addressDTO.setCountry(address.getCountry());
-			addressDTO.setFName(address.getFName());
-			addressDTO.setId(address.getId());
-			addressDTO.setLName(address.getLName());
-			addressDTO.setProvince(address.getProvince());
-			addressDTO.setZipCode(address.getZipCode());
-			addressList.add(addressDTO);
-		}
-		userDTO.setAddress(addressList);
-		userDTO.setContactNo(user.getContactNo());
-		userDTO.setDob(user.getDob());
-		userDTO.setGender(user.getGender());
-		userDTO.setLogin(user.getLogin());
-		return userDTO;
+	public ResponseEntity<UserDTO> getUser(String id) {
+		Optional<User> userOptinal = userRepo.findById(id);
+        UserDTO userDTO = null;
+		if(userOptinal.isPresent()) {
+            User user = userOptinal.get();
+            userDTO = new UserDTO();
+
+            ArrayList<AddressDTO> addressList = new ArrayList<AddressDTO>();
+            for (Address address : user.getAddress()) {
+                AddressDTO addressDTO = new AddressDTO();
+                addressDTO.setAddress(address.getAddress());
+                addressDTO.setAddType(address.getAddType());
+                addressDTO.setCity(address.getCity());
+                addressDTO.setContactNo(address.getContactNo());
+                addressDTO.setCountry(address.getCountry());
+                addressDTO.setFName(address.getFName());
+                addressDTO.setId(address.getId());
+                addressDTO.setLName(address.getLName());
+                addressDTO.setProvince(address.getProvince());
+                addressDTO.setZipCode(address.getZipCode());
+                addressList.add(addressDTO);
+            }
+            userDTO.setAddress(addressList);
+            userDTO.setContactNo(user.getContactNo());
+            userDTO.setDob(user.getDob());
+            userDTO.setGender(user.getGender());
+            userDTO.setLogin(user.getLogin());
+
+            return new ResponseEntity<>(userDTO,HttpStatus.OK);
+        }
+		return new ResponseEntity<>(userDTO,HttpStatus.NOT_FOUND);
 	}
 	
 	public boolean deleteUser(String id) {

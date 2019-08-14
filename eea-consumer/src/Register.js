@@ -1,12 +1,14 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import React, { Component } from 'react';
+// import { Redirect } from "react-router-dom";
 let csc = require('country-state-city').default;
 const axios = require("axios");
 
 class Register extends Component{
     constructor(props){
         super(props);
+
         this.state = { 
             countriesList: [],
             selectedCountry: "",
@@ -28,6 +30,8 @@ class Register extends Component{
             zipCode:""
         };
 
+        
+
         this.selectCountry = this.selectCountry.bind(this);
         this.selectState = this.selectState.bind(this);
         this.selectCity = this.selectCity.bind(this);
@@ -37,10 +41,19 @@ class Register extends Component{
     }
 
     componentDidMount(){
-        console.log(csc)
-        this.setState({
-            countriesList:csc.getAllCountries()
-        })
+        console.log(this.props)
+        if(this.props!=={}){
+            const email = this.props.email;
+            const fullName = this.props.name;
+            const nameList = fullName.split(" ");
+            this.setState({
+                email:email,
+                firstName:nameList[0],
+                lastName:nameList[nameList.length-1],
+                countriesList:csc.getAllCountries()
+            })
+        }
+        
     }
 
     changeInputText(event){
@@ -123,14 +136,16 @@ class Register extends Component{
             addType:"Shipping"
         }]
 
+        const login = {
+            email:this.state.email,
+            pass:this.state.password,
+            fname:this.state.firstName,
+            lname:this.state.lastName,
+            role:"Consumer"
+        };
+
         const user = {
-            login :{
-                email:this.state.email,
-                pass:this.state.password,
-                fname:this.state.firstName,
-                lname:this.state.lastName,
-                role:"Consumer"
-            },
+            login :login,
             email:this.state.email,
             address:address
         }
@@ -138,8 +153,12 @@ class Register extends Component{
         axios.post("http://localhost:8080/Register",user)
         .then(function(res){
             alert("Registered Successfully!");
-            console.log(res.data);
-
+            console.log(login);
+            axios.post("http://localhost:8080/authenticate/",login)
+            .then(function(res){
+                localStorage.setItem("email",login.email);
+                localStorage.setItem("token",res.data.jwttoken);
+            });
         })
     }
 

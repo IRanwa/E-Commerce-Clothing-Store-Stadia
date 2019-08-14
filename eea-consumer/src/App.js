@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import './images.css';
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route,Redirect } from "react-router-dom";
 //import {Register,SignIn} from './RegSignIn';
 import ProductList from './ProductList';
 import ProductDetails from './Details';
@@ -39,13 +39,19 @@ function SignInPage(){
   );
 }
 
-function RegisterPage(){
-  return(
-    <div>
-      <NavBar/>
-      <Register/>
-    </div>
-  );
+class RegisterPage extends Component{
+  constructor(props){
+    super(props);
+  }
+  
+  render(){
+    return(
+      <div>
+        <NavBar/>
+        <Register email={this.props.location.state.email} name={this.props.location.state.name}/>
+      </div>
+    );
+  }
 }
 
 class CartPage extends Component{
@@ -114,10 +120,11 @@ class NavBar extends Component{
       showNav:false,
       mouseMove:false,
       mainCat:[],
-      subCatView:true,
+      subCatView:true
     }
     this.toggleClick = this.toggleClick.bind(this);
     this.getMainCat = this.getMainCat.bind(this);
+    this.signOut = this.signOut.bind(this);
   }
 
   toggleClick(){
@@ -141,6 +148,11 @@ class NavBar extends Component{
         });
       })
     }
+  }
+
+  signOut(){
+    localStorage.removeItem("token")
+    localStorage.removeItem("email")
   }
 
   render(){
@@ -216,15 +228,70 @@ class NavBar extends Component{
 
                 <a className="nav-item nav-link nav-sub" href="/">Orders</a>
               </div>
-              <div className="cart-icon-container">
-                <a className="nav-item nav-link" href="/cart">
-                  <img src="https://static.thenounproject.com/png/16757-200.png" className="cart-img"/>
-                  <label className="cart-text">1</label>
-                </a>
-                
+              {
+                localStorage.email!=undefined?(
+                  <div className="cart-icon-container">
+                    <a className="nav-item nav-link" href="/cart">
+                      <img src="https://static.thenounproject.com/png/16757-200.png" className="cart-img"/>
+                      <label className="cart-text">1</label>
+                    </a>
+                    
+                  </div>
+                ):("")
+              }
+             
+              <div>
+                <div className="dropdown">
+                    <a className="nav-item nav-link profile-icon-container">
+                      <img src="https://cdn4.iconfinder.com/data/icons/standard-free-icons/139/Profile01-512.png" alt="profile-icon" className="profile-icon"/>
+                        
+                    </a>
+                    <div className="dropdown-menu profile-icon-subcontainer row">
+                      {
+                        localStorage.email!=undefined?(
+                          <div>
+                            <div className="column w-100">
+                              <h6>Welcome back {localStorage.name}</h6>
+                            </div>
+                            <div className="column w-100 my-1">
+                              <a className="profile-icon-item" href="/" onClick={this.signOut}>
+                                <img src="https://icon-library.net/images/icon-logout/icon-logout-22.jpg" className="login-sub-icon mr-3"/>Sign Out
+                              </a>
+                            </div>
+                            <hr></hr>
+
+                            <div className="column w-100">
+                              <a className="profile-icon-item">
+                                <img src="https://icon-library.net/images/my-profile-icon-png/my-profile-icon-png-3.jpg" className="profile-sub-icon mr-3"/>My Profile
+                              </a>
+                            </div>
+
+                            <div className="column w-100">
+                              <a className="profile-icon-item">
+                                <img src="http://cdn.onlinewebfonts.com/svg/img_440180.png" className="profile-sub-icon mr-3"/>My Address
+                              </a>
+                            </div>
+                          </div>
+                        ):(
+                          <div>
+                            <div className="column w-100 my-1">
+                              <a className="profile-icon-item" href="/login">
+                                <img src="https://image.flaticon.com/icons/svg/1286/1286825.svg" className="login-sub-icon mr-3"/>Login
+                              </a>
+                            </div>
+
+                            <div className="column w-100 my-1">
+                              <a className="profile-icon-item" href="/register">
+                                <img src="https://cdn0.iconfinder.com/data/icons/cosmetic-store/25/Register-512.png" className="login-sub-icon mr-3"/>Register
+                              </a>
+                            </div>
+                          </div>
+                        )
+                      }
+                    </div>
+                </div>
               </div>
-              
-              <a className="nav-item nav-link mr-3" href="/">Log out</a>
+              {/* <a className="nav-item nav-link mr-3" href="/">Log out</a> */}
             </div>
           </div>
         </nav>

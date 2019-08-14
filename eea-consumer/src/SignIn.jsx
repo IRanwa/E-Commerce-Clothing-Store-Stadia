@@ -1,42 +1,60 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import React, { Component } from 'react';
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 const axios = require("axios");
 
 
 class SignIn extends Component{
     constructor(props){
         super(props);
-        this.responseFacebook = this.responseFacebook.bind(this);
-        this.responseGoogle = this.responseGoogle.bind(this);
+
+        this.state = {
+            email:"",
+            password:"",
+            name:"",
+            redirectToHome:false,
+            redirectToRegister:false
+        }
+
         this.loginFacebook = this.loginFacebook.bind(this);
         
+        this.changeInput = this.changeInput.bind(this);
+        this.signBtn = this.signBtn.bind(this);
+        this.socialLogin = this.socialLogin.bind(this);
     }
 
     componentDidMount(){
+        const that = this;
         const googleScript = document.createElement("script");
         googleScript.src="https://apis.google.com/js/platform.js";
         googleScript.onload=()=>{
             
             
             window.gapi.signin2.render('my-signin2', {
-                'scope': 'profile email',
+                // 'scope': 'profile email',
+                'scope': 'https://www.googleapis.com/auth/plus.login',
                 'width':'0',
-                'longtitle': true,
+                'longtitle': false,
                 'theme': 'dark',
                 'onsuccess': onSuccess,
                 'onfailure': onFailure
             });
 
             function onSuccess(response){
-                console.log("success ",response)
+                console.log("Google Sign In Successful!");
+                const data = {
+                    email:response.w3.U3,
+                    name:response.w3.ig
+                }
+                that.socialLogin(data);
             }
         
             function onFailure(response){
-                console.log("failed ",response)
+                console.log("Google Sign In un-Successful!");
             }
         }
+        document.body.appendChild(googleScript);
 
         window.fbAsyncInit = function() {
             window.FB.init({
@@ -49,56 +67,135 @@ class SignIn extends Component{
             window.FB.AppEvents.logPageView();   
               
         };
-        
-        (function(d, s, id){
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {return;}
-            js = d.createElement(s); js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
 
-        document.body.appendChild(googleScript);
+        
+        // Load the SDK asynchronously
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=YOUR-APP'S-ID";
+            fjs.parentNode.insertBefore(js, fjs);
+          }(document, 'script', 'facebook-jssdk'));
+
+        
     }
 
     loginFacebook(){
+        const that = this;
         window.FB.login(
-            response => {this.responseFacebook(response)},
-            {scope : 'email,public_profile'}
+            response => {
+                //this.responseFacebook(response)
+                if(response.status === 'connected'){
+                    console.log("Facebook login successful!");
+                    window.FB.api('/me',{ locale: 'en_US', fields: 'name, email' },function(response){
+                        that.socialLogin(response)
+                    });
+                }else{
+                    console.log("Facebook login un-successful!");
+                }
+            },
+            {scope : 'public_profile,email'}
         );
     }
-    
 
-    responseFacebook(response){
-        console.log("res facebook ",response)
-        if(response.status === 'connected'){
-            window.FB.api('/me',{ locale: 'en_US', fields: 'name, email' },function(response){
-                console.log(response.name)
-                console.log(response)
-            });
+    socialLogin(response){
+        console.log(response)
+        const that = this;
+        axios.post("http://localhost:8080/GetUser",{
+            email:response.email
+        })
+        .then(function(res){
+            console.log("facebook signin ",res.data)
+            axios.post("http://localhost:8080/authenticate/SocialMedia",res.data.login)
+            .then(function(res){
+                const data = res.data;
+                localStorage.setItem("token",data.jwktoken);
+                localStorage.setItem("email",that.state.email);
+                localStorage.setItem("name",(data.fname+" "+data.lname));
+                that.setState({
+                    redirectToHome:true
+                })
+
+            })
+        }).catch(function(error){
+            const res = error.response;
+            if(res.data==="" && res.status===404){
+                that.setState({
+                    email:response.email,
+                    name:response.name,
+                    redirectToRegister:true
+                });
+            }else{
+                alert("Server Erro!");
+            }
+        })
+    }
+
+    changeInput(event){
+        const name = event.target.name;
+        const value = event.target.value;
+        switch(name){
+            case "email":
+                this.setState({
+                    email:value
+                })
+                break;
+            case "password":
+                this.setState({
+                    password:value
+                })
+                break;
         }
     }
 
-    responseGoogle(response){
-        console.log("res ",response)
+    signBtn(){
+        const login = {
+            email:this.state.email,
+            pass:this.state.password
+        }
+
+        const that = this;
+        axios.post("http://localhost:8080/authenticate/",login)
+        .then(function(res){
+            const data = res.data;
+            console.log(data)
+            localStorage.setItem("token",data.jwktoken);
+            localStorage.setItem("email",that.state.email);
+            localStorage.setItem("name",(data.fname+" "+data.lname));
+            that.setState({
+                redirectToHome:true
+            })
+
+        })
     }
-    
 
     render(){
+        console.log(this.state.email)
         return(
             <div>
-               
+               {
+                   this.state.redirectToHome?(
+                       <Redirect to="/"/>
+                   ):("")
+               }
+               {
+                   
+                   this.state.redirectToRegister?(
+                       <Redirect to={{pathname:"/register",state:{email:this.state.email, name:this.state.name}}}/>
+                   ):("")
+               }
                <div className="card signin-container">
-                    <h6 className="signin-text">Email</h6>
-                    <input type="text" className="card"/>
+                    <h6 className="signin-text" >Email</h6>
+                    <input type="text" className="card" value={this.state.email} onChange={(event)=>this.changeInput(event)} name="email"/>
                     <h6 className="signin-text my-2">Password</h6>
-                    <input type="password" className="card"/>
+                    <input type="password" className="card" value={this.state.password} onChange={(event)=>this.changeInput(event)} name="password"/>
                     <div className="row text-nowrap">
                         <div className="col-lg-6 col-md-12 text-center p-2">
                             <button className="btn-sm btn-danger w-75">Reset</button>
                         </div>
                         <div className="col-lg-6 col-md-12 text-center p-2">
-                            <button className="btn-sm btn-success w-75">Sign In</button>
+                            <button className="btn-sm btn-success w-75" onClick={this.signBtn}>Sign In</button>
                         </div>
                         
                     </div>

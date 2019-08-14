@@ -410,6 +410,48 @@ input[type='email'], input[type='password'] {
   
 }
 
+.profile-icon{
+  width:30px;
+  height:30px;
+}
+
+.profile-icon-container{
+  margin-right: 30px;
+}
+
+.profile-icon-subcontainer{
+  display:none;
+  min-width:0;
+  right: 0;
+  left:-75px;
+  padding:10px;
+  margin-right:10px;
+}
+
+.profile-icon-subcontainer .dropdown-menu{
+  left:none;
+  
+}
+
+.profile-icon-container:hover .profile-icon-subcontainer{
+  display:block;
+  left:0;
+}
+
+.profile-icon-item{
+  cursor: pointer;
+}
+
+.profile-sub-icon{
+  width:20px;
+  height:20px;
+}
+
+.login-sub-icon{
+  width:18px;
+  height:18px;
+}
+
 .cart-text{
   position: absolute;
   background-color: green;
@@ -492,6 +534,7 @@ input[type='email'], input[type='password'] {
 
 .facebook-btn{
   cursor: pointer;
+  height:100%;
 }
 
 .google-btn{

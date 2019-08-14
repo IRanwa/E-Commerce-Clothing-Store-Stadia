@@ -1,15 +1,21 @@
 package com.apiit.stadia.RestController;
 
 import com.apiit.stadia.DTOClasses.LoginDTO;
+import com.apiit.stadia.ModelClasses.Login;
+import com.apiit.stadia.Repositories.LoginRepository;
 import com.apiit.stadia.config.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.authentication.PasswordEncoderParser;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.DateFormat;
@@ -17,6 +23,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.TimeZone;
 
 @RestController
@@ -30,20 +37,50 @@ public class JwtAuthenticationController {
 	private JwtTokenUtil jwtTokenUtil;
 
 	@Autowired
-	private UserDetailsService jwtInMemoryUserDetailsService;
+	private UserDetailsService jwtUserDetailsService;
 
-	@PostMapping("/authenticate")
+	@Autowired
+	private LoginRepository loginRepo;
+
+
+	@PostMapping("/authenticate/")
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginDTO authenticationRequest)
 			throws Exception {
 
 		authenticate(authenticationRequest.getEmail(), authenticationRequest.getPass());
 
-		final UserDetails userDetails = jwtInMemoryUserDetailsService
+		final UserDetails userDetails = jwtUserDetailsService
 				.loadUserByUsername(authenticationRequest.getEmail());
 
 		final String token = jwtTokenUtil.generateToken(userDetails);
 
-		return ResponseEntity.ok(new LoginDTO(token));
+		Optional<Login> loginOptional = loginRepo.findById(authenticationRequest.getEmail());
+		if(loginOptional.isPresent()){
+			Login login = loginOptional.get();
+			return ResponseEntity.ok(new LoginDTO(token,login.getFName(),login.getLName()));
+		}else{
+			return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+		}
+
+	}
+
+	@PostMapping("/authenticate/SocialMedia")
+	public ResponseEntity<?> createAuthenticationTokenUsingSocialMedia(@RequestBody LoginDTO authenticationRequest)
+			throws Exception {
+
+		Optional<Login> loginOptional = loginRepo.findById(authenticationRequest.getEmail());
+		if(loginOptional.isPresent()) {
+			Login login = loginOptional.get();
+			//authenticate(authenticationRequest.getEmail(), loginOptional.get().getPass());
+
+			final UserDetails userDetails = jwtUserDetailsService
+					.loadUserByUsername(authenticationRequest.getEmail());
+
+			final String token = jwtTokenUtil.generateToken(userDetails);
+
+			return new ResponseEntity<>(new LoginDTO(token,login.getFName(),login.getLName()), HttpStatus.OK);
+		}
+		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 	}
 
 	@PostMapping("/getTokenExpirationDate")

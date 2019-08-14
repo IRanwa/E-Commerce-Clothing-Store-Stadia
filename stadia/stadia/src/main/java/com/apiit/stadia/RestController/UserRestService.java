@@ -30,30 +30,23 @@ public class UserRestService {
 	@Autowired
 	UserService userService;
 
-	@PostMapping(value="/Register")
+	@PostMapping("/Register")
 	public ResponseEntity<Boolean> RegisterUser(@RequestBody User user) {
 		return userService.registerUser(user);
 	}
 	
-	@GetMapping(value="/Login")
-	public boolean LoginUser() {
-		Login login = new Login("imeshranwa2","123");
-		return userService.loginUser(login);
+	@PostMapping("/GetUser")
+	public ResponseEntity<UserDTO> GetUserDetails(@RequestBody User user) {
+		return userService.getUser(user.getEmail());
 	}
 	
-	@GetMapping(value="/User/{id}")
-	public UserDTO GetUserDetails(@PathVariable String id) {
-		return userService.getUser(id);
-	}
-	
-	@DeleteMapping(value="/User/{id}")
+	@DeleteMapping(value="/DeleteUser/{id}")
 	public boolean DeleteUser(@PathVariable String id) {
 		return userService.deleteUser(id);
 	}
 	
-	@PutMapping(value="/User/{id}")
+	@PutMapping(value="/UpdateUser/{id}")
 	public User UpdateUser(@PathVariable String id) {
-		
 		return userService.updateUser(id);
 	}
 	
