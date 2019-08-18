@@ -50,7 +50,7 @@ class Profile extends Component{
         })
     }
 
-    modalClose(command){
+    modalClose(){
         
         const that = this;
         const modal = document.getElementsByClassName("modal")[0];

@@ -3,7 +3,14 @@ import './App.css';
 import { Link } from "react-router-dom";
 import { Fade } from 'react-slideshow-image';
 import React, { Component } from 'react';
+import {Redirect} from 'react-router-dom';
 const axios = require("axios");
+
+const config = {
+    headers:{
+        Authorization:'Bearer '+localStorage.token
+    }
+}
 
 class Cart extends Component{
     constructor(props){
@@ -12,7 +19,8 @@ class Cart extends Component{
             orderProducts:[],
             cartStatus:true,
             selectedRows:[],
-            remoteItemBtn:false
+            remoteItemBtn:false,
+            redirectToHome:false
         }
         this.changeQty = this.changeQty.bind(this);
         this.removeItem = this.removeItem.bind(this);
@@ -23,10 +31,10 @@ class Cart extends Component{
     componentDidMount(){
         const that = this;
         axios.post("http://localhost:8080/ViewCart",{
-           email:"imesh"
+           email:localStorage.email
             
-        }).then(function(res){
-            
+        },config).then(function(res){
+            console.log("View cart data retreive sucessfully!");
             if(res.data!=null && res.data.length>0){
                 that.setState({
                     orderProducts:res.data
@@ -37,12 +45,21 @@ class Cart extends Component{
                 })
                 
             }
-        }).catch(function(res){
-            console.log(res)
-            if(res.data!=null && res.data.length==0){
+        }).catch(function(error){
+            console.log(error.response)
+            if(error.response.status===401 && localStorage.token!==undefined){
+                localStorage.removeItem("token");
+                localStorage.removeItem("email");
+                localStorage.removeItem("name");
+                window.location.reload();
+            }
+
+            console.log("View cart data retreive un-sucessfully!");
+            if(error.data!=null && error.data.length==0){
                 alert("Server Error");
                 console.log("Server error in cart!");
             }else{
+                
                 that.setState({
                     cartStatus: false
                 })
@@ -122,6 +139,7 @@ class Cart extends Component{
     }
 
     removeSelectedItems(){
+        const that = this;
         let prodSizeIds = [];
         for(var i=0;i<this.state.selectedRows.length;i++){
             prodSizeIds.push({
@@ -135,12 +153,22 @@ class Cart extends Component{
             orderProducts:prodSizeIds
         };
         console.log(data)
-        axios.post("http://localhost:8080/DeleteCartItems",
-        data
-        ).then(function(res){
+        axios.post("http://localhost:8080/DeleteCartItems",data,config)
+        .then(function(res){
             console.log("Cart selected items removed successfully!");
             alert("Cart selected items removed successfully!");
             window.location.reload();
+        }).catch(function(error){
+            if(error.status===401){
+                localStorage.removeItem("token");
+                localStorage.removeItem("email");
+                localStorage.removeItem("name");
+                that.setState({
+                    redirectToHome:true
+                })
+            }
+            console.log("Cart selected items remove un-successful!\nError : ",error.response);
+            alert("Cart selected items remove un-successful!");
         });
     }
 
@@ -154,8 +182,7 @@ class Cart extends Component{
             productSizes:{
                 id:prodSizeId
             }
-        }).then(function(res){
-            
+        },config).then(function(res){
             that.setState(state=>{
                 const orderProdList = state.orderProducts;
                 let orderProd = orderProdList[index];
@@ -170,12 +197,24 @@ class Cart extends Component{
     }
 
     removeItem(orderId,prodSizeId){
-        axios.delete("http://localhost:8080/DeleteCartItem/"+orderId+"/"+prodSizeId)
+        const that = this;
+        axios.delete("http://localhost:8080/DeleteCartItem/"+orderId+"/"+prodSizeId,config)
         .then(function(res){
             console.log("Cart item removed successfully!");
             alert("Cart item removed successfully!");
             window.location.reload();
-        })
+        }).catch(function(error){
+            if(error.status===401){
+                localStorage.removeItem("token");
+                localStorage.removeItem("email");
+                localStorage.removeItem("name");
+                that.setState({
+                    redirectToHome:true
+                })
+            }
+            console.log("Cart item removed un-successful!\nError : ",error.response);
+            alert("Cart item removed un-successful!");
+        });
     }
 
     render(){
@@ -189,6 +228,11 @@ class Cart extends Component{
         console.log(this.state.orderProducts)
         return(
             <div className="card w-90 p-1 m-5">
+                {
+                    this.state.redirectToHome?(
+                        <Redirect to="/"/>
+                    ):("")
+                }
                  <div className="w-100 text-center ">
 
                     

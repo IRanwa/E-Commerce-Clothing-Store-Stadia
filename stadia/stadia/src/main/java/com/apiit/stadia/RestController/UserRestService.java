@@ -1,8 +1,11 @@
 package com.apiit.stadia.RestController;
 
 import java.util.Date;
+import java.util.List;
 
+import com.apiit.stadia.DTOClasses.AddressDTO;
 import com.apiit.stadia.DTOClasses.LoginDTO;
+import com.apiit.stadia.ModelClasses.Address;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +26,8 @@ import com.apiit.stadia.EnumClasses.UserRole;
 import com.apiit.stadia.ModelClasses.Login;
 import com.apiit.stadia.ModelClasses.User;
 import com.apiit.stadia.Services.UserService;
+
+import javax.xml.ws.Response;
 
 @RestController
 @CrossOrigin("*")
@@ -55,6 +60,26 @@ public class UserRestService {
 	public ResponseEntity<User> UpdateUser(@PathVariable String id, @RequestBody User user) {
 		return userService.updateUser(id,user);
 	}
-	
+
+	//Address details
+	@GetMapping("/GetAddressList/{id}")
+	public ResponseEntity<List<AddressDTO>> getAddressList(@PathVariable String id){
+		return userService.getAddressList(id);
+	}
+
+	@PostMapping("/NewAddress")
+	public ResponseEntity<AddressDTO> newAddress(@RequestBody Address address){
+		return userService.newAddress(address);
+	}
+
+	@PutMapping("/UpdateAddress")
+	public ResponseEntity<AddressDTO> updateAddress(@RequestBody Address address){
+		return userService.updateAddress(address);
+	}
+
+	@DeleteMapping("/DeleteAddress/{id}")
+	public ResponseEntity<Boolean> deleteAddress(@PathVariable long id){
+		return userService.deleteAddress(id);
+	}
 	
 }

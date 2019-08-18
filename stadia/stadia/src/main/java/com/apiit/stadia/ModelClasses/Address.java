@@ -30,7 +30,7 @@ public class Address implements Serializable{
 	@OneToMany(mappedBy="billingAddress")
 	@Getter @Setter List<Orders> ordersBilling;
 	
-	@ManyToOne(cascade=CascadeType.REMOVE)
+	@ManyToOne(cascade=CascadeType.DETACH)
 	@JoinColumn(name="email",referencedColumnName="email")
 	@Getter @Setter User user;
 	

@@ -205,4 +205,20 @@ public class ModelClassToDTO {
 		loginDTO.setRole(login.getRole());
 		return loginDTO;
 	}
+
+	public AddressDTO addressToDTO(Address address){
+		AddressDTO addressDTO = new AddressDTO();
+		addressDTO.setId(address.getId());
+		addressDTO.setFName(address.getFName());
+		addressDTO.setLName(address.getLName());
+		addressDTO.setContactNo(address.getContactNo());
+		addressDTO.setAddress(address.getAddress());
+		addressDTO.setCity(address.getCity());
+		addressDTO.setProvince(address.getProvince());
+		addressDTO.setZipCode(address.getZipCode());
+		addressDTO.setCountry(address.getCountry());
+		addressDTO.setAddType(address.getAddType());
+
+		return addressDTO;
+	}
 }

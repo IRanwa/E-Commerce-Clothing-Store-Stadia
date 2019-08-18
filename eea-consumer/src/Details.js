@@ -5,6 +5,12 @@ import { Fade } from 'react-slideshow-image';
 import React, { Component } from 'react';
 const axios = require("axios");
 
+const config = {
+    headers:{
+        Authorization:"Bearer "+localStorage.token
+    }
+}
+
 class ProductDetails extends Component{
     constructor(props){
         super(props);
@@ -13,7 +19,9 @@ class ProductDetails extends Component{
             product:"",
             stockLevel:0,
             selectedSize:0,
-            selectQty:1
+            selectQty:1,
+
+            redirectToLogin:false
         }
         this.changeSize = this.changeSize.bind(this);
         this.changeQty = this.changeQty.bind(this);
@@ -51,24 +59,31 @@ class ProductDetails extends Component{
     }
 
     addToCart(){
-        console.log("selected size ",this.state.selectedSize," ",this.state.selectQty)
-        axios.post("http://localhost:8080/AddToCart",{
-            productSizes:{
-                id:this.state.selectedSize,
-                quantity:this.state.selectQty
-           },
-           orders:{
-              user:{
-                 email:"imesh" 
-              } 
-           } 
-        }).then(function(res){
-            alert("Product added to cart successfully!");
-            console.log("Product added to cart successfully!");
-        }).catch(function(error){
-            alert("Product added to cart un-successfully!");
-            console.log("Product added to cart un-successfully!");
-        });
+        if(localStorage.email!==undefined){
+            console.log("selected size ",this.state.selectedSize," ",this.state.selectQty)
+            axios.post("http://localhost:8080/AddToCart",{
+                productSizes:{
+                    id:this.state.selectedSize,
+                    quantity:this.state.selectQty
+            },
+            orders:{
+                user:{
+                    email:localStorage.email 
+                } 
+            } 
+            },config).then(function(res){
+                alert("Product added to cart successfully!");
+                console.log("Product added to cart successfully!");
+            }).catch(function(error){
+                alert("Product added to cart un-successfully!");
+                console.log("Product added to cart un-successfully!");
+            });
+        }else{
+            this.setState({
+                redirectToLogin:true
+            })
+        }
+        
     }
 
     render(){
@@ -93,6 +108,11 @@ class ProductDetails extends Component{
         console.log(qty)
         return(
             <div className="card details-container">
+                {
+                    this.state.redirectToLogin?(
+                        <Redirect to="/login"/>
+                    ):("")
+                }
                 <div className="row">
                     <div className="column slide-container slide-container-details ">
                         {
