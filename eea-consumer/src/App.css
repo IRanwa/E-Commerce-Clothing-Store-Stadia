@@ -566,6 +566,35 @@ input[type='email'], input[type='password'] {
   font-family: 'Times New Roman', Times, serif;
 }
 
+.profile-container{
+  margin:50px 5%;
+  width:90%;
+  padding:30px;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.profile-container .profile-header{
+  font-weight: bold;
+}
+
+.profile-subcontainer-1{
+  width:20%;
+  margin-right:5%;
+}
+
+.profile-subcontainer-1 .card{
+  padding:10px;
+}
+
+.profile-subcontainer-2{
+  width:75%;
+}
+
+.profile-subcontainer-2 .card{
+  padding:10px;
+}
+
+
 .register-subcontainer{
   width:40%;
   margin:0px 5%;

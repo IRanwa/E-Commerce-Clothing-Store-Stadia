@@ -9,6 +9,7 @@ import ProductDetails from './Details';
 import Cart from './Cart';
 import SignIn from './SignIn.jsx';
 import Register from './Register';
+import Profile from './Profile';
 const axios = require("axios");
 
 const sitename = "Stadia";
@@ -24,10 +25,20 @@ class App extends Component{
           <Route path="/register" component={RegisterPage} />
           <Route path="/productdetails" component={ProductDetailsPage} />
           <Route path="/cart" component={CartPage} />
+          <Route path="/profile" component={ProfilePage} />
         </div>
       </Router>
     );
   }
+}
+
+function ProfilePage(){
+  return(
+    <div>
+      <NavBar/>
+      <Profile/>
+    </div>
+  )
 }
 
 function SignInPage(){
@@ -151,8 +162,10 @@ class NavBar extends Component{
   }
 
   signOut(){
-    localStorage.removeItem("token")
-    localStorage.removeItem("email")
+    localStorage.removeItem("token");
+    localStorage.removeItem("email");
+    localStorage.removeItem("name");
+    console.log(localStorage);
   }
 
   render(){
@@ -253,21 +266,21 @@ class NavBar extends Component{
                             <div className="column w-100">
                               <h6>Welcome back {localStorage.name}</h6>
                             </div>
-                            <div className="column w-100 my-1">
+                            <div className="column w-100">
                               <a className="profile-icon-item" href="/" onClick={this.signOut}>
                                 <img src="https://icon-library.net/images/icon-logout/icon-logout-22.jpg" className="login-sub-icon mr-3"/>Sign Out
                               </a>
                             </div>
                             <hr></hr>
 
-                            <div className="column w-100">
-                              <a className="profile-icon-item">
+                            <div className="column w-100 my-1">
+                              <a className="profile-icon-item nav-item nav-link m-0 p-0 " href="/profile">
                                 <img src="https://icon-library.net/images/my-profile-icon-png/my-profile-icon-png-3.jpg" className="profile-sub-icon mr-3"/>My Profile
                               </a>
                             </div>
 
-                            <div className="column w-100">
-                              <a className="profile-icon-item">
+                            <div className="column w-100 my-1">
+                              <a className="profile-icon-item nav-item nav-link m-0 p-0 " href="/address">
                                 <img src="http://cdn.onlinewebfonts.com/svg/img_440180.png" className="profile-sub-icon mr-3"/>My Address
                               </a>
                             </div>

@@ -2,6 +2,7 @@ package com.apiit.stadia.RestController;
 
 import java.util.Date;
 
+import com.apiit.stadia.DTOClasses.LoginDTO;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,11 @@ public class UserRestService {
 	@PostMapping("/GetUser")
 	public ResponseEntity<UserDTO> GetUserDetails(@RequestBody User user) {
 		return userService.getUser(user.getEmail());
+	}
+
+	@PostMapping("/CheckUser")
+	public ResponseEntity<LoginDTO> CheckUserRegistered(@RequestBody User user) {
+		return userService.checkUserRegistered(user.getEmail());
 	}
 	
 	@DeleteMapping(value="/DeleteUser/{id}")

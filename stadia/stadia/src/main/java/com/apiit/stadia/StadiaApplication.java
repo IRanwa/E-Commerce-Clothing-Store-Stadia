@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.security.Principal;
 
+
 @SpringBootApplication
 //@ComponentScan(basePackages = { "com.apiit.stadia.RestController","com.apiit.stadia.Services"} )
 @EntityScan("com.apiit.stadia.ModelClasses")

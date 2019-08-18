@@ -41,6 +41,9 @@ public class UserService {
 	@Autowired
 	private PasswordEncoder bcryptEncoder;
 
+	@Autowired
+	private ModelClassToDTO modelClassToDTO;
+
 	public ResponseEntity<Boolean> registerUser(User newUser) {
 		Optional<Login> loginOptional = loginRepo.findById(newUser.getEmail());
 		if(!loginOptional.isPresent()) {
@@ -74,35 +77,11 @@ public class UserService {
 	
 	public ResponseEntity<UserDTO> getUser(String id) {
 		Optional<User> userOptinal = userRepo.findById(id);
-        UserDTO userDTO = null;
 		if(userOptinal.isPresent()) {
             User user = userOptinal.get();
-            userDTO = new UserDTO();
-
-            ArrayList<AddressDTO> addressList = new ArrayList<AddressDTO>();
-            for (Address address : user.getAddress()) {
-                AddressDTO addressDTO = new AddressDTO();
-                addressDTO.setAddress(address.getAddress());
-                addressDTO.setAddType(address.getAddType());
-                addressDTO.setCity(address.getCity());
-                addressDTO.setContactNo(address.getContactNo());
-                addressDTO.setCountry(address.getCountry());
-                addressDTO.setFName(address.getFName());
-                addressDTO.setId(address.getId());
-                addressDTO.setLName(address.getLName());
-                addressDTO.setProvince(address.getProvince());
-                addressDTO.setZipCode(address.getZipCode());
-                addressList.add(addressDTO);
-            }
-            userDTO.setAddress(addressList);
-            userDTO.setContactNo(user.getContactNo());
-            userDTO.setDob(user.getDob());
-            userDTO.setGender(user.getGender());
-            userDTO.setLogin(user.getLogin());
-
-            return new ResponseEntity<>(userDTO,HttpStatus.OK);
+            return new ResponseEntity<>(modelClassToDTO.userToDTO(user),HttpStatus.OK);
         }
-		return new ResponseEntity<>(userDTO,HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
 	}
 	
 	public boolean deleteUser(String id) {
@@ -123,5 +102,13 @@ public class UserService {
 		user.setLogin(login);
 		user.setEmail(login.getEmail());
 		return userRepo.save(user);
+	}
+
+	public ResponseEntity<LoginDTO> checkUserRegistered(String email) {
+		Optional<Login> loginOptional = loginRepo.findById(email);
+		if(loginOptional.isPresent()){
+			return new ResponseEntity<>(modelClassToDTO.loginToDTO(loginOptional.get()),HttpStatus.OK);
+		}
+		return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
 	}
 }

@@ -25,6 +25,7 @@ class SignIn extends Component{
     }
 
     componentDidMount(){
+        console.log("localStorage ",localStorage)
         const that = this;
         const googleScript = document.createElement("script");
         googleScript.src="https://apis.google.com/js/platform.js";
@@ -100,18 +101,19 @@ class SignIn extends Component{
     }
 
     socialLogin(response){
-        console.log(response)
+        
         const that = this;
-        axios.post("http://localhost:8080/GetUser",{
+        axios.post("http://localhost:8080/CheckUser",{
             email:response.email
         })
         .then(function(res){
             console.log("facebook signin ",res.data)
-            axios.post("http://localhost:8080/authenticate/SocialMedia",res.data.login)
+            axios.post("http://localhost:8080/authenticate/SocialMedia",res.data)
             .then(function(res){
                 const data = res.data;
-                localStorage.setItem("token",data.jwktoken);
-                localStorage.setItem("email",that.state.email);
+                console.log(data);
+                localStorage.setItem("token",data.jwttoken);
+                localStorage.setItem("email",response.email);
                 localStorage.setItem("name",(data.fname+" "+data.lname));
                 that.setState({
                     redirectToHome:true
@@ -119,6 +121,7 @@ class SignIn extends Component{
 
             })
         }).catch(function(error){
+            console.log(error);
             const res = error.response;
             if(res.data==="" && res.status===404){
                 that.setState({

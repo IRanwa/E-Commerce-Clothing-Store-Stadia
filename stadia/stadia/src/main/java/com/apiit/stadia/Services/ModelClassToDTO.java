@@ -184,4 +184,25 @@ public class ModelClassToDTO {
 		mainSubCatDTO.setMainCategory(mainCategoryToDTO(mainSubCategory.getMainCategory()));
 		return mainSubCatDTO;
 	}
+
+	public UserDTO userToDTO(User user){
+		UserDTO userDTO = new UserDTO();
+		userDTO.setEmail(user.getEmail());
+		userDTO.setContactNo(user.getContactNo());
+		userDTO.setDob(user.getDob());
+		userDTO.setGender(user.getGender());
+
+		userDTO.setLogin(loginToDTO(user.getLogin()));
+		return userDTO;
+	}
+
+	public LoginDTO loginToDTO(Login login){
+		LoginDTO loginDTO = new LoginDTO();
+		loginDTO.setEmail(login.getEmail());
+		loginDTO.setFName(login.getFName());
+		loginDTO.setLName(login.getLName());
+		loginDTO.setLastLogin(login.getLastLogin());
+		loginDTO.setRole(login.getRole());
+		return loginDTO;
+	}
 }
