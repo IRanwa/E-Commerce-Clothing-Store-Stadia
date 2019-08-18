@@ -46,14 +46,14 @@ public class UserRestService {
 		return userService.checkUserRegistered(user.getEmail());
 	}
 	
-	@DeleteMapping(value="/DeleteUser/{id}")
-	public boolean DeleteUser(@PathVariable String id) {
+	@DeleteMapping("/DeleteUser/{id}")
+	public ResponseEntity<Boolean> DeleteUser(@PathVariable String id) {
 		return userService.deleteUser(id);
 	}
 	
-	@PutMapping(value="/UpdateUser/{id}")
-	public User UpdateUser(@PathVariable String id) {
-		return userService.updateUser(id);
+	@PutMapping("/UpdateUser/{id}")
+	public ResponseEntity<User> UpdateUser(@PathVariable String id, @RequestBody User user) {
+		return userService.updateUser(id,user);
 	}
 	
 	

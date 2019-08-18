@@ -107,7 +107,7 @@ class SignIn extends Component{
             email:response.email
         })
         .then(function(res){
-            console.log("facebook signin ",res.data)
+            console.log(res.data)
             axios.post("http://localhost:8080/authenticate/SocialMedia",res.data)
             .then(function(res){
                 const data = res.data;
@@ -119,6 +119,9 @@ class SignIn extends Component{
                     redirectToHome:true
                 })
 
+            }).catch(function(error){
+                console.log("Social login error : ",error.response);
+                alert("Social login un-successful!");
             })
         }).catch(function(error){
             console.log(error);

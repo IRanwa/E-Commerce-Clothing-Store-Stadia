@@ -84,24 +84,32 @@ public class UserService {
 		return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
 	}
 	
-	public boolean deleteUser(String id) {
+	public ResponseEntity<Boolean> deleteUser(String id) {
 		try{
 			loginRepo.deleteById(id);
-			return true;
+			return new ResponseEntity<>(true,HttpStatus.OK);
 		}catch(EmptyResultDataAccessException erda_ex) {
 			
 		}
-		return false;
+		return new ResponseEntity<>(false,HttpStatus.OK);
 	}
 	
-	public User updateUser(String id) {
-		User user = new User();
-		Login login = loginRepo.findById(id).get();
-		login.setFName("I");
-		login.setLName("r");
-		user.setLogin(login);
-		user.setEmail(login.getEmail());
-		return userRepo.save(user);
+	public ResponseEntity<User> updateUser(String id,User newUser) {
+		Optional<User> userOptional = userRepo.findById(id);
+		Optional<Login> loginOptional = loginRepo.findById(id);
+		if(userOptional.isPresent() && loginOptional.isPresent()){
+			Login login = loginOptional.get();
+			Login newLogin = newUser.getLogin();
+
+			login.setFName(newLogin.getFName());
+			login.setLName(newLogin.getLName());
+			login = loginRepo.save(login);
+
+			newUser.setLogin(login);
+			newUser = userRepo.save(newUser);
+			return new ResponseEntity<>(newUser,HttpStatus.OK);
+		}
+		return new ResponseEntity<>(null,HttpStatus.OK);
 	}
 
 	public ResponseEntity<LoginDTO> checkUserRegistered(String email) {

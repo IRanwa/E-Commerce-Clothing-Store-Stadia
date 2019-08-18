@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import React, { Component } from 'react';
-// import { Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 let csc = require('country-state-city').default;
 const axios = require("axios");
 
@@ -27,7 +27,9 @@ class Register extends Component{
             country:"",
             state:"",
             city:"",
-            zipCode:""
+            zipCode:"",
+            
+            redirectToLogin:false
         };
 
         
@@ -150,6 +152,7 @@ class Register extends Component{
             address:address
         }
 
+        const that = this;
         axios.post("http://localhost:8080/Register",user)
         .then(function(res){
             alert("Registered Successfully!");
@@ -158,6 +161,10 @@ class Register extends Component{
             .then(function(res){
                 localStorage.setItem("email",login.email);
                 localStorage.setItem("token",res.data.jwttoken);
+                localStorage.setItem("name",login.fname+" "+login.lname);
+                that.setState({
+                    redirectToLogin:true
+                })
             });
         })
     }
@@ -165,6 +172,11 @@ class Register extends Component{
     render(){
         return(
             <div>
+                {
+                    this.state.redirectToLogin?(
+                        <Redirect to="/"/>
+                    ):("")
+                }
                 <div className="card register-container">
                     <div className="row">
                         <div className="column register-subcontainer">

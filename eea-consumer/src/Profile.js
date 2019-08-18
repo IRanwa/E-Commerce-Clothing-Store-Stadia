@@ -22,11 +22,6 @@ class Profile extends Component{
         //console.log(localStorage)
         const token = 'Bearer '+localStorage.token;
         const headersInfo = {
-            'Content-Type':'application/json',
-            'Access-Control-Allow-Origin': '*',
-            "Access-Control-Allow-Headers": "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With",
-            "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
-            useCredentails: true,
             Authorization:token
         }
         const data = {
@@ -36,8 +31,10 @@ class Profile extends Component{
             headers:headersInfo
         }).then(function(res){
             console.log(res.data)
+            const data = res.data;
+            localStorage.setItem("name",data.login.fname+" "+data.login.lname);
             that.setState({
-                login:res.data
+                login:data
             })
         }).catch(function(error){
             console.log(error.response);
@@ -182,12 +179,15 @@ class PopupWindow extends Component{
     constructor(props){
         super(props);
         if(props.command=="update"){
-            
+            let dateOfBirth = null;
+            if(props.login.dob!==null){
+                dateOfBirth = new Date(props.login.dob).toISOString().slice(0,10)
+            }
             this.state = {
                 command:props.command,
                 email:props.login.email,
                 contactNo:props.login.contactNo,
-                dob:props.login.dob,
+                dob:dateOfBirth,
                 fName:props.login.login.fname,
                 lName:props.login.login.lname
             }
@@ -206,17 +206,38 @@ class PopupWindow extends Component{
         
     }
 
-    componentDidMount(){
-        
-    }
-
-    inputChange(){
-
+    inputChange(target){
+        const name = target.name;
+        const value = target.value;
+        switch(name){
+            case "fname":
+                this.setState({
+                    fName:value
+                })
+                break;
+            case "lname":
+                this.setState({
+                    lName:value
+                })
+                break;
+            case "contactno":
+                this.setState({
+                    contactNo:value
+                })
+                break;
+            case "dob":
+                this.setState({
+                    dob:value
+                })
+                break;
+            
+        }
     }
 
     deleteWindowRender(){
         return(
             <div className="modal-body add-cat-popup-body">
+                <p>Are you sure you want to deactivate {this.state.email}?</p>
             </div>
         )
     }
@@ -230,9 +251,9 @@ class PopupWindow extends Component{
                     <h6>Last Name</h6>
                     <input className="w-100" type="text" name="lname" value={this.state.lName} onChange={(event)=>this.inputChange(event.target)}/>
                     <h6>Contact No</h6>
-                    <input className="w-100" type="text" name="contactno" value={this.state.contactNo!==null?(this.state.contactNo):("")} onChange={(event)=>this.inputChange(event.target)}/>
+                    <input className="w-100" type="number" name="contactno" value={this.state.contactNo!==null?(this.state.contactNo):("")} onChange={(event)=>this.inputChange(event.target)}/>
                     <h6>Date of Birth</h6>
-                    <input className="w-100" type="text" name="dob" value={this.state.dob!==null?(this.state.contactNo):("")} onChange={(event)=>this.inputChange(event.target)}/>
+                    <input className="w-100" type="date" name="dob" value={this.state.dob!==null?(this.state.dob):("")} onChange={(event)=>this.inputChange(event.target)}/>
                 </div>
             </div>
         );
@@ -240,10 +261,45 @@ class PopupWindow extends Component{
 
 
     btnSubmit(){
-
+        const config = {
+            headers:{
+                Authorization:'Bearer '+localStorage.token
+            }
+        }
+        if(this.state.command==="update"){
+            const data = {
+                email:this.state.email,
+                login:{
+                    fname:this.state.fName,
+                    lname:this.state.lName
+                },
+                dob:this.state.dob,
+                contactNo:this.state.contactNo
+            }
+            axios.put("http://localhost:8080/UpdateUser/"+this.state.email,data,config)
+            .then(function(res){
+                console.log("Profile updated successfully!");
+                alert("Profile updated successfully!");
+                window.location.reload();
+            }).catch(function(error){
+                console.log("Profile update un-successful!\nError : ",error.response);
+                alert("Profile update un-successful!");
+            })
+            
+        }else{
+            axios.delete("http://localhost:8080/DeleteUser/"+this.state.email,config)
+            .then(function(res){
+                console.log("Profile deleted successfully!");
+                alert("Profile deleted successfully!");
+                window.location.reload();
+            }).catch(function(error){
+                console.log("Profile delete un-successful!\nError : ",error.response);
+                alert("Profile delete un-successful!");
+            })
+        }
     }
 
-    btnReset(event){
+    btnReset(){
         if(this.state.command==="update"){
             this.setState({
                 contactNo:"",
@@ -284,10 +340,17 @@ class PopupWindow extends Component{
                         )
                     }
                     <div className="modal-footer">
-                        <button className="btn btn-success"  onClick={this.btnSubmit}>
+                        <button className="btn btn-success" onClick={this.btnSubmit}>
                             {footer}
                         </button>
-                        <button className="btn btn-danger" name="btn-close" onClick={(event)=>this.btnReset(event)}>{btnCloseText}</button>
+                        {
+                            this.state.command==="update"?(
+                                <button className="btn btn-danger" onClick={this.btnReset}>{btnCloseText}</button>
+                            ):(
+                                <button className="btn btn-danger" name="btn-close" onClick={this.btnReset}>{btnCloseText}</button>
+                            )
+                        }
+                        
                     </div>
                 </div>
             </div>
