@@ -20,12 +20,14 @@ class Cart extends Component{
             cartStatus:true,
             selectedRows:[],
             remoteItemBtn:false,
-            redirectToHome:false
+            redirectToHome:false,
+            redirectToCheckout:false,
         }
         this.changeQty = this.changeQty.bind(this);
         this.removeItem = this.removeItem.bind(this);
         this.checkBoxSelect = this.checkBoxSelect.bind(this);
         this.removeSelectedItems = this.removeSelectedItems.bind(this);
+        this.checkoutBtn = this.checkoutBtn.bind(this);
     }
 
     componentDidMount(){
@@ -217,6 +219,12 @@ class Cart extends Component{
         });
     }
 
+    checkoutBtn(){
+        this.setState({
+            redirectToCheckout:true
+        })
+    }
+
     render(){
         const properties = {
             duration: 5000,
@@ -231,6 +239,11 @@ class Cart extends Component{
                 {
                     this.state.redirectToHome?(
                         <Redirect to="/"/>
+                    ):("")
+                }
+                {
+                    this.state.redirectToCheckout?(
+                        <Redirect to="/checkout"/>
                     ):("")
                 }
                  <div className="w-100 text-center ">
@@ -316,7 +329,7 @@ class Cart extends Component{
                                                 <button className="btn-sm btn-danger float-left m-2" onClick={this.removeSelectedItems}>Remove Selected</button>
                                             ):("")
                                         }
-                                        <button className="btn-sm btn-success float-right m-2">Checkout</button>
+                                        <button className="btn-sm btn-success float-right m-2" onClick={this.checkoutBtn}>Checkout</button>
                                     </div>
                                 </div>
                             ):(

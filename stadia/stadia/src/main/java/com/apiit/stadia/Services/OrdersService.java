@@ -29,6 +29,8 @@ public class OrdersService {
 	ProductSizesRepository prodSizesRepo;
 	@Autowired
 	UserRepository userRepo;
+	@Autowired
+	AddressRepository addressRepo;
 	
 	@Autowired
 	ModelClassToDTO modelToDTO;
@@ -74,7 +76,15 @@ public class OrdersService {
 				List<OrderProducts> orderProds = orderProdRepo.findByOrders(order);
 
 				for (OrderProducts orderProd : orderProds) {
-					Product product = orderProd.getProductSizes().getProduct();
+					ProductSizes prodSize = orderProd.getProductSizes();
+					if (orderProd.getQuantity()>prodSize.getQuantity()) {
+						if(prodSize.getQuantity()!=0 ){
+							orderProd.setQuantity(1);
+						}else{
+							orderProd.setQuantity(0);
+						}
+					}
+					Product product = prodSize.getProduct();
 					OrderProductsDTO orderProdDTO = modelToDTO.orderProductToDTO(orderProd,product);
 					orderProdDTOList.add(orderProdDTO);
 				}
@@ -148,14 +158,37 @@ public class OrdersService {
 
 	}
 	
-	public boolean placeOrder(User user) {
-		Orders order = ordersRepo.findByUserAndStatus(user, OrderStatus.Cart);
-		if(order!=null) {
-			order.setStatus(OrderStatus.Pending);
-			ordersRepo.save(order);
-			return true;
+	public ResponseEntity<Boolean> placeOrder(Orders newOrders) {
+		Optional<User> userOptional = userRepo.findById(newOrders.getUser().getEmail());
+		if(userOptional.isPresent()){
+			Orders order = ordersRepo.findByUserAndStatus(userOptional.get(), OrderStatus.Cart);
+			if(order!=null) {
+				if(newOrders.getOrderProducts().size()>0){
+
+				}else{
+					List<OrderProducts> orderProdList = order.getOrderProducts();
+					for(OrderProducts orderProd : orderProdList){
+						ProductSizes productSize = orderProd.getProductSizes();
+						productSize.setQuantity(productSize.getQuantity()-orderProd.getQuantity());
+						prodSizesRepo.save(productSize);
+					}
+					order.setStatus(OrderStatus.Pending);
+					Optional<Address> billingAddress = addressRepo.findById(newOrders.getBillingAddress().getId());
+					Optional<Address> shippingAddress = addressRepo.findById(newOrders.getShippingAddress().getId());
+					if(billingAddress.isPresent() && shippingAddress.isPresent()){
+						order.setBillingAddress(billingAddress.get());
+						order.setShippingAddress(shippingAddress.get());
+						order.setPaymentMethod(newOrders.getPaymentMethod());
+
+						ordersRepo.save(order);
+					}
+
+				}
+				return new ResponseEntity<>(true,HttpStatus.OK);
+			}
+			return new ResponseEntity<>(false,HttpStatus.NOT_FOUND);
 		}
-		return false;
+		return new ResponseEntity<>(false,HttpStatus.NOT_FOUND);
 	}
 	
 	public List<OrdersDTO> getOrdersList(User user){
@@ -177,5 +210,6 @@ public class OrdersService {
 		}
 		return ordersDTOList;
 	}
+
 
 }

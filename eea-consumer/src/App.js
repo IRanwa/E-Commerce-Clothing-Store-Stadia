@@ -11,6 +11,7 @@ import SignIn from './SignIn.jsx';
 import Register from './Register';
 import Profile from './Profile';
 import Address from './Address';
+import Checkout from './Checkout';
 const axios = require("axios");
 
 const sitename = "Stadia";
@@ -28,10 +29,20 @@ class App extends Component{
           <Route path="/cart" component={CartPage} />
           <Route path="/profile" component={ProfilePage} />
           <Route path="/address" component={AddressPage} />
+          <Route path="/checkout" component={CheckoutPage}/>
         </div>
       </Router>
     );
   }
+}
+
+function CheckoutPage(){
+  return(
+    <div>
+      <NavBar/>
+      <Checkout/>
+    </div>
+  )
 }
 
 function AddressPage(){

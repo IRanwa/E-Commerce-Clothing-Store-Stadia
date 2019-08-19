@@ -600,6 +600,29 @@ input[type='email'], input[type='password'] {
   margin:0px 5%;
 }
 
+.placeorder-container{
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.checkout-img-slider{
+  width:100px;
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.checkout-header6{
+  font-weight: bold;
+}
+
+.checkout-prod-details label{
+  margin-bottom:0px;
+}
+.checkout-payment-icons{
+  width:40px;
+  height:40px;
+}
+
 @media screen and (max-height:500px){
   .login-form{
     margin:0% 30%;

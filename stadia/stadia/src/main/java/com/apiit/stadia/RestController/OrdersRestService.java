@@ -47,12 +47,13 @@ public class OrdersRestService {
 	}
 	
 	@PostMapping("/PlaceOrder")
-	public String placeOrder(User user) {
-		return "{Status:"+orderService.placeOrder(user)+"}";
+	public ResponseEntity<Boolean> placeOrder(@RequestBody Orders order) {
+		return orderService.placeOrder(order);
 	}
 	
 	@PostMapping("/ListOrders")
 	public List<OrdersDTO> getOrdersList(User user){
 		return orderService.getOrdersList(user);
 	}
+
 }
