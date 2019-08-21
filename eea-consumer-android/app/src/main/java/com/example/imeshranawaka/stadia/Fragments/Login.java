@@ -8,12 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.imeshranawaka.stadia.APIs.APIBuilder;
+import com.example.imeshranawaka.stadia.Models.LoginDTO;
 import com.example.imeshranawaka.stadia.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -42,6 +47,22 @@ public class Login extends Fragment {
         String email = txtEmail.getText().toString();
         String pass = txtEmail.getText().toString();
 
+        LoginDTO loginDTO = new LoginDTO();
+        loginDTO.setEmail("imesh");
+        loginDTO.setPass("imesh");
+        Call<LoginDTO> responseBodyCall = APIBuilder.createBuilder().createAuthenticationToken(loginDTO);
+        responseBodyCall.enqueue(new Callback<LoginDTO>() {
+            @Override
+            public void onResponse(Call<LoginDTO> call, Response<LoginDTO> response) {
+                LoginDTO loginDTO = response.body();
+                //System.out.println(loginDTO.getJwttoken());
+            }
+
+            @Override
+            public void onFailure(Call<LoginDTO> call, Throwable t) {
+
+            }
+        });
     }
 
 }
