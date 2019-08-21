@@ -18,7 +18,7 @@
         android:layout_height="80dp"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:src="@drawable/userimage_icon" />
+        app:srcCompat="@drawable/userimage_icon" />
 
     <TextView
         android:id="@+id/txtNavName"
@@ -27,7 +27,7 @@
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:text="@string/nav_header_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
         android:textSize="14sp"
         android:textStyle="bold"
         android:typeface="serif" />
@@ -38,7 +38,7 @@
         android:layout_height="wrap_content"
         android:text="@string/nav_header_subtitle"
         android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
         android:textSize="14sp"
         android:typeface="serif" />
 

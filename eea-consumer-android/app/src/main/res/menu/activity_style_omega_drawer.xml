@@ -8,19 +8,19 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/home_icon"
-            android:title="Home" />
+            android:title="@string/home" />
         <item
             android:id="@+id/nav_account"
             android:icon="@drawable/userimage_icon"
-            android:title="My Account" />
+            android:title="@string/my_account" />
         <item
             android:id="@+id/nav_order"
             android:icon="@drawable/order_icon"
-            android:title="My Orders" />
+            android:title="@string/my_orders" />
         <item
             android:id="@+id/nav_contact"
             android:icon="@drawable/contact_icon"
-            android:title="Contact Us" />
+            android:title="@string/contact_us" />
         <item
             android:id="@+id/nav_logout"
             android:title="Log Out"
