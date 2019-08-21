@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.example.imeshranawaka.stadia.Fragments.Login;
 import com.example.imeshranawaka.stadia.Fragments.MainMenu;
 
 import butterknife.BindView;
@@ -42,12 +43,12 @@ public class Stadia extends AppCompatActivity implements NavigationView.OnNaviga
                 return;
             }
             getSupportFragmentManager().beginTransaction().
-                    replace(R.id.mainFragment, new MainMenu(), "MainMenu").
+                    replace(R.id.mainFragment, new Login(), "MainMenu").
                     commit();
 //            String email = SharedPreferenceUtility.getInstance(this).getUserEmail();
 //            if(email.isEmpty()) {
 //                getSupportFragmentManager().beginTransaction().
-//                        replace(R.id.mainFragment, new SignIn(), "SignIn").
+//                        replace(R.id.mainFragment, new Login(), "Login").
 //                        commit();
 //            }else{
 //                List<Login> login = Login.find(Login.class, "email=?", email);
@@ -63,7 +64,7 @@ public class Stadia extends AppCompatActivity implements NavigationView.OnNaviga
 //                    editor.remove("pass");
 //                    editor.commit();
 //                    getSupportFragmentManager().beginTransaction().
-//                            replace(R.id.mainFragment, new SignIn(), "SignIn").
+//                            replace(R.id.mainFragment, new Login(), "Login").
 //                            commit();
 //                }
 //            }
