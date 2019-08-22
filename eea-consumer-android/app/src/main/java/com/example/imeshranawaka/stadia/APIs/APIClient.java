@@ -15,4 +15,7 @@ public interface APIClient {
 
    @POST("/authenticate/")
     Call<LoginDTO> createAuthenticationToken(@Body LoginDTO authenticationRequest);
+
+   @POST("/validateToken")
+    Call<Boolean> validateToken(@Body LoginDTO loginDTO);
 }

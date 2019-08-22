@@ -83,11 +83,12 @@ public class JwtAuthenticationController {
 		return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 	}
 
-	@PostMapping("/getTokenExpirationDate")
-	public String getTokenExpirationDate(@RequestBody LoginDTO loginDTO){
-		Date date = jwtTokenUtil.getExpirationDateFromToken(loginDTO.getJwttoken());
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss aaa");
-		return dateFormat.format(date);
+	@PostMapping("/validateToken")
+	public ResponseEntity<Boolean> getTokenExpirationDate(@RequestBody LoginDTO loginDTO){
+		final UserDetails userDetails = jwtUserDetailsService
+				.loadUserByUsername(loginDTO.getEmail());
+		boolean status = jwtTokenUtil.validateToken(loginDTO.getJwttoken(), userDetails);
+		return new ResponseEntity<>(status,HttpStatus.OK);
 	}
 
 	@PostMapping("/getTokenIssuedDate")

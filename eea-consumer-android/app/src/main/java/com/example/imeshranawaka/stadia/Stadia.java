@@ -1,5 +1,6 @@
 package com.example.imeshranawaka.stadia;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -8,12 +9,17 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.example.imeshranawaka.stadia.APIs.APIBuilder;
 import com.example.imeshranawaka.stadia.Fragments.Login;
 import com.example.imeshranawaka.stadia.Fragments.MainMenu;
+import com.example.imeshranawaka.stadia.Models.LoginDTO;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class Stadia extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -42,32 +48,42 @@ public class Stadia extends AppCompatActivity implements NavigationView.OnNaviga
             if (savedInstanceState != null) {
                 return;
             }
-            getSupportFragmentManager().beginTransaction().
-                    replace(R.id.mainFragment, new Login(), "MainMenu").
-                    commit();
-//            String email = SharedPreferenceUtility.getInstance(this).getUserEmail();
-//            if(email.isEmpty()) {
-//                getSupportFragmentManager().beginTransaction().
-//                        replace(R.id.mainFragment, new Login(), "Login").
-//                        commit();
-//            }else{
-//                List<Login> login = Login.find(Login.class, "email=?", email);
-//                if(login.size()>0) {
-//                    SharedPreferenceUtility shraed = SharedPreferenceUtility.getInstance(this);
-//                    getSupportFragmentManager().beginTransaction().
-//                            replace(R.id.mainFragment, new MainMenu(), "MainMenu").
-//                            commit();
-//                }else{
-//                    SharedPreferences.Editor editor = SharedPreferenceUtility.getInstance(this).getEditor();
-//                    editor.remove("email");
-//                    editor.remove("user");
-//                    editor.remove("pass");
-//                    editor.commit();
-//                    getSupportFragmentManager().beginTransaction().
-//                            replace(R.id.mainFragment, new Login(), "Login").
-//                            commit();
-//                }
-//            }
+            SharedPreferenceUtility sharedPref = SharedPreferenceUtility.getInstance(this);
+
+            String token = sharedPref.getUserToken();
+            if(token.isEmpty()) {
+                getSupportFragmentManager().beginTransaction().
+                        replace(R.id.mainFragment, new Login(), "Login").
+                        commit();
+            }else{
+                LoginDTO loginDTO = new LoginDTO(sharedPref.getUserEmail(),sharedPref.getUserPass(),sharedPref.getUserToken());
+                Call<Boolean> apiClient = APIBuilder.createBuilder().validateToken(loginDTO);
+                apiClient.enqueue(new Callback<Boolean>() {
+                    @Override
+                    public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                        Boolean status = response.body();
+                        System.out.println("status "+status);
+                        if(status==null){
+                            getSupportFragmentManager().beginTransaction().
+                                    replace(R.id.mainFragment, new Login(), "Login").
+                                    commit();
+                        }else{
+                            getSupportFragmentManager().beginTransaction().
+                                    replace(R.id.mainFragment, new MainMenu(), "MainMenu").
+                                    commit();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Boolean> call, Throwable t) {
+                        //.Editor editor = SharedPreferenceUtility.getInstance(this).getEditor();
+                        System.err.println("error "+t.getMessage());
+                        getSupportFragmentManager().beginTransaction().
+                                replace(R.id.mainFragment, new Login(), "Login").
+                                commit();
+                    }
+                });
+            }
         }
     }
 

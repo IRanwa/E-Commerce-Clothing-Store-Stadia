@@ -17,10 +17,10 @@ public class LoginDTO implements Serializable {
 		
 	}
 
-	public LoginDTO(String jwttoken, String fName, String lName) {
+	public LoginDTO(String email, String pass, String jwttoken) {
+		this.email = email;
+		this.pass = pass;
 		this.jwttoken = jwttoken;
-		this.fName = fName;
-		this.lName = lName;
 	}
 
 	public String getEmail() {
