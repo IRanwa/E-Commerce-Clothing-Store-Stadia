@@ -18,6 +18,15 @@ public class SharedPreferenceUtility {
         return mContext.getSharedPreferences("login",Context.MODE_PRIVATE).edit();
     }
 
+    public void resetSharedPreferences(){
+        SharedPreferences.Editor editor = getEditor();
+        editor.remove("email");
+        editor.remove("pass");
+        editor.remove("token");
+        editor.remove("name");
+        editor.apply();
+    }
+
     private SharedPreferences getSharedPref(){
         return mContext.getSharedPreferences("login",Context.MODE_PRIVATE);
     }

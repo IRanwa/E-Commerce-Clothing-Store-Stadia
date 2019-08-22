@@ -1,9 +1,14 @@
 package com.example.imeshranawaka.stadia.Models;
 
 
-public class MainSubCategoryDTO {
+import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
+
+public class MainSubCategoryDTO implements Serializable {
 	long id;
 	MainCategoryDTO mainCategory;
+
 	SubCategoryDTO subCategory;
 
 	public long getId() {
