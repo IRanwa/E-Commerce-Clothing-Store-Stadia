@@ -15,6 +15,7 @@ import com.example.imeshranawaka.stadia.APIs.APIBuilder;
 import com.example.imeshranawaka.stadia.Models.LoginDTO;
 import com.example.imeshranawaka.stadia.R;
 import com.example.imeshranawaka.stadia.SharedPreferenceUtility;
+import com.example.imeshranawaka.stadia.Stadia;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -67,6 +68,11 @@ public class Login extends Fragment {
                     sharedPref.setUserPass(pass);
                     sharedPref.setUserName(loginDTO.getfName() + " " + loginDTO.getlName());
                     sharedPref.setUserToken(loginDTO.getJwttoken());
+
+                    Stadia.drawerLockOpen();
+                    getActivity().getSupportFragmentManager().beginTransaction().
+                            replace(R.id.mainFragment, new MainMenu(), "MainMenu").
+                            commit();
                 }else{
                     Snackbar snackBar = Snackbar.make(getView(), "User Login Un-Successful!", Snackbar.LENGTH_LONG);
                     snackBar.getView().setBackgroundColor(Color.parseColor("#FF0000"));

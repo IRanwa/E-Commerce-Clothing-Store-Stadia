@@ -11,7 +11,7 @@ class ProductList extends Component{
         this.state={
             mainCat:props.mainCat,
             subCat:props.subCat,
-            sortBy:"Z_To_A",
+            sortBy:"Date_Newest",
             pageNo:0,
             noOfPages:0,
             prodList:[]

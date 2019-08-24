@@ -24,7 +24,7 @@ import retrofit2.Response;
 
 public class Stadia extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    @BindView(R.id.drawer_layout) DrawerLayout drawer_layout;
+    @BindView(R.id.drawer_layout) static DrawerLayout drawer_layout;
     @BindView(R.id.nav_view) NavigationView nav_view;
     private Unbinder unbinder;
     @Override
@@ -68,6 +68,7 @@ public class Stadia extends AppCompatActivity implements NavigationView.OnNaviga
                                     replace(R.id.mainFragment, new Login(), "Login").
                                     commit();
                         }else{
+                            drawerLockOpen();
                             getSupportFragmentManager().beginTransaction().
                                     replace(R.id.mainFragment, new MainMenu(), "MainMenu").
                                     commit();
@@ -85,6 +86,10 @@ public class Stadia extends AppCompatActivity implements NavigationView.OnNaviga
                 });
             }
         }
+    }
+
+    public static void drawerLockOpen(){
+        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
     }
 
     @Override
