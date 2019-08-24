@@ -128,7 +128,6 @@ public class ProductService {
 		if(pageNo>=0) {
 			if(productDTO.getSortBy()==null) {
 				Pageable pages = PageRequest.of(pageNo, PAGE_COUNT);
-
 				Page<Product> prodList = productRepo.findAll(pages);
 				for (Product prod : prodList) {
 					prodDTOList.add(modelToDTO.productToDTO(prod));
@@ -136,26 +135,44 @@ public class ProductService {
 			}else{
 				SortBy sortBy = productDTO.getSortBy();
 				Page<Product> prodList = null;
+				Pageable pages = PageRequest.of(pageNo, PAGE_COUNT);
 				switch(sortBy){
 					case Date_Newest:
-						Pageable pages = PageRequest.of(pageNo, PAGE_COUNT, Sort.by(Sort.Direction.DESC, "modifyDate"));
-						prodList = productRepo.findAll(pages);
+						pages = PageRequest.of(pageNo, PAGE_COUNT, Sort.by(Sort.Direction.DESC, "modifyDate"));
+						//prodList = productRepo.findAll(pages);
 						break;
 					case Date_Oldest:
 						pages = PageRequest.of(pageNo, PAGE_COUNT, Sort.by(Sort.Direction.ASC, "modifyDate"));
 
-						prodList = productRepo.findAll(pages);
+						//prodList = productRepo.findAll(pages);
 						break;
 					case A_To_Z:
 						pages = PageRequest.of(pageNo, PAGE_COUNT, Sort.by(Sort.Direction.ASC, "title"));
 
-						prodList = productRepo.findAll(pages);
+						//prodList = productRepo.findAll(pages);
 						break;
 					case Z_To_A:
 						pages = PageRequest.of(pageNo, PAGE_COUNT, Sort.by(Sort.Direction.DESC, "title"));
 
-						prodList = productRepo.findAll(pages);
+						//prodList = productRepo.findAll(pages);
 						break;
+				}
+				MainSubCategoryDTO mainSubCatDTO = productDTO.getMainSubCategory();
+				if(mainSubCatDTO.getMainCategory()!=null){
+					Optional<MainCategory> mainCatOptional = mainCatRepo.findById(mainSubCatDTO.getMainCategory().getId());
+					if(mainCatOptional.isPresent()){
+						Optional<SubCategory> subCatOptional = subCatRepo.findById(mainSubCatDTO.getSubCategory().getId());
+						if(subCatOptional.isPresent()){
+							MainSubCategory mainSubCat = mainSubCatRepo.findByMainCategoryAndSubCategory(mainCatOptional.get(), subCatOptional.get());
+							prodList = productRepo.findByMainSubCategory(mainSubCat,pages);
+						}else{
+
+						}
+					}else{
+						prodList = productRepo.findAll(pages);
+					}
+				}else{
+					prodList = productRepo.findAll(pages);
 				}
 				for (Product prod : prodList) {
 					prodDTOList.add(modelToDTO.productToDTO(prod));

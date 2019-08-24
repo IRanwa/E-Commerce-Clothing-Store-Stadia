@@ -76,7 +76,7 @@ public class MainMenu extends Fragment {
                 fragments = fm.getFragments();
             }
         }
-        transaction.replace(R.id.subFragment, new CategoryView(), "ProductView");
+        transaction.replace(R.id.subFragment, new ProductsView(), "ProductView");
         transaction.commit();
     }
 

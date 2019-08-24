@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.example.imeshranawaka.stadia.APIs.APIBuilder;
 import com.example.imeshranawaka.stadia.Adapters.ProductListAdapter;
 import com.example.imeshranawaka.stadia.EnumClasses.SortBy;
+import com.example.imeshranawaka.stadia.Models.MainSubCategoryDTO;
 import com.example.imeshranawaka.stadia.Models.ProductDTO;
 import com.example.imeshranawaka.stadia.Models.SubCategoryDTO;
 import com.example.imeshranawaka.stadia.R;
@@ -52,11 +53,31 @@ public class ProductsView extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        ProductDTO productDTO = new ProductDTO();
-        productDTO.setSortBy(SortBy.Date_Newest);
-        viewProductList(0,productDTO);
-        txtMainTitle.setText("Latest Arrival");
-        txtSortBy.setVisibility(View.GONE);
+        Bundle bundle = getArguments();
+        if(bundle!=null){
+            int pageNo = bundle.getInt("pageNo");
+            ProductDTO productDTO = (ProductDTO) bundle.getSerializable("productDTO");
+            viewProductList(pageNo,productDTO);
+
+            MainSubCategoryDTO mainSubCat = productDTO.getMainSubCategory();
+            String title = "";
+            if(mainSubCat.getMainCategory()!=null){
+                title += mainSubCat.getMainCategory().getMainCatTitle();
+                if(mainSubCat.getSubCategory()!=null){
+                    title += " - "+mainSubCat.getSubCategory().getSubCatTitle();
+                }
+            }
+            txtMainTitle.setText(title);
+            txtSortBy.setVisibility(View.VISIBLE);
+        }else{
+            ProductDTO productDTO = new ProductDTO();
+            productDTO.setSortBy(SortBy.Date_Newest);
+            viewProductList(0,productDTO);
+            txtMainTitle.setText("Latest Arrival");
+            txtSortBy.setVisibility(View.GONE);
+        }
+
+
     }
 
     private void viewProductList(int pageNo,ProductDTO productDTO){

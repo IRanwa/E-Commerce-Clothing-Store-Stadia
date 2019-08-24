@@ -86,7 +86,7 @@ public class CategoryView extends Fragment {
                     List<SubCategoryDTO> subCategoryList = response.body();
 
                     GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),2);
-                    SubCategoryAdapter adapter = new SubCategoryAdapter(subCategoryList,getContext());
+                    SubCategoryAdapter adapter = new SubCategoryAdapter(subCategoryList,getContext(),getActivity().getSupportFragmentManager(),mainCategoryDTO);
                     subCategoryListView.setLayoutManager(gridLayoutManager);
                     subCategoryListView.setAdapter(adapter);
                 }
