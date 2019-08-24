@@ -33,9 +33,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -54,14 +51,56 @@ public class MainMenu extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main_menu, container, false);
         unbinder = ButterKnife.bind(this, view);
 
+        getActivity().getSupportFragmentManager().beginTransaction().
+                replace(R.id.subFragment, new ProductsView(), "ProductsView").
+                commit();
         return view;
+    }
+
+    @OnClick(R.id.homeNavBtn)
+    public void homeNavBtnClick(){
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+        int backStackEntry = fm.getBackStackEntryCount();
+        List<Fragment> fragments = fm.getFragments();
+        if (backStackEntry > 0) {
+            for (int i = 0; i < backStackEntry; i++) {
+                fm.popBackStackImmediate();
+                if(fragments.size()<i) {
+                    Fragment frag = fragments.get(0);
+                    transaction.remove(frag);
+                    if(frag.getTag()!=null && !frag.getTag().equals("ProductView")) {
+                        break;
+                    }
+                }
+                fragments = fm.getFragments();
+            }
+        }
+        transaction.replace(R.id.subFragment, new CategoryView(), "ProductView");
+        transaction.commit();
     }
 
     @OnClick(R.id.categoryNavBtn)
     public void categoryNavBtnClick(){
-        getActivity().getSupportFragmentManager().beginTransaction().
-                replace(R.id.subFragment, new CategoryView(), "CategoryView").
-                commit();
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+        int backStackEntry = fm.getBackStackEntryCount();
+        List<Fragment> fragments = fm.getFragments();
+        if (backStackEntry > 0) {
+            for (int i = 0; i < backStackEntry; i++) {
+                fm.popBackStackImmediate();
+                if(fragments.size()<i) {
+                    Fragment frag = fragments.get(0);
+                    transaction.remove(frag);
+                    if(frag.getTag()!=null && !frag.getTag().equals("CategoryView")) {
+                        break;
+                    }
+                }
+                fragments = fm.getFragments();
+            }
+        }
+        transaction.replace(R.id.subFragment, new CategoryView(), "CategoryView").addToBackStack("ProductView");
+        transaction.commit();
     }
 
 

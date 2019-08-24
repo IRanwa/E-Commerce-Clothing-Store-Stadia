@@ -69,7 +69,6 @@ public class Login extends Fragment {
                     sharedPref.setUserName(loginDTO.getfName() + " " + loginDTO.getlName());
                     sharedPref.setUserToken(loginDTO.getJwttoken());
 
-                    Stadia.drawerLockOpen();
                     getActivity().getSupportFragmentManager().beginTransaction().
                             replace(R.id.mainFragment, new MainMenu(), "MainMenu").
                             commit();

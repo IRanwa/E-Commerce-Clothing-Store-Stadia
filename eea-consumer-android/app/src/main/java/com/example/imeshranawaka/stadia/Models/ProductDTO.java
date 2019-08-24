@@ -1,5 +1,7 @@
 package com.example.imeshranawaka.stadia.Models;
 
+import com.example.imeshranawaka.stadia.EnumClasses.SortBy;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -14,7 +16,7 @@ public class ProductDTO implements Serializable{
 	double price;
 	Date createdDate;
 	Date modifyDate;
-	String sortBy;
+	SortBy sortBy;
 
 	public List<ProductSizesDTO> getProductSizes() {
 		return productSizes;
@@ -88,11 +90,11 @@ public class ProductDTO implements Serializable{
 		this.modifyDate = modifyDate;
 	}
 
-	public String getSortBy() {
+	public SortBy getSortBy() {
 		return sortBy;
 	}
 
-	public void setSortBy(String sortBy) {
+	public void setSortBy(SortBy sortBy) {
 		this.sortBy = sortBy;
 	}
 }

@@ -11,15 +11,22 @@
         android:id="@+id/imgMainCat"
         android:layout_width="80sp"
         android:layout_height="80sp"
+        android:layout_gravity="center"
         android:src="@drawable/home_icon" />
 
     <TextView
         android:id="@+id/txtMainCat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="5sp"
+        android:layout_marginRight="5sp"
+        android:layout_marginBottom="5sp"
         android:ellipsize="marquee"
         android:fontFamily="serif-monospace"
+        android:gravity="center"
         android:text="TextView"
-        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
         app:autoSizeTextType="uniform" />
 </LinearLayout>
