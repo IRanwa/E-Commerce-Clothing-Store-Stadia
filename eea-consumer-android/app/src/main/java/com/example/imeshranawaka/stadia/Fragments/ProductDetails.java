@@ -1,9 +1,11 @@
 package com.example.imeshranawaka.stadia.Fragments;
 
 
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
@@ -20,10 +22,15 @@ import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.imeshranawaka.stadia.APIs.APIBuilder;
 import com.example.imeshranawaka.stadia.Adapters.SlidingImageAdapter;
+import com.example.imeshranawaka.stadia.Models.OrderProductsDTO;
+import com.example.imeshranawaka.stadia.Models.OrdersDTO;
 import com.example.imeshranawaka.stadia.Models.ProductDTO;
 import com.example.imeshranawaka.stadia.Models.ProductSizesDTO;
+import com.example.imeshranawaka.stadia.Models.UserDTO;
 import com.example.imeshranawaka.stadia.R;
+import com.example.imeshranawaka.stadia.SharedPreferenceUtility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,7 +40,12 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -59,7 +71,6 @@ public class ProductDetails extends Fragment {
 
     @BindView(R.id.btnOrderNow) Button btnOrderNow;
     @BindView(R.id.btnAddToCart) Button btnAddToCart;
-    @BindView(R.id.btnCartInView) ImageView btnCartInView;
     @BindView(R.id.txtStockMessage) TextView txtStockMessage;
 
     @BindView(R.id.sizeContainer) LinearLayout sizeContainer;
@@ -158,7 +169,6 @@ public class ProductDetails extends Fragment {
                 quantity.setVisibility(View.GONE);
                 btnAddToCart.setVisibility(View.GONE);
                 btnOrderNow.setVisibility(View.GONE);
-                btnCartInView.setVisibility(View.GONE);
                 txtStockMessage.setVisibility(View.VISIBLE);
             }
         }
@@ -167,5 +177,43 @@ public class ProductDetails extends Fragment {
         public void onNothingSelected(AdapterView<?> adapterView) {
 
         }
+    }
+
+    @OnClick(R.id.btnAddToCart)
+    public void btnAddToCart_onClick(){
+        ProductSizesDTO prodSize = product.getProductSizes().get(sizeSelector.getSelectedItemPosition());
+        String qty = quantity.getSelectedItem().toString();
+        System.out.println(qty);
+
+        OrderProductsDTO orderProduct = new OrderProductsDTO();
+        orderProduct.setProductSizes(prodSize);
+        orderProduct.setQuantity(Integer.parseInt(qty));
+
+        OrdersDTO order = new OrdersDTO();
+        UserDTO user = new UserDTO();
+        user.setEmail(SharedPreferenceUtility.getInstance(getContext()).getUserEmail());
+        order.setUser(user);
+        orderProduct.setOrders(order);
+
+        Call<String> callback = APIBuilder.createAuthBuilder(getContext()).addToCart(orderProduct);
+        callback.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if(response.code()==401){
+                    APIBuilder.Logout(getContext(),getActivity());
+                }else {
+                    String body = response.body();
+                    if (body.equalsIgnoreCase("true")) {
+                        Snackbar snackBar = Snackbar.make(getView(), "Product added to cart successfully!", Snackbar.LENGTH_LONG);
+                        snackBar.show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 }

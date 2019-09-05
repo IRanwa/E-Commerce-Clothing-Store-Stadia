@@ -3,6 +3,7 @@ package com.example.imeshranawaka.stadia.APIs;
 import com.example.imeshranawaka.stadia.Models.LoginDTO;
 import com.example.imeshranawaka.stadia.Models.MainCategoryDTO;
 import com.example.imeshranawaka.stadia.Models.MainSubCategoryDTO;
+import com.example.imeshranawaka.stadia.Models.OrderProductsDTO;
 import com.example.imeshranawaka.stadia.Models.ProductDTO;
 import com.example.imeshranawaka.stadia.Models.SubCategoryDTO;
 
@@ -32,6 +33,9 @@ public interface APIClient {
 
     @POST("/Product/{pageNo}")
     Call<List<ProductDTO>> getProductList(@Path("pageNo") int pageNo,@Body ProductDTO productDTO);
+
+    @POST("/AddToCart")
+    Call<String> addToCart(@Body OrderProductsDTO orderProducts);
 
 
 }

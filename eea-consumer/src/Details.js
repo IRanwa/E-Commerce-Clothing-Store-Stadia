@@ -63,14 +63,14 @@ class ProductDetails extends Component{
             console.log("selected size ",this.state.selectedSize," ",this.state.selectQty)
             axios.post("http://localhost:8080/AddToCart",{
                 productSizes:{
-                    id:this.state.selectedSize,
-                    quantity:this.state.selectQty
+                    id:this.state.selectedSize
             },
             orders:{
                 user:{
                     email:localStorage.email 
                 } 
-            } 
+            },
+            quantity:this.state.selectQty
             },config).then(function(res){
                 alert("Product added to cart successfully!");
                 console.log("Product added to cart successfully!");

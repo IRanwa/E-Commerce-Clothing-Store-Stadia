@@ -39,7 +39,7 @@ public class OrdersService {
 	public boolean addToCart(OrderProducts orderProducts) {
 		long prodSizesId = orderProducts.getProductSizes().getId();
 		String userEmail = orderProducts.getOrders().getUser().getEmail();
-		int qty = orderProducts.getProductSizes().getQuantity();
+		int qty = orderProducts.getQuantity();
 
 		Optional<User> userOptional = userRepo.findById(userEmail);
 		if(userOptional.isPresent()) {
