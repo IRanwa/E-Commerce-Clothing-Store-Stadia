@@ -10,6 +10,8 @@ import android.support.v4.app.FragmentTransaction;
 import com.example.imeshranawaka.stadia.Fragments.Login;
 import com.example.imeshranawaka.stadia.R;
 import com.example.imeshranawaka.stadia.SharedPreferenceUtility;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.util.List;
@@ -57,11 +59,15 @@ public class APIBuilder {
                   }
               });
 
+            Gson gson = new GsonBuilder()
+                    .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                    .create();
+
             OkHttpClient client = httpClient.build();
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("http://10.0.2.2:8080")
                     //.baseUrl("http://192.168.137.1:8080")
-                    .addConverterFactory(GsonConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(gson))
                     .client(client)
                     .build();
             apiAuthClient = retrofit.create(APIClient.class);

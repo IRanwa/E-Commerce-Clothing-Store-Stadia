@@ -3,6 +3,7 @@ package com.example.imeshranawaka.stadia.Fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.example.imeshranawaka.stadia.SharedPreferenceUtility;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -45,5 +47,14 @@ public class ProfileView extends Fragment {
         txtEmail.setText(sharedPref.getUserEmail());
     }
 
+    @OnClick(R.id.btnAccInfo)
+    public void btnAccInfo_onClick(){
+        AccountView accInfo = new AccountView();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.subFragment,accInfo,"AccountView");
+        transaction.addToBackStack("MyAccount");
+
+        transaction.commit();
+    }
 
 }

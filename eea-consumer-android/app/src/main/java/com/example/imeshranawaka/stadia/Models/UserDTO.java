@@ -1,5 +1,8 @@
 package com.example.imeshranawaka.stadia.Models;
 
+import com.example.imeshranawaka.stadia.EnumClasses.Gender;
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -12,8 +15,9 @@ public class UserDTO implements Serializable{
 	private List<OrdersDTO> orders;
 	List<RatingDTO> rating;
 	private String email;
+	@SerializedName("dob")
 	private Date dob;
-	private String gender;
+	private Gender gender;
 	private String contactNo;
 	
 	public UserDTO() {
@@ -68,11 +72,11 @@ public class UserDTO implements Serializable{
 		this.dob = dob;
 	}
 
-	public String getGender() {
+	public Gender getGender() {
 		return gender;
 	}
 
-	public void setGender(String gender) {
+	public void setGender(Gender gender) {
 		this.gender = gender;
 	}
 
