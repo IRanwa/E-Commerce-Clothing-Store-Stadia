@@ -109,6 +109,30 @@ public class MainMenu extends Fragment {
         transaction.commit();
     }
 
+    @OnClick(R.id.cartNavBtn)
+    public void cartNabBtnClick(){
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+        int backStackEntry = fm.getBackStackEntryCount();
+        List<Fragment> fragments = fm.getFragments();
+        if (backStackEntry > 0) {
+            for (int i = 0; i < backStackEntry; i++) {
+                fm.popBackStackImmediate();
+                if(fragments.size()<i) {
+                    Fragment frag = fragments.get(0);
+                    transaction.remove(frag);
+                    System.err.println("frag tag : "+frag.getTag());
+                    if(frag.getTag()!=null && !frag.getTag().equals("CartView")) {
+                        break;
+                    }
+                }
+                fragments = fm.getFragments();
+            }
+        }
+        transaction.replace(R.id.subFragment, new CartView(), "CartView");
+        transaction.commit();
+    }
+
 
 
 

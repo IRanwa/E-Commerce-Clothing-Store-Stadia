@@ -46,6 +46,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
+                                                <entry key="opacityPercent" value="80" />
                                                 <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
@@ -57,8 +58,8 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="C:\Users\Imesh Ranawaka\Desktop\EEA\Wireframes\Icons\category_icon.png" />
-                                      <entry key="outputName" value="category_icon" />
+                                      <entry key="imageAsset" value="C:\Users\Imesh Ranawaka\Desktop\EEA\Wireframes\Icons\Edit_Notepad_Icon.svg" />
+                                      <entry key="outputName" value="update_icon" />
                                       <entry key="theme" value="CUSTOM" />
                                       <entry key="themeColor" value="000000" />
                                     </map>

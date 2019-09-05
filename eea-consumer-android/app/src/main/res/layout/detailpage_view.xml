@@ -24,7 +24,7 @@
             android:layout_marginRight="10dp"
             android:text="Imesh Ranawaka"
             android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/black"
             android:textSize="16sp"
             android:textStyle="bold"
             android:typeface="serif" />
@@ -39,7 +39,7 @@
             android:layout_marginBottom="10dp"
             android:text="Imesh Ranawaka"
             android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/black"
             android:textSize="16sp"
             android:textStyle="bold"
             android:typeface="serif" />
@@ -77,7 +77,7 @@
                 android:layout_weight="1"
                 android:text="Size        :"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
-                android:textColor="@android:color/white"
+                android:textColor="@android:color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:typeface="serif" />
@@ -111,7 +111,7 @@
                 android:layout_weight="1"
                 android:text="Quantity :"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
-                android:textColor="@android:color/white"
+                android:textColor="@android:color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:typeface="serif" />
@@ -125,6 +125,7 @@
                 android:gravity="right"
                 android:text="Product Out Of Stock"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
+                android:textColor="@android:color/black"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:typeface="serif"
@@ -156,7 +157,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginBottom="5dp"
                 android:layout_weight="1"
-                android:background="@drawable/button_layout"
+                android:background="@drawable/button_layout_white"
                 android:text="Add to cart"
                 android:textAppearance="@android:style/TextAppearance.Holo.Widget.Button"
                 android:textSize="16sp"
@@ -168,7 +169,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 android:layout_weight="1"
-                android:background="@drawable/button_layout"
+                android:background="@drawable/button_layout_white"
                 android:text="Order Now"
                 android:textAppearance="@android:style/TextAppearance.Holo.Widget.Button"
                 android:textSize="16sp"
@@ -195,7 +196,7 @@
             android:layout_marginRight="10dp"
             android:text="Description"
             android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold"
             android:typeface="serif" />
@@ -209,7 +210,7 @@
             android:layout_marginBottom="10dp"
             android:text="No.432/3, Himbutana Lane, Angoda, Mulleriyawa, Western, 10620"
             android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/black"
             android:typeface="serif" />
 
     </LinearLayout>
@@ -234,7 +235,7 @@
             android:layout_marginRight="10dp"
             android:text="Reviews"
             android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold"
             android:typeface="serif" />
@@ -258,7 +259,7 @@
             android:layout_marginBottom="5dp"
             android:text="Imesh"
             android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/black"
             android:textSize="16sp"
             android:textStyle="bold"
             android:typeface="serif" />
@@ -271,7 +272,7 @@
             android:layout_marginRight="10dp"
             android:text="Review"
             android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/black"
             android:textStyle="bold"
             android:typeface="serif" />
 
@@ -284,7 +285,7 @@
             android:layout_marginBottom="5dp"
             android:text="No.432/3, Himbutana Lane, Angoda, Mulleriyawa, Western, 10620"
             android:textAppearance="@style/TextAppearance.AppCompat.Small.Inverse"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/black"
             android:typeface="serif" />
 
         <Button
@@ -293,7 +294,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="10dp"
-            android:background="@drawable/button_layout"
+            android:background="@drawable/button_layout_white"
             android:text="View All"
             android:textAppearance="@android:style/TextAppearance.Holo.Widget.Button"
             android:textSize="16sp"
