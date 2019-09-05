@@ -1,5 +1,7 @@
 package com.example.imeshranawaka.stadia.Models;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -7,7 +9,9 @@ public class LoginDTO implements Serializable {
 	
     private String email;
 	private String pass;
+	@SerializedName("fname")
 	private String fName;
+	@SerializedName("lname")
 	private String lName;
 	private String role;
 	private Date lastLogin;

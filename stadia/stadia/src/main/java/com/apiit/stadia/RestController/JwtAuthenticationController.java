@@ -44,7 +44,7 @@ public class JwtAuthenticationController {
 
 
 	@PostMapping("/authenticate/")
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginDTO authenticationRequest)
+	public ResponseEntity<LoginDTO> createAuthenticationToken(@RequestBody LoginDTO authenticationRequest)
 			throws Exception {
 
 		authenticate(authenticationRequest.getEmail(), authenticationRequest.getPass());
@@ -57,7 +57,8 @@ public class JwtAuthenticationController {
 		Optional<Login> loginOptional = loginRepo.findById(authenticationRequest.getEmail());
 		if(loginOptional.isPresent()){
 			Login login = loginOptional.get();
-			return ResponseEntity.ok(new LoginDTO(token,login.getFName(),login.getLName()));
+			LoginDTO loginDTO = new LoginDTO(token, login.getFName(), login.getLName());
+			return ResponseEntity.ok(loginDTO);
 		}else{
 			return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
 		}

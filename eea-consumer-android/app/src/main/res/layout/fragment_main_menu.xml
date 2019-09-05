@@ -12,30 +12,6 @@
         android:orientation="vertical"
         android:weightSum="3">
 
-        <LinearLayout
-            android:id="@+id/linearLayout6"
-            android:layout_width="match_parent"
-            android:layout_height="60sp"
-            android:background="@color/colorPrimaryDark"
-            android:orientation="horizontal"
-            android:paddingLeft="5sp"
-            android:paddingTop="8sp"
-            android:paddingRight="5sp"
-            android:paddingBottom="5sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <SearchView
-                android:id="@+id/searchBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8sp"
-                android:layout_marginRight="8sp"
-                android:background="@drawable/search_layout" />
-
-        </LinearLayout>
-
         <FrameLayout
             android:id="@+id/subFragment"
             android:layout_width="match_parent"

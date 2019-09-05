@@ -102,7 +102,7 @@ public class Stadia extends AppCompatActivity implements NavigationView.OnNaviga
         }else if(id == R.id.nav_contact){
 
         }else if(id == R.id.nav_logout){
-
+            APIBuilder.Logout(getApplicationContext(),this);
         }
 
         drawer_layout.closeDrawer(GravityCompat.START);
