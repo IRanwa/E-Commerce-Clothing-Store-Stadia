@@ -29,6 +29,7 @@ public class APIBuilder {
         if(apiClient==null) {
             Retrofit.Builder builder = new Retrofit.Builder()
                     .baseUrl("http://10.0.2.2:8080")
+                    //.baseUrl("http://192.168.137.1:8080")
                     .addConverterFactory(GsonConverterFactory.create());
 
             Retrofit retrofit = builder.build();
@@ -59,6 +60,7 @@ public class APIBuilder {
             OkHttpClient client = httpClient.build();
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("http://10.0.2.2:8080")
+                    //.baseUrl("http://192.168.137.1:8080")
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(client)
                     .build();
@@ -69,22 +71,24 @@ public class APIBuilder {
 
     public static void Logout(Context context,FragmentActivity activity){
         FragmentManager fm = activity.getSupportFragmentManager();
-        FragmentTransaction transaction = fm.beginTransaction();
-        int backStackEntry = fm.getBackStackEntryCount();
-        List<Fragment> fragments = fm.getFragments();
-        if (backStackEntry > 0) {
-            for (int i = 0; i < backStackEntry; i++) {
-                fm.popBackStackImmediate();
-                if(fragments.size()<i) {
-                    Fragment frag = fragments.get(0);
-                    transaction.remove(frag);
+        if(fm!=null) {
+            FragmentTransaction transaction = fm.beginTransaction();
+            int backStackEntry = fm.getBackStackEntryCount();
+            List<Fragment> fragments = fm.getFragments();
+            if (backStackEntry > 0) {
+                for (int i = 0; i < backStackEntry; i++) {
+                    fm.popBackStackImmediate();
+                    if (fragments.size() < i) {
+                        Fragment frag = fragments.get(0);
+                        transaction.remove(frag);
+                    }
+                    fragments = fm.getFragments();
                 }
-                fragments = fm.getFragments();
             }
-        }
 
-        SharedPreferenceUtility.getInstance(context).resetSharedPreferences();
-        transaction.replace(R.id.mainFragment, new Login(), "Login");
-        transaction.commit();
+            SharedPreferenceUtility.getInstance(context).resetSharedPreferences();
+            transaction.replace(R.id.mainFragment, new Login(), "Login");
+            transaction.commit();
+        }
     }
 }

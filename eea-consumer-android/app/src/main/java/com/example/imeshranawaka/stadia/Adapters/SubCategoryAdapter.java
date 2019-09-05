@@ -104,22 +104,23 @@ public class SubCategoryAdapter extends RecyclerView.Adapter<SubCategoryAdapter.
             productView.setArguments(bundle);
 
             FragmentTransaction transaction = fm.beginTransaction();
-            int backStackEntry = fm.getBackStackEntryCount();
-            List<Fragment> fragments = fm.getFragments();
-            if (backStackEntry > 0) {
-                for (int i = 0; i < backStackEntry; i++) {
-                    fm.popBackStackImmediate();
-                    if(fragments.size()<i) {
-                        Fragment frag = fragments.get(0);
-                        transaction.remove(frag);
-                        if(frag.getTag()!=null && !frag.getTag().equals("ProductView")) {
-                            break;
-                        }
-                    }
-                    fragments = fm.getFragments();
-                }
-            }
+//            int backStackEntry = fm.getBackStackEntryCount();
+//            List<Fragment> fragments = fm.getFragments();
+//            if (backStackEntry > 0) {
+//                for (int i = 0; i < backStackEntry; i++) {
+//                    fm.popBackStackImmediate();
+//                    if(fragments.size()<i) {
+//                        Fragment frag = fragments.get(0);
+//                        transaction.remove(frag);
+//                        if(frag.getTag()!=null && !frag.getTag().equals("ProductView")) {
+//                            break;
+//                        }
+//                    }
+//                    fragments = fm.getFragments();
+//                }
+//            }
             transaction.replace(R.id.subFragment, productView, "ProductView");
+            transaction.addToBackStack(null);
             transaction.commit();
         }
     }

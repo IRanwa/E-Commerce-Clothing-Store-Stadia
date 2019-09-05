@@ -158,17 +158,21 @@ public class ProductService {
 						break;
 				}
 				MainSubCategoryDTO mainSubCatDTO = productDTO.getMainSubCategory();
-				if(mainSubCatDTO.getMainCategory()!=null){
-					Optional<MainCategory> mainCatOptional = mainCatRepo.findById(mainSubCatDTO.getMainCategory().getId());
-					if(mainCatOptional.isPresent()){
-						Optional<SubCategory> subCatOptional = subCatRepo.findById(mainSubCatDTO.getSubCategory().getId());
-						if(subCatOptional.isPresent()){
-							MainSubCategory mainSubCat = mainSubCatRepo.findByMainCategoryAndSubCategory(mainCatOptional.get(), subCatOptional.get());
-							prodList = productRepo.findByMainSubCategory(mainSubCat,pages);
-						}else{
+				if(mainSubCatDTO!=null) {
+					if (mainSubCatDTO.getMainCategory() != null) {
+						Optional<MainCategory> mainCatOptional = mainCatRepo.findById(mainSubCatDTO.getMainCategory().getId());
+						if (mainCatOptional.isPresent()) {
+							Optional<SubCategory> subCatOptional = subCatRepo.findById(mainSubCatDTO.getSubCategory().getId());
+							if (subCatOptional.isPresent()) {
+								MainSubCategory mainSubCat = mainSubCatRepo.findByMainCategoryAndSubCategory(mainCatOptional.get(), subCatOptional.get());
+								prodList = productRepo.findByMainSubCategory(mainSubCat, pages);
+							} else {
 
+							}
+						} else {
+							prodList = productRepo.findAll(pages);
 						}
-					}else{
+					} else {
 						prodList = productRepo.findAll(pages);
 					}
 				}else{

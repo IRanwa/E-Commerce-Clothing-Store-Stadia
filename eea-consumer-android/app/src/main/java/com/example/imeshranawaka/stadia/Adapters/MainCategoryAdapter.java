@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.imeshranawaka.stadia.Fragments.CategoryTabView;
 import com.example.imeshranawaka.stadia.Fragments.CategoryView;
 import com.example.imeshranawaka.stadia.Fragments.MainMenu;
 import com.example.imeshranawaka.stadia.Models.MainCategoryDTO;
@@ -29,12 +30,12 @@ public class MainCategoryAdapter extends RecyclerView.Adapter<MainCategoryAdapte
 
     private List<MainCategoryDTO> mainCategoryList;
     private Context context;
-    private CategoryView categoryView;
+    private CategoryTabView categoryTabView;
 
-    public MainCategoryAdapter(Context context, List<MainCategoryDTO> mainCategoryList, CategoryView categoryView) {
+    public MainCategoryAdapter(Context context, List<MainCategoryDTO> mainCategoryList, CategoryTabView categoryTabView) {
         this.mainCategoryList = mainCategoryList;
         this.context = context;
-        this.categoryView = categoryView;
+        this.categoryTabView = categoryTabView;
     }
 
     @NonNull
@@ -81,7 +82,7 @@ public class MainCategoryAdapter extends RecyclerView.Adapter<MainCategoryAdapte
 
         @Override
         public void onClick(View view) {
-            categoryView.setSubCategory(mainCat);
+            categoryTabView.setSubCategory(mainCat);
         }
     }
 }

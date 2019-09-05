@@ -3,6 +3,8 @@ package com.example.imeshranawaka.stadia.Fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,7 +17,6 @@ import com.example.imeshranawaka.stadia.Adapters.ProductListAdapter;
 import com.example.imeshranawaka.stadia.EnumClasses.SortBy;
 import com.example.imeshranawaka.stadia.Models.MainSubCategoryDTO;
 import com.example.imeshranawaka.stadia.Models.ProductDTO;
-import com.example.imeshranawaka.stadia.Models.SubCategoryDTO;
 import com.example.imeshranawaka.stadia.R;
 
 import java.util.List;
@@ -90,10 +91,14 @@ public class ProductsView extends Fragment {
                 }else{
                     List<ProductDTO> productList = response.body();
 
-                    GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),2);
-                    ProductListAdapter adapter = new ProductListAdapter(productList,getContext());
-                    productListView.setLayoutManager(gridLayoutManager);
-                    productListView.setAdapter(adapter);
+                    if(productList!=null) {
+                        if(getActivity()!=null) {
+                            GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
+                            ProductListAdapter adapter = new ProductListAdapter(productList, getContext(), getActivity().getSupportFragmentManager());
+                            productListView.setLayoutManager(gridLayoutManager);
+                            productListView.setAdapter(adapter);
+                        }
+                    }
                 }
             }
 

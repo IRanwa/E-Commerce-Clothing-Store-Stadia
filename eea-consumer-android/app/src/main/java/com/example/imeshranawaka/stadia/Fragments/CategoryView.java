@@ -2,7 +2,10 @@ package com.example.imeshranawaka.stadia.Fragments;
 
 
 import android.os.Bundle;
+import android.support.design.widget.TabItem;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.imeshranawaka.stadia.APIs.APIBuilder;
+import com.example.imeshranawaka.stadia.Adapters.CategoryPagerAdapter;
 import com.example.imeshranawaka.stadia.Adapters.MainCategoryAdapter;
 import com.example.imeshranawaka.stadia.Adapters.SubCategoryAdapter;
 import com.example.imeshranawaka.stadia.Models.MainCategoryDTO;
@@ -30,8 +34,9 @@ import retrofit2.Response;
  * A simple {@link Fragment} subclass.
  */
 public class CategoryView extends Fragment {
-    @BindView(R.id.mainCategoryList) RecyclerView mainCategoryListView;
-    @BindView(R.id.subCategoryList) RecyclerView subCategoryListView;
+
+    @BindView(R.id.categoryViewPager) ViewPager categoryViewPager;
+    @BindView(R.id.categoryTabLayout) TabLayout categoryTabLayout;
     private Unbinder unbinder;
     public CategoryView() {
         // Required empty public constructor
@@ -50,55 +55,25 @@ public class CategoryView extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        Call<List<MainCategoryDTO>> apiClient = APIBuilder.createAuthBuilder(getContext()).getAllMainCategory();
-        apiClient.enqueue(new Callback<List<MainCategoryDTO>>() {
+        final CategoryPagerAdapter adapter = new CategoryPagerAdapter(getContext(),getActivity().getSupportFragmentManager(), categoryTabLayout.getTabCount());
+        categoryViewPager.setAdapter(adapter);
+        categoryViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(categoryTabLayout));
+        categoryTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onResponse(Call<List<MainCategoryDTO>> call, Response<List<MainCategoryDTO>> response) {
+            public void onTabSelected(TabLayout.Tab tab) {
+                categoryViewPager.setCurrentItem(tab.getPosition());
 
-                if(response.code()==401){
-                    APIBuilder.Logout(getContext(),getActivity());
-                }else{
-                    List<MainCategoryDTO> mainCategoryList = response.body();
-
-                    LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-                    MainCategoryAdapter adapter = new MainCategoryAdapter(getContext(),mainCategoryList,CategoryView.this);
-                    mainCategoryListView.setLayoutManager(layoutManager);
-                    mainCategoryListView.setAdapter(adapter);
-                }
             }
 
             @Override
-            public void onFailure(Call<List<MainCategoryDTO>> call, Throwable t) {
-                System.out.println("Main Category Error!");
-                System.out.println(t.getMessage());
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
             }
         });
     }
-
-    public void setSubCategory(MainCategoryDTO mainCategoryDTO) {
-        Call<List<SubCategoryDTO>> apiClient = APIBuilder.createAuthBuilder(getContext()).getMainSubCategory(mainCategoryDTO.getId());
-        apiClient.enqueue(new Callback<List<SubCategoryDTO>>() {
-            @Override
-            public void onResponse(Call<List<SubCategoryDTO>> call, Response<List<SubCategoryDTO>> response) {
-                if(response.code()==401){
-                    APIBuilder.Logout(getContext(),getActivity());
-                }else{
-                    List<SubCategoryDTO> subCategoryList = response.body();
-
-                    GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),2);
-                    SubCategoryAdapter adapter = new SubCategoryAdapter(subCategoryList,getContext(),getActivity().getSupportFragmentManager(),mainCategoryDTO);
-                    subCategoryListView.setLayoutManager(gridLayoutManager);
-                    subCategoryListView.setAdapter(adapter);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<SubCategoryDTO>> call, Throwable t) {
-                System.err.println(t.getMessage());
-            }
-        });
-
-    }
-
-
 }

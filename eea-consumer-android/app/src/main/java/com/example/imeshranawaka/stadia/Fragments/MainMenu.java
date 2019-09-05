@@ -50,11 +50,15 @@ public class MainMenu extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_main_menu, container, false);
         unbinder = ButterKnife.bind(this, view);
+        return view;
+    }
 
+    @Override
+    public void onStart() {
+        super.onStart();
         getActivity().getSupportFragmentManager().beginTransaction().
                 replace(R.id.subFragment, new ProductsView(), "ProductsView").
                 commit();
-        return view;
     }
 
     @OnClick(R.id.homeNavBtn)
@@ -65,18 +69,19 @@ public class MainMenu extends Fragment {
         List<Fragment> fragments = fm.getFragments();
         if (backStackEntry > 0) {
             for (int i = 0; i < backStackEntry; i++) {
+
                 fm.popBackStackImmediate();
                 if(fragments.size()<i) {
                     Fragment frag = fragments.get(0);
                     transaction.remove(frag);
-                    if(frag.getTag()!=null && !frag.getTag().equals("ProductView")) {
+                    if(frag.getTag()!=null && !frag.getTag().equals("ProductsView")) {
                         break;
                     }
                 }
                 fragments = fm.getFragments();
             }
         }
-        transaction.replace(R.id.subFragment, new ProductsView(), "ProductView");
+        transaction.replace(R.id.subFragment, new ProductsView(), "ProductsView");
         transaction.commit();
     }
 
@@ -92,6 +97,7 @@ public class MainMenu extends Fragment {
                 if(fragments.size()<i) {
                     Fragment frag = fragments.get(0);
                     transaction.remove(frag);
+                    System.err.println("frag tag : "+frag.getTag());
                     if(frag.getTag()!=null && !frag.getTag().equals("CategoryView")) {
                         break;
                     }
@@ -99,7 +105,7 @@ public class MainMenu extends Fragment {
                 fragments = fm.getFragments();
             }
         }
-        transaction.replace(R.id.subFragment, new CategoryView(), "CategoryView").addToBackStack("ProductView");
+        transaction.replace(R.id.subFragment, new CategoryView(), "CategoryView");
         transaction.commit();
     }
 

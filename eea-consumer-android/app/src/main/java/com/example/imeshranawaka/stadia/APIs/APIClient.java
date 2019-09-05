@@ -24,8 +24,8 @@ public interface APIClient {
    @POST("/validateToken")
    Call<Boolean> validateToken(@Body LoginDTO loginDTO);
 
-   @GET("/MainCategory")
-    Call<List<MainCategoryDTO>> getAllMainCategory();
+   @GET("/GetMainCatByType/{type}")
+    Call<List<MainCategoryDTO>> GetMainCatByType(@Path("type") String type);
 
     @GET("/MainSubCategory/{id}")
     Call<List<SubCategoryDTO>> getMainSubCategory(@Path("id") int id);
