@@ -2,8 +2,11 @@ package com.example.imeshranawaka.stadia.Adapters;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.example.imeshranawaka.stadia.APIs.APIBuilder;
 import com.example.imeshranawaka.stadia.Models.AddressDTO;
 import com.example.imeshranawaka.stadia.R;
 
@@ -24,6 +28,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHolder>{
     private static List<AddressDTO> mDataSet;
@@ -31,13 +39,15 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
     private Context mContext;
     //private static ArrayList<View> viewsList;
     private FragmentManager fm;
+    private FragmentActivity activity;
 
-    public AddressAdapter(Context context, List<AddressDTO> addressList, FragmentManager fm) {
+    public AddressAdapter(Context context, List<AddressDTO> addressList, FragmentManager fm, FragmentActivity activity) {
         mDataSet = addressList;
         mContext = context;
         //viewsList = new ArrayList<>();
         deleteBtns = new ArrayList<>();
         this.fm = fm;
+        this.activity = activity;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
@@ -117,40 +127,38 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
             dialog.findViewById(R.id.btnYes).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    
-                    //Address.deleteAll(Address.class,"id=?",address.getId().toString());
-                    //viewsList.remove(position);
-                    mDataSet.remove(position);
-                    notifyItemRemoved(position);
-                    deleteBtns.remove(position);
 
-                    for(int count=position;count<deleteBtns.size();count++){
-                        btnDelete_onClick btnOnClick = deleteBtns.get(count);
-                        btnOnClick.setPosition(count);
-                    }
+                    Call<Boolean> callback = APIBuilder.createAuthBuilder(mContext).deleteAddress(address.getId());
+                    callback.enqueue(new Callback<Boolean>() {
+                        @Override
+                        public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                            if(response.code()==401){
+                                APIBuilder.Logout(mContext,activity);
+                            }else{
+                                if(response.body()){
+                                    mDataSet.remove(position);
+                                    notifyItemRemoved(position);
+                                    deleteBtns.remove(position);
 
-//                    SharedPreferenceUtility sharedPref = SharedPreferenceUtility.getInstance(mContext);
-//                    List<Address> addressList = Address.find(Address.class, "user_Email=?"
-//                            , sharedPref.getUserEmail());
-//                    if (addressList.size()>0) {
-//                        boolean status = false;
-//                        for(Address tempAddress : addressList){
-//                            if(tempAddress.isDef()){
-//                                status = true;
-//                                break;
-//                            }
-//                        }
-//                        if(!status){
-//                            address = addressList.get(0);
-//                            address.setDef(true);
-//                            address.save();
-//                        }
-//                        for(View view : viewsList){
-//                            RadioButton tempBtn = view.findViewById(R.id.defBtnRadio);
-//                            tempBtn.setChecked(true);
-//                            break;
-//                        }
-//                    }
+                                    for(int count=position;count<deleteBtns.size();count++){
+                                        btnDelete_onClick btnOnClick = deleteBtns.get(count);
+                                        btnOnClick.setPosition(count);
+                                    }
+                                }else{
+                                    Snackbar snackBar = Snackbar.make(v, "Address delete un-successful!", Snackbar.LENGTH_LONG);
+                                    snackBar.getView().setBackgroundColor(Color.parseColor("#FF0000"));
+                                    snackBar.show();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Boolean> call, Throwable t) {
+                            Snackbar snackBar = Snackbar.make(v, "Address delete un-successful!", Snackbar.LENGTH_LONG);
+                            snackBar.getView().setBackgroundColor(Color.parseColor("#FF0000"));
+                            snackBar.show();
+                        }
+                    });
                     dialog.dismiss();
                 }
             });

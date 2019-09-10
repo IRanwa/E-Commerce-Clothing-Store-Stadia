@@ -67,7 +67,7 @@ public class AddressBookView extends Fragment {
                         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
                         addressListRecycle.setLayoutManager(layoutManager);
 
-                        AddressAdapter addressAdapter = new AddressAdapter(getContext(), addressList, getFragmentManager());
+                        AddressAdapter addressAdapter = new AddressAdapter(getContext(), addressList, getFragmentManager(),getActivity());
                         addressListRecycle.setAdapter(addressAdapter);
                     }else{
                         addressListRecycle.setVisibility(View.GONE);

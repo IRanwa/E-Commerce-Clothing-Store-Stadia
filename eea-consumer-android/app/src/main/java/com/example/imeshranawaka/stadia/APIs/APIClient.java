@@ -61,4 +61,7 @@ public interface APIClient {
     @GET("/GetAddressList/{id}")
     Call<List<AddressDTO>> getAddressList(@Path("id") String id);
 
+    @DELETE("/DeleteAddress/{id}")
+    Call<Boolean> deleteAddress(@Path("id") long id);
+
 }
