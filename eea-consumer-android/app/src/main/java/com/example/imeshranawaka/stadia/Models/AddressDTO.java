@@ -1,5 +1,7 @@
 package com.example.imeshranawaka.stadia.Models;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -9,7 +11,9 @@ public class AddressDTO implements Serializable{
 	List<OrdersDTO> ordersBilling;
 	UserDTO user;
 	long id;
+	@SerializedName("fname")
 	String fName;
+	@SerializedName("lname")
 	String lName;
 	String contactNo;
 	String address;

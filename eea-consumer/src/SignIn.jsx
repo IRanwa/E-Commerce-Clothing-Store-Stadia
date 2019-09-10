@@ -166,7 +166,7 @@ class SignIn extends Component{
         .then(function(res){
             const data = res.data;
             console.log(data)
-            localStorage.setItem("token",data.jwktoken);
+            localStorage.setItem("token",data.jwttoken);
             localStorage.setItem("email",that.state.email);
             localStorage.setItem("name",(data.fname+" "+data.lname));
             that.setState({

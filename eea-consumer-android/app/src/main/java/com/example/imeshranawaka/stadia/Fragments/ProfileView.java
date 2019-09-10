@@ -57,4 +57,13 @@ public class ProfileView extends Fragment {
         transaction.commit();
     }
 
+    @OnClick(R.id.btnAddBook)
+    public void btnAddBook_onClick(){
+        AddressBookView addressBookView = new AddressBookView();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.subFragment,addressBookView,"AddressBookView");
+        transaction.addToBackStack("ProfileView");
+        transaction.commit();
+    }
+
 }

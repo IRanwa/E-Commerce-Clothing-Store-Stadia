@@ -1,5 +1,6 @@
 package com.example.imeshranawaka.stadia.APIs;
 
+import com.example.imeshranawaka.stadia.Models.AddressDTO;
 import com.example.imeshranawaka.stadia.Models.LoginDTO;
 import com.example.imeshranawaka.stadia.Models.MainCategoryDTO;
 import com.example.imeshranawaka.stadia.Models.MainSubCategoryDTO;
@@ -11,6 +12,7 @@ import com.example.imeshranawaka.stadia.Models.UserDTO;
 
 import java.util.List;
 
+import okhttp3.Address;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -55,5 +57,8 @@ public interface APIClient {
 
     @PUT("/UpdateUser/{id}")
     Call<UserDTO> UpdateUser(@Path("id") String id, @Body UserDTO user);
+
+    @GET("/GetAddressList/{id}")
+    Call<List<AddressDTO>> getAddressList(@Path("id") String id);
 
 }
