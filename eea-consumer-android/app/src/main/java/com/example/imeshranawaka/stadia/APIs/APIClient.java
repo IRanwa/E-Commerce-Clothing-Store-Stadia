@@ -64,4 +64,10 @@ public interface APIClient {
     @DELETE("/DeleteAddress/{id}")
     Call<Boolean> deleteAddress(@Path("id") long id);
 
+    @POST("/NewAddress")
+    Call<AddressDTO> newAddress(@Body AddressDTO addressDTO);
+
+    @PUT("/UpdateAddress")
+    Call<AddressDTO> updateAddress(@Body AddressDTO addressDTO);
+
 }

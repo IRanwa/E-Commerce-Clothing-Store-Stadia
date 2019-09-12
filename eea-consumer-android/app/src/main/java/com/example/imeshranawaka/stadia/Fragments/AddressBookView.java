@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,6 +23,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,6 +54,11 @@ public class AddressBookView extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         setList();
     }
 
@@ -82,5 +90,15 @@ public class AddressBookView extends Fragment {
                 snackBar.show();
             }
         });
+    }
+
+    @OnClick(R.id.btnAddAddress)
+    public void btnAddAddress_onClick(){
+        FragmentManager fm = getFragmentManager();
+        NewAddressView newAddress = new NewAddressView();
+        FragmentTransaction transaction = fm.beginTransaction().replace(R.id.subFragment
+                , newAddress,"NewAddressView");
+        transaction.addToBackStack("AddressBookView");
+        transaction.commit();
     }
 }

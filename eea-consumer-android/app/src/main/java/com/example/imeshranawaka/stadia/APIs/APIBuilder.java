@@ -30,8 +30,8 @@ public class APIBuilder {
     public static APIClient createBuilder(){
         if(apiClient==null) {
             Retrofit.Builder builder = new Retrofit.Builder()
-                    .baseUrl("http://10.0.2.2:8080")
-                    //.baseUrl("http://192.168.137.1:8080")
+                    //.baseUrl("http://10.0.2.2:8080")
+                    .baseUrl("http://192.168.137.1:8080")
                     .addConverterFactory(GsonConverterFactory.create());
 
             Retrofit retrofit = builder.build();
@@ -65,8 +65,8 @@ public class APIBuilder {
 
             OkHttpClient client = httpClient.build();
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://10.0.2.2:8080")
-                    //.baseUrl("http://192.168.137.1:8080")
+                    //.baseUrl("http://10.0.2.2:8080")
+                    .baseUrl("http://192.168.137.1:8080")
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .client(client)
                     .build();

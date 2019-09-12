@@ -1,25 +1,25 @@
 package com.apiit.stadia.RestController;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.apiit.stadia.DTOClasses.AddressDTO;
 import com.apiit.stadia.DTOClasses.LoginDTO;
 import com.apiit.stadia.ModelClasses.Address;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.apiit.stadia.DTOClasses.UserDTO;
 import com.apiit.stadia.EnumClasses.UserRole;
@@ -81,5 +81,17 @@ public class UserRestService {
 	public ResponseEntity<Boolean> deleteAddress(@PathVariable long id){
 		return userService.deleteAddress(id);
 	}
-	
+
+
+	@PostMapping("/SaveAddressList")
+	public void saveAddress(@RequestBody  Map<String, Object> data){
+		try {
+			JSONObject obj = new JSONObject(data);
+			BufferedWriter wr = new BufferedWriter(new FileWriter(new File("countries.json")));
+			wr.write(obj.toString());
+			wr.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

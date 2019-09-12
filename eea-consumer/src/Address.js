@@ -204,6 +204,25 @@ class PopupWindow extends Component{
     }
 
     componentDidMount(){
+        // console.log(csc.getAllCountries());
+        // let countryList = csc.getAllCountries();
+        // for(var i =0;i<countryList.length;i++){
+        //     let country = countryList[i];
+        //     let stateList = csc.getStatesOfCountry(country.id);
+        //     for(var x=0;x<stateList.length;x++){
+        //         let state = stateList[x];
+        //         let cityList = csc.getCitiesOfState(state.id);
+        //         state.cities = cityList;
+        //     }
+        //     country.states = stateList;
+            
+        // }
+        // console.log(countryList)
+        // axios.post("http://localhost:8080/SaveAddressList",{countryList},config)
+        // .then(function(res){
+        //     console.log("save : ",res);
+        // })
+
         if(this.state.command==="update"){
             const countryList = this.state.countriesList;
             let countryId;

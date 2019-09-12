@@ -19,6 +19,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.example.imeshranawaka.stadia.APIs.APIBuilder;
+import com.example.imeshranawaka.stadia.Fragments.NewAddressView;
 import com.example.imeshranawaka.stadia.Models.AddressDTO;
 import com.example.imeshranawaka.stadia.R;
 
@@ -175,13 +176,13 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.ViewHold
         @Override
         public void onClick(View v) {
             FragmentTransaction transaction = fm.beginTransaction();
-//            NewAddress newAddress = new NewAddress();
-//            Bundle bundle = new Bundle();
-//            bundle.putLong("Address",address.getId());
-//            newAddress.setArguments(bundle);
-//            transaction.replace(R.id.mainFragment,newAddress,"NewAddress");
-//            transaction.addToBackStack("MyAddressBook");
-//            transaction.commit();
+            NewAddressView newAddress = new NewAddressView();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("address",address);
+            newAddress.setArguments(bundle);
+            transaction.replace(R.id.subFragment,newAddress,"NewAddressView");
+            transaction.addToBackStack("MyAddressBook");
+            transaction.commit();
 
         }
     }
