@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.apiit.stadia.DTOClasses.ProductDTO;
+import com.apiit.stadia.DTOClasses.ProductSizesDTO;
 import com.apiit.stadia.EnumClasses.PaymentMethod;
 import com.apiit.stadia.ModelClasses.*;
 import com.apiit.stadia.Repositories.*;
@@ -192,23 +193,40 @@ public class OrdersService {
 	}
 	
 	public List<OrdersDTO> getOrdersList(User user){
-		List<Orders> orders = ordersRepo.findByUser(user);
-		List<OrdersDTO> ordersDTOList = new ArrayList<OrdersDTO>();
-		for(Orders order : orders) {
-			if(order.getStatus()!=OrderStatus.Cart) {
-				//Order to OrderDTO class
-				OrdersDTO orderDTO = modelToDTO.ordersToDTO(order);
-				//OrderProducts to OrderProductsDTO class
-				List<OrderProducts> orderProdList = order.getOrderProducts();
-				List<OrderProductsDTO> orderProdDTOList = new ArrayList<OrderProductsDTO>();
-				for(OrderProducts orderProd : orderProdList) {
-					orderProdDTOList.add(modelToDTO.orderProductToDTO(orderProd,null));
+		Optional<User> userOptional = userRepo.findById(user.getEmail());
+		if(userOptional.isPresent()) {
+			List<Orders> orders = ordersRepo.findByUser(userOptional.get());
+			List<OrdersDTO> ordersDTOList = new ArrayList<OrdersDTO>();
+			for (Orders order : orders) {
+				if (order.getStatus() != OrderStatus.Cart) {
+					//Order to OrderDTO class
+					OrdersDTO orderDTO = modelToDTO.ordersToDTO(order);
+					//OrderProducts to OrderProductsDTO class
+					List<OrderProducts> orderProdList = order.getOrderProducts();
+					List<OrderProductsDTO> orderProdDTOList = new ArrayList<OrderProductsDTO>();
+					for (OrderProducts orderProd : orderProdList) {
+						OrderProductsDTO orderProdDTO = modelToDTO.orderProductToDTO(orderProd, null);
+
+						ProductSizes prodSize = orderProd.getProductSizes();
+						ProductSizesDTO prodSizeDTO = modelToDTO.productSizesToDTO(prodSize);
+
+						ProductDTO prodDTO = modelToDTO.productToDTO(prodSize.getProduct());
+						prodSizeDTO.setProduct(prodDTO);
+
+						orderProdDTO.setProductSizes(prodSizeDTO);
+						orderProdDTOList.add(orderProdDTO);
+					}
+					orderDTO.setOrderProducts(orderProdDTOList);
+					ordersDTOList.add(orderDTO);
+
+					orderDTO.setBillingAddress(modelToDTO.addressToDTO(order.getBillingAddress()));
+					orderDTO.setShippingAddress(modelToDTO.addressToDTO(order.getShippingAddress()));
+
 				}
-				orderDTO.setOrderProducts(orderProdDTOList);
-				ordersDTOList.add(orderDTO);
 			}
+			return ordersDTOList;
 		}
-		return ordersDTOList;
+		return null;
 	}
 
 

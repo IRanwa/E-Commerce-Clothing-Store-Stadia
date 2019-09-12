@@ -12,6 +12,7 @@ import Register from './Register';
 import Profile from './Profile';
 import Address from './Address';
 import Checkout from './Checkout';
+import Orders from './Orders';
 const axios = require("axios");
 
 const sitename = "Stadia";
@@ -30,10 +31,20 @@ class App extends Component{
           <Route path="/profile" component={ProfilePage} />
           <Route path="/address" component={AddressPage} />
           <Route path="/checkout" component={CheckoutPage}/>
+          <Route path="/orders" component={OrdersPage}/>
         </div>
       </Router>
     );
   }
+}
+
+function OrdersPage(){
+  return(
+    <div>
+      <NavBar/>
+      <Orders/>
+    </div>
+  )
 }
 
 function CheckoutPage(){
@@ -261,7 +272,7 @@ class NavBar extends Component{
                 </div>
 
 
-                <a className="nav-item nav-link nav-sub" href="/">Orders</a>
+                <a className="nav-item nav-link nav-sub" href="/orders">Orders</a>
               </div>
               {
                 localStorage.email!=undefined?(

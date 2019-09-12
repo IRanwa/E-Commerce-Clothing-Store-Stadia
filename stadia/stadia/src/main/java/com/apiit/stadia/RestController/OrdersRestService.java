@@ -52,7 +52,7 @@ public class OrdersRestService {
 	}
 	
 	@PostMapping("/ListOrders")
-	public List<OrdersDTO> getOrdersList(User user){
+	public List<OrdersDTO> getOrdersList(@RequestBody  User user){
 		return orderService.getOrdersList(user);
 	}
 

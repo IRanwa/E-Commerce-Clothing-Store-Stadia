@@ -488,6 +488,18 @@ input[type='email'], input[type='password'] {
   height:100px;
 }
 
+.product-img-order{
+  width:250px;
+  height:300px;
+}
+
+.slide-container-img-order{
+  width:250px;
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+}
+
 
 .slide-container-img{
   width:100px;
