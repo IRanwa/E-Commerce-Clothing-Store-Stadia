@@ -3,21 +3,14 @@ package com.example.imeshranawaka.stadia.Adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BitmapShader;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.RectF;
-import android.graphics.Shader;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.annotation.NonNull;
+import com.google.android.material.snackbar.Snackbar;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Base64;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -137,8 +130,30 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder>{
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             int itemQty = Integer.parseInt(parent.getSelectedItem().toString());
-//            orderProduct.setQuantity(itemQty);
-//            orderProduct.save();
+            orderProduct.setQuantity(itemQty);
+
+            Call<Boolean> callback = APIBuilder.createAuthBuilder(mContext).updateCartQty(orderProduct);
+            callback.enqueue(new Callback<Boolean>() {
+                @Override
+                public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                    if(response.code()==401){
+                        APIBuilder.Logout(mContext,mActivity);
+                    }else{
+                        if(!response.body()){
+                            Snackbar snackBar = Snackbar.make(view, "Cart Item Quantity Update Un-Successful!", Snackbar.LENGTH_LONG);
+                            snackBar.getView().setBackgroundColor(Color.parseColor("#FF0000"));
+                            snackBar.show();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Boolean> call, Throwable t) {
+                    Snackbar snackBar = Snackbar.make(view, "Cart Item Quantity Update Un-Successful!", Snackbar.LENGTH_LONG);
+                    snackBar.getView().setBackgroundColor(Color.parseColor("#FF0000"));
+                    snackBar.show();
+                }
+            });
         }
 
         @Override

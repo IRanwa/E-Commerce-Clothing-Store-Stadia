@@ -2,33 +2,21 @@ package com.example.imeshranawaka.stadia.Fragments;
 
 
 import android.os.Bundle;
-import android.support.design.widget.TabItem;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import com.google.android.material.tabs.TabLayout;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.imeshranawaka.stadia.APIs.APIBuilder;
 import com.example.imeshranawaka.stadia.Adapters.CategoryPagerAdapter;
-import com.example.imeshranawaka.stadia.Adapters.MainCategoryAdapter;
-import com.example.imeshranawaka.stadia.Adapters.SubCategoryAdapter;
-import com.example.imeshranawaka.stadia.Models.MainCategoryDTO;
-import com.example.imeshranawaka.stadia.Models.SubCategoryDTO;
 import com.example.imeshranawaka.stadia.R;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.

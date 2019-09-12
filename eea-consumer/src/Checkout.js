@@ -403,7 +403,7 @@ class Checkout extends Component{
                                         <label><label className="checkout-header6">Card No : </label>{this.state.cardSecureNo}</label>
                                     </div>
                                 ):(
-                                    this.state.paymentMethod==="card"?(
+                                    this.state.paymentMethod==="Card"?(
                                         <div className="card m-3 p-3 w-50">
                                             <div className="add-cat-form">
                                                 <div>

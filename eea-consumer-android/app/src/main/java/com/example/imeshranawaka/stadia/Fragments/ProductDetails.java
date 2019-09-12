@@ -1,14 +1,13 @@
 package com.example.imeshranawaka.stadia.Fragments;
 
 
-import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
-import android.text.Html;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.Spinner;
@@ -32,9 +30,6 @@ import com.example.imeshranawaka.stadia.Models.UserDTO;
 import com.example.imeshranawaka.stadia.R;
 import com.example.imeshranawaka.stadia.SharedPreferenceUtility;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +40,6 @@ import butterknife.Unbinder;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -165,6 +159,11 @@ public class ProductDetails extends Fragment {
                 ArrayAdapter<Integer> qtyAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_item_view, qtyList);
                 qtyAdapter.setDropDownViewResource(R.layout.spinner_item_view);
                 quantity.setAdapter(qtyAdapter);
+
+                quantity.setVisibility(View.VISIBLE);
+                btnAddToCart.setVisibility(View.VISIBLE);
+                btnOrderNow.setVisibility(View.VISIBLE);
+                txtStockMessage.setVisibility(View.GONE);
             }else{
                 quantity.setVisibility(View.GONE);
                 btnAddToCart.setVisibility(View.GONE);

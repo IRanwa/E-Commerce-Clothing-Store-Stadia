@@ -3,9 +3,9 @@ package com.example.imeshranawaka.stadia.Fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +15,6 @@ import com.example.imeshranawaka.stadia.APIs.APIBuilder;
 import com.example.imeshranawaka.stadia.Models.LoginDTO;
 import com.example.imeshranawaka.stadia.R;
 import com.example.imeshranawaka.stadia.SharedPreferenceUtility;
-import com.example.imeshranawaka.stadia.Stadia;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

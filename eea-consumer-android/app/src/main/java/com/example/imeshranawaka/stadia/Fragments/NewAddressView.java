@@ -3,8 +3,8 @@ package com.example.imeshranawaka.stadia.Fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,17 +12,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import com.example.imeshranawaka.stadia.APIs.APIBuilder;
 import com.example.imeshranawaka.stadia.EnumClasses.AddressType;
 import com.example.imeshranawaka.stadia.Models.AddressDTO;
-import com.example.imeshranawaka.stadia.Models.Country;
 import com.example.imeshranawaka.stadia.Models.UserDTO;
 import com.example.imeshranawaka.stadia.R;
 import com.example.imeshranawaka.stadia.SharedPreferenceUtility;
-import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,7 +28,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

@@ -4,8 +4,8 @@ package com.example.imeshranawaka.stadia.Adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.imeshranawaka.stadia.Fragments.CategoryTabView;
-import com.example.imeshranawaka.stadia.Fragments.CategoryView;
-import com.example.imeshranawaka.stadia.Fragments.MainMenu;
 import com.example.imeshranawaka.stadia.Models.MainCategoryDTO;
 import com.example.imeshranawaka.stadia.R;
 
@@ -24,7 +22,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class MainCategoryAdapter extends RecyclerView.Adapter<MainCategoryAdapter.ViewHolder> {
 

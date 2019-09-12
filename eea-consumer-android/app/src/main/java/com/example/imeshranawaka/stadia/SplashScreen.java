@@ -1,22 +1,9 @@
 package com.example.imeshranawaka.stadia;
 
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-
-import com.example.imeshranawaka.stadia.Models.City;
-import com.example.imeshranawaka.stadia.Models.Country;
-import com.example.imeshranawaka.stadia.Models.State;
-import com.google.gson.JsonObject;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 
 public class SplashScreen extends AppCompatActivity {
 

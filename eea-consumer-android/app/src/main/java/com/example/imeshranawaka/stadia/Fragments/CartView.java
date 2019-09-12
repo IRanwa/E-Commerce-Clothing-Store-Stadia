@@ -3,18 +3,18 @@ package com.example.imeshranawaka.stadia.Fragments;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.Toast;
 
 import com.example.imeshranawaka.stadia.APIs.APIBuilder;
-import com.example.imeshranawaka.stadia.APIs.APIClient;
 import com.example.imeshranawaka.stadia.Adapters.CartAdapter;
 import com.example.imeshranawaka.stadia.Models.OrderProductsDTO;
 import com.example.imeshranawaka.stadia.Models.UserDTO;
@@ -71,7 +71,7 @@ public class CartView extends Fragment {
                     APIBuilder.Logout(getContext(),getActivity());
                 }else {
                     List<OrderProductsDTO> orderProds = response.body();
-                    if(orderProds.size()>0) {
+                    if(orderProds!=null && orderProds.size()>0) {
 
                         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
                         productsRecycleView.setLayoutManager(layoutManager);
@@ -107,5 +107,17 @@ public class CartView extends Fragment {
     @OnClick(R.id.btnDeleteSelected)
     public void btnDeleteSelected_onClick(View v){
         adapter.btnDeleteSelected_onClick(v);
+    }
+
+    @OnClick(R.id.btnCheckout)
+    public void btnCheckout_onClick(View v){
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+
+        PlaceOrderView placeOrder = new PlaceOrderView();
+
+        transaction.replace(R.id.subFragment, placeOrder,"PlaceOrderView");
+        transaction.addToBackStack("CartView");
+        transaction.commit();
     }
 }

@@ -70,4 +70,10 @@ public interface APIClient {
     @PUT("/UpdateAddress")
     Call<AddressDTO> updateAddress(@Body AddressDTO addressDTO);
 
+    @POST("/UpdateCartQty")
+    Call<Boolean> updateCartQty(@Body OrderProductsDTO orderProductsDTO);
+
+    @POST("/PlaceOrder")
+    Call<Boolean> placeOrder(@Body OrdersDTO ordersDTO);
+
 }
