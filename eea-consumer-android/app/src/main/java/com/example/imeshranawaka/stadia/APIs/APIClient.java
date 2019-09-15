@@ -79,4 +79,10 @@ public interface APIClient {
     @POST("/ListOrders")
     Call<List<OrdersDTO>> getOrdersList(@Body UserDTO userDTO);
 
+    @GET("/GetOrder/{id}")
+    Call<OrdersDTO> getOrder(@Path(("id")) long id);
+
+    @PUT("/UpdateOrderStatus")
+    Call<Boolean> updateOrderStatus(@Body OrdersDTO ordersDTO);
+
 }

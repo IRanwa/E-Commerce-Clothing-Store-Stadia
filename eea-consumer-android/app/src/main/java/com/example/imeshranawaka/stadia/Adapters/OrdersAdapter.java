@@ -4,12 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BitmapShader;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.RectF;
-import android.graphics.Shader;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.Display;
@@ -22,9 +17,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.imeshranawaka.stadia.EnumClasses.OrderStatus;
+import com.example.imeshranawaka.stadia.Fragments.OrderDetailsView;
 import com.example.imeshranawaka.stadia.Models.OrderProductsDTO;
 import com.example.imeshranawaka.stadia.Models.OrdersDTO;
 import com.example.imeshranawaka.stadia.Models.ProductDTO;
@@ -151,15 +149,15 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.ViewHolder
 
         @Override
         public void onClick(View v) {
-//            Bundle bundle = new Bundle();
-//            bundle.putLong("OrderNo",id);
-//            OrderDetails orderdetails = new OrderDetails();
-//            orderdetails.setArguments(bundle);
-//
-//            FragmentManager fm = activity.getSupportFragmentManager();
-//            FragmentTransaction transaction = fm.beginTransaction().replace(R.id.mainFragment,orderdetails , "OrderDetails");
-//            transaction.addToBackStack("MyOrders");
-//            transaction.commit();
+            Bundle bundle = new Bundle();
+            bundle.putLong("OrderNo",id);
+            OrderDetailsView orderdetails = new OrderDetailsView();
+            orderdetails.setArguments(bundle);
+
+            FragmentManager fm = activity.getSupportFragmentManager();
+            FragmentTransaction transaction = fm.beginTransaction().replace(R.id.subFragment,orderdetails , "OrderDetailsView");
+            transaction.addToBackStack("OrdersView");
+            transaction.commit();
         }
     }
 }
