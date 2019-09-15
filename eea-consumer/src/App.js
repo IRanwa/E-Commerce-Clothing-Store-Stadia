@@ -13,6 +13,7 @@ import Profile from './Profile';
 import Address from './Address';
 import Checkout from './Checkout';
 import Orders from './Orders';
+import OrderDetails from './OrderDetails';
 const axios = require("axios");
 
 const sitename = "Stadia";
@@ -32,9 +33,29 @@ class App extends Component{
           <Route path="/address" component={AddressPage} />
           <Route path="/checkout" component={CheckoutPage}/>
           <Route path="/orders" component={OrdersPage}/>
+          <Route path="/orderdetails" component={OrderDetailsPage}/>
         </div>
       </Router>
     );
+  }
+}
+
+class OrderDetailsPage extends Component{
+  constructor(props){
+    super(props);
+    console.log(this.props.location.state)
+    this.state={
+      id:this.props.location.state.id
+    }
+  }
+  
+  render(){
+    return(
+      <div>
+        <NavBar/>
+        <OrderDetails id={this.state.id}/>
+      </div>
+    )
   }
 }
 
@@ -271,11 +292,17 @@ class NavBar extends Component{
                   </div>
                 </div>
 
-
-                <a className="nav-item nav-link nav-sub" href="/orders">Orders</a>
+                {
+                  localStorage.token!==undefined?(
+                    <a className="nav-item nav-link nav-sub" href="/orders">Orders</a>
+                  ):(
+                    ""
+                  )
+                }
+                
               </div>
               {
-                localStorage.email!=undefined?(
+                localStorage.token!=undefined?(
                   <div className="cart-icon-container">
                     <a className="nav-item nav-link" href="/cart">
                       <img src="https://static.thenounproject.com/png/16757-200.png" className="cart-img"/>
@@ -294,7 +321,7 @@ class NavBar extends Component{
                     </a>
                     <div className="dropdown-menu profile-icon-subcontainer row">
                       {
-                        localStorage.email!=undefined?(
+                        localStorage.token!=undefined?(
                           <div>
                             <div className="column w-100">
                               <h6>Welcome back {localStorage.name}</h6>

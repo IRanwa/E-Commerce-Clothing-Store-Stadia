@@ -221,4 +221,13 @@ public class ModelClassToDTO {
 
 		return addressDTO;
 	}
+
+	public RatingDTO ratingToDTO(Rating rating){
+		RatingDTO ratingDTO = new RatingDTO();
+		ratingDTO.setId(rating.getId());
+		ratingDTO.setComment(rating.getComment());
+		ratingDTO.setRatedDate(rating.getRatedDate());
+		ratingDTO.setRating(rating.getRating());
+		return ratingDTO;
+	}
 }

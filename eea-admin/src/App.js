@@ -7,6 +7,7 @@ import HomepageApp from './Homepage.js';
 import CategoriesApp from './Categories.js';
 import ProductSizesApp from './ProductSizes.js';
 import ProductsApp from './Products';
+const axios = require("axios");
 
 class App extends Component{
   render(){
@@ -25,20 +26,52 @@ class App extends Component{
 }
 
 class Index extends Component{
+  constructor(props){
+    super(props);
+    this.state={
+      fields:{
+        email:"",
+        pass:""
+      }
+    }
+    this.loginBtn = this.loginBtn.bind(this);
+  }
+
+  inputChnage(event){
+    let fields = this.state.fields;
+    fields[event.target.name] = event.target.value;
+    this.setState({
+      fields
+    })
+  }
+
+  loginBtn(){
+    axios.post("http://localhost:8080/authenticate/",this.state.fields)
+    .then(function(res){
+      console.log(res);
+      const data = res.data;
+      localStorage.setItem("token",data.jwttoken);
+      localStorage.setItem("email",this.state.fields.email);
+      localStorage.setItem("name",(data.fname+" "+data.lname));
+    }).catch(function(error){
+      console.log(error.response);
+    })
+  }
+
   render(){
     return(
       <div className="login-form">
           <div className="main_color card p-sm-2 shadow">
             <div className="input_container">
               <h6 className="font_weight_bold">Email</h6>
-              <input className="card font_14px" type="email" placeholder="Email" name="email"/>
+              <input className="card font_14px" type="email" placeholder="Email" name="email" value={this.state.fields.name} onChange={this.inputChnage.bind(this)}/>
             </div>
             <div className="input_container">
               <h6 className="font_weight_bold">Password</h6>
-              <input className="card font_14px" type="password" placeholder="Password" name="password"/>
+              <input className="card font_14px" type="password" placeholder="password" name="pass" value={this.state.fields.password} onChange={this.inputChnage.bind(this)}/>
             </div>
             <div className="input_container text-center">
-              <input className="btn btn-lg shadow btnSignIn" type="submit" value="Sign In"/>
+              <input className="btn btn-lg shadow btnSignIn" type="submit" value="Sign In" onClick={this.loginBtn}/>
             </div>
           </div>
       </div>

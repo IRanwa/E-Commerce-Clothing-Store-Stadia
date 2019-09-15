@@ -56,4 +56,23 @@ public class OrdersRestService {
 		return orderService.getOrdersList(user);
 	}
 
+	@GetMapping("/GetRecentOrders")
+	public List<OrdersDTO> getRecentOrders(){
+		return orderService.getRecentOrders();
+	}
+
+	@PutMapping("/UpdateOrderStatus")
+	public ResponseEntity<Boolean> updateOrderStatus(@RequestBody Orders order){
+		return orderService.updateOrderStatus(order);
+	}
+
+	@GetMapping("/GetOrder/{id}")
+	public ResponseEntity<OrdersDTO> getOrder(@PathVariable long id ){
+		return orderService.getOrders(id);
+	}
+
+	@PostMapping("/AddRating")
+	public ResponseEntity<Boolean> addRating(@RequestBody OrderProducts orderProducts){
+		return orderService.addRating(orderProducts);
+	}
 }

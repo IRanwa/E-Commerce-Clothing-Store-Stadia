@@ -52,7 +52,7 @@ public class UserService {
 			login.setLastLogin(new Date());
 			login = loginRepo.save(login);
 
-			if (login != null) {
+			if (login != null && login.getRole()==UserRole.Consumer) {
 				newUser.setLogin(login);
 				User user = userRepo.save(newUser);
 
@@ -62,6 +62,8 @@ public class UserService {
 					addressRepo.save(address);
 				}
 
+				return new ResponseEntity<>(true, HttpStatus.OK);
+			}else{
 				return new ResponseEntity<>(true, HttpStatus.OK);
 			}
 		}

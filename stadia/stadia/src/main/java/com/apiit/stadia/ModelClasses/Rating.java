@@ -33,7 +33,7 @@ public class Rating implements Serializable{
 	@Getter @Setter OrderProducts orderProducts;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Getter @Setter long id;
 	
 	@Getter @Setter int rating;

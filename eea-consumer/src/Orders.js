@@ -21,8 +21,12 @@ class Orders extends Component{
     constructor(props){
         super(props);
         this.state={
-            orders:[]
+            orders:[],
+            redirectToHome:false,
+            redirectToViewOrder:false,
+            viewOrderId:0
         }
+        this.viewOrder = this.viewOrder.bind(this);
     }
 
     componentDidMount(){
@@ -34,13 +38,38 @@ class Orders extends Component{
             that.setState({orders:res.data});
         }).catch(function(error){
             console.log(error.response);
+            if(error.response!=null){
+                if(error.response.status===401){
+                    localStorage.removeItem("token");
+                    that.setState({
+                        redirectToHome:true
+                    })
+                }
+            }
         });
     }
 
+    viewOrder(id){
+        this.setState({
+            redirectToViewOrder:true,
+            viewOrderId:id
+        })
+    }
+
     render(){
-        console.log(this.state.orders);
+        console.log("orders ",this.state.orders);
         return(
             <div>
+                {
+                    this.state.redirectToHome?(
+                        <Redirect to="/"/>
+                    ):("")
+                }
+                {
+                    this.state.redirectToViewOrder?(
+                        <Redirect to={{pathname:"/orderdetails",state:{id:this.state.viewOrderId}}}/>
+                    ):("")
+                }
                 <div className="card register-container">
                     <div>
                         <h4>Order Details</h4>
@@ -54,11 +83,15 @@ class Orders extends Component{
                                 let deliverDate="";
                                 let orderCompleteDate="";
                                 switch(status){
-                                    case "Completed" || "Cancelled":
-                                        orderCompleteDate = new Date(order.orderCompleteDate).toLocaleTimeString();
+                                    case "Cancelled":
+                                    case "Completed":
+                                        orderCompleteDate = new Date(order.orderCompleteDate).toLocaleString();
                                     case "Delivered":
-                                        deliverDate = new Date(order.deliverDate).toLocaleTimeString();
+                                        if(order.deliverDate!==null){
+                                            deliverDate = new Date(order.deliverDate).toLocaleString();
+                                        }
                                     case "Pending":
+                                        console.log(index," ",order.purchasedDate)
                                         purchaseDate = new Date(order.purchasedDate).toLocaleString();
                                         break;
                                 }
@@ -68,7 +101,6 @@ class Orders extends Component{
 
                                 address = order.shippingAddress;
                                 const shippingAdd = address.address+", "+address.city+", "+address.province+", "+address.zipCode+", "+address.country;
-                                console.log(billingAdd);
 
                                 const orderProds = order.orderProducts;
                                 let images = [];
@@ -88,7 +120,6 @@ class Orders extends Component{
                                                     <Fade {...properties}>
                                                     {
                                                         images.map((image,index)=>{
-                                                            console.log("image",image)
                                                             return(
                                                                 <div className="each-fade" key={index}>
                                                                     <div>
@@ -141,6 +172,9 @@ class Orders extends Component{
                                             </div>
                                             <div>
                                                 Billing Address : {billingAdd}
+                                            </div>
+                                            <div>
+                                                <input type="submit" className="btn-sm btn-success float-right" value="View Order Details" onClick={()=>this.viewOrder(order.id)}/>
                                             </div>
                                         </div>
                                     </div>

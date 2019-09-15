@@ -10,7 +10,9 @@ import com.apiit.stadia.DTOClasses.ProductSizesDTO;
 import com.apiit.stadia.EnumClasses.PaymentMethod;
 import com.apiit.stadia.ModelClasses.*;
 import com.apiit.stadia.Repositories.*;
+import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,8 @@ public class OrdersService {
 	UserRepository userRepo;
 	@Autowired
 	AddressRepository addressRepo;
+	@Autowired
+	RatingRepository ratingRepo;
 	
 	@Autowired
 	ModelClassToDTO modelToDTO;
@@ -195,39 +199,99 @@ public class OrdersService {
 	public List<OrdersDTO> getOrdersList(User user){
 		Optional<User> userOptional = userRepo.findById(user.getEmail());
 		if(userOptional.isPresent()) {
-			List<Orders> orders = ordersRepo.findByUser(userOptional.get());
+			Sort sort = new Sort(Sort.Direction.DESC, "orderCompleteDate", "deliverDate","purchasedDate");
+			List<Orders> orders = ordersRepo.findByUser(userOptional.get(),sort);
 			List<OrdersDTO> ordersDTOList = new ArrayList<OrdersDTO>();
-			for (Orders order : orders) {
+			for(Orders order : orders){
 				if (order.getStatus() != OrderStatus.Cart) {
-					//Order to OrderDTO class
-					OrdersDTO orderDTO = modelToDTO.ordersToDTO(order);
-					//OrderProducts to OrderProductsDTO class
-					List<OrderProducts> orderProdList = order.getOrderProducts();
-					List<OrderProductsDTO> orderProdDTOList = new ArrayList<OrderProductsDTO>();
-					for (OrderProducts orderProd : orderProdList) {
-						OrderProductsDTO orderProdDTO = modelToDTO.orderProductToDTO(orderProd, null);
-
-						ProductSizes prodSize = orderProd.getProductSizes();
-						ProductSizesDTO prodSizeDTO = modelToDTO.productSizesToDTO(prodSize);
-
-						ProductDTO prodDTO = modelToDTO.productToDTO(prodSize.getProduct());
-						prodSizeDTO.setProduct(prodDTO);
-
-						orderProdDTO.setProductSizes(prodSizeDTO);
-						orderProdDTOList.add(orderProdDTO);
-					}
-					orderDTO.setOrderProducts(orderProdDTOList);
-					ordersDTOList.add(orderDTO);
-
-					orderDTO.setBillingAddress(modelToDTO.addressToDTO(order.getBillingAddress()));
-					orderDTO.setShippingAddress(modelToDTO.addressToDTO(order.getShippingAddress()));
-
+					ordersDTOList.add(getOrderToDTO(order));
 				}
 			}
 			return ordersDTOList;
 		}
-		return null;
+		return new ArrayList<>();
+	}
+
+	private OrdersDTO getOrderToDTO(Orders order){
+		//Order to OrderDTO class
+		OrdersDTO orderDTO = modelToDTO.ordersToDTO(order);
+		//OrderProducts to OrderProductsDTO class
+		List<OrderProducts> orderProdList = order.getOrderProducts();
+		List<OrderProductsDTO> orderProdDTOList = new ArrayList<OrderProductsDTO>();
+		for (OrderProducts orderProd : orderProdList) {
+			OrderProductsDTO orderProdDTO = modelToDTO.orderProductToDTO(orderProd, null);
+			Rating rating = orderProd.getRating();
+			if(rating!=null) {
+				orderProdDTO.setRating(modelToDTO.ratingToDTO(rating));
+			}
+			ProductSizes prodSize = orderProd.getProductSizes();
+			ProductSizesDTO prodSizeDTO = modelToDTO.productSizesToDTO(prodSize);
+
+			ProductDTO prodDTO = modelToDTO.productToDTO(prodSize.getProduct());
+			prodSizeDTO.setProduct(prodDTO);
+
+			orderProdDTO.setProductSizes(prodSizeDTO);
+			orderProdDTOList.add(orderProdDTO);
+		}
+		orderDTO.setOrderProducts(orderProdDTOList);
+
+		orderDTO.setBillingAddress(modelToDTO.addressToDTO(order.getBillingAddress()));
+		orderDTO.setShippingAddress(modelToDTO.addressToDTO(order.getShippingAddress()));
+
+		return orderDTO;
 	}
 
 
+	public List<OrdersDTO> getRecentOrders() {
+		Sort sort = new Sort(Sort.Direction.DESC, "orderCompleteDate", "deliverDate","purchasedDate");
+		List<Orders> orders = ordersRepo.findByStatus(OrderStatus.Pending,sort);
+		List<OrdersDTO> ordersDTOList = new ArrayList<>();
+		for(Orders order : orders){
+			if (order.getStatus() != OrderStatus.Cart) {
+				ordersDTOList.add(getOrderToDTO(order));
+			}
+		}
+		return ordersDTOList;
+	}
+
+	public ResponseEntity<Boolean> updateOrderStatus(Orders newOrder) {
+		Optional<Orders> ordersOptional = ordersRepo.findById(newOrder.getId());
+		if(ordersOptional.isPresent()){
+			Orders order = ordersOptional.get();
+			order.setStatus(newOrder.getStatus());
+
+			if(newOrder.getStatus()==OrderStatus.Delivered){
+				order.setDeliverDate(new Date());
+			}else if(newOrder.getStatus()==OrderStatus.Cancelled || newOrder.getStatus()==OrderStatus.Completed){
+				order.setOrderCompleteDate(new Date());
+			}
+
+			ordersRepo.save(order);
+			return new ResponseEntity<>(true,HttpStatus.OK);
+		}
+		return new ResponseEntity<>(false,HttpStatus.NOT_FOUND);
+	}
+
+	public ResponseEntity<OrdersDTO> getOrders(long id) {
+		Optional<Orders> orderOptional = ordersRepo.findById(id);
+		if(orderOptional.isPresent()){
+			OrdersDTO orderDTO = getOrderToDTO(orderOptional.get());
+			return new ResponseEntity<>(orderDTO,HttpStatus.OK);
+		}
+		return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+	}
+
+	public ResponseEntity<Boolean> addRating(OrderProducts saveOrderProd) {
+		OrderProducts orderProduct = orderProdRepo.findByOrdersAndProductSizes(saveOrderProd.getOrders(), saveOrderProd.getProductSizes());
+		Optional<User> userOptional = userRepo.findById(saveOrderProd.getOrders().getUser().getEmail());
+		if(orderProduct!=null && userOptional.isPresent()) {
+			Rating rating = saveOrderProd.getRating();
+			rating.setRatedDate(new Date());
+			rating.setUser(userOptional.get());
+			rating.setOrderProducts(orderProduct);
+			ratingRepo.save(rating);
+			return new ResponseEntity<>(true,HttpStatus.OK);
+		}
+		return new ResponseEntity<>(false,HttpStatus.NOT_FOUND);
+	}
 }
