@@ -76,4 +76,7 @@ public interface APIClient {
     @POST("/PlaceOrder")
     Call<Boolean> placeOrder(@Body OrdersDTO ordersDTO);
 
+    @POST("/ListOrders")
+    Call<List<OrdersDTO>> getOrdersList(@Body UserDTO userDTO);
+
 }

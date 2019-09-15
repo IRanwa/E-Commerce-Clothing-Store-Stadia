@@ -1,17 +1,27 @@
 package com.example.imeshranawaka.stadia;
 
 import android.os.Bundle;
+
+import com.example.imeshranawaka.stadia.Fragments.OrdersView;
+import com.example.imeshranawaka.stadia.Fragments.ProductsView;
+import com.example.imeshranawaka.stadia.Fragments.ProfileView;
 import com.google.android.material.navigation.NavigationView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.view.MenuItem;
 
 import com.example.imeshranawaka.stadia.APIs.APIBuilder;
 import com.example.imeshranawaka.stadia.Fragments.Login;
 import com.example.imeshranawaka.stadia.Fragments.MainMenu;
 import com.example.imeshranawaka.stadia.Models.LoginDTO;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -93,10 +103,68 @@ public class Stadia extends AppCompatActivity implements NavigationView.OnNaviga
         int id = item.getItemId();
 
         if (id == R.id.nav_home) {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction transaction = fm.beginTransaction();
+            int backStackEntry = fm.getBackStackEntryCount();
+            List<Fragment> fragments = fm.getFragments();
+            if (backStackEntry > 0) {
+                for (int i = 0; i < backStackEntry; i++) {
 
+                    fm.popBackStackImmediate();
+                    if(fragments.size()<i) {
+                        Fragment frag = fragments.get(0);
+                        transaction.remove(frag);
+                        if(frag.getTag()!=null && !frag.getTag().equals("ProductsView")) {
+                            break;
+                        }
+                    }
+                    fragments = fm.getFragments();
+                }
+            }
+            transaction.replace(R.id.subFragment, new ProductsView(), "ProductsView");
+            transaction.commit();
         } else if (id == R.id.nav_account) {
-
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction transaction = fm.beginTransaction();
+            int backStackEntry = fm.getBackStackEntryCount();
+            List<Fragment> fragments = fm.getFragments();
+            if (backStackEntry > 0) {
+                for (int i = 0; i < backStackEntry; i++) {
+                    fm.popBackStackImmediate();
+                    if(fragments.size()<i) {
+                        Fragment frag = fragments.get(0);
+                        transaction.remove(frag);
+                        System.err.println("frag tag : "+frag.getTag());
+                        if(frag.getTag()!=null && !frag.getTag().equals("ProfileView")) {
+                            break;
+                        }
+                    }
+                    fragments = fm.getFragments();
+                }
+            }
+            transaction.replace(R.id.subFragment, new ProfileView(), "ProfileView");
+            transaction.commit();
         } else if (id == R.id.nav_order) {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction transaction = fm.beginTransaction();
+            int backStackEntry = fm.getBackStackEntryCount();
+            List<Fragment> fragments = fm.getFragments();
+            if (backStackEntry > 0) {
+                for (int i = 0; i < backStackEntry; i++) {
+                    fm.popBackStackImmediate();
+                    if(fragments.size()<i) {
+                        Fragment frag = fragments.get(0);
+                        transaction.remove(frag);
+                        System.err.println("frag tag : "+frag.getTag());
+                        if(frag.getTag()!=null && !frag.getTag().equals("OrdersView")) {
+                            break;
+                        }
+                    }
+                    fragments = fm.getFragments();
+                }
+            }
+            transaction.replace(R.id.subFragment, new OrdersView(), "OrdersView");
+            transaction.commit();
 
         }else if(id == R.id.nav_contact){
 
